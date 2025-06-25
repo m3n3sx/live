@@ -1,0 +1,502 @@
+/**
+ * Modern Admin Styler V2 - Admin CSS
+ * Czyste style dla nowej wtyczki
+ */
+
+/* RESET I PODSTAWY */
+.mas-v2-wrap {
+    margin: 20px 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f1f1f1;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+/* HEADER */
+.mas-v2-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    position: relative;
+}
+
+.mas-v2-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    margin: 0 auto;
+}
+
+.mas-v2-title {
+    font-size: 28px;
+    margin: 0;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mas-v2-icon {
+    font-size: 32px;
+}
+
+.mas-v2-subtitle {
+    margin: 5px 0 0 0;
+    opacity: 0.9;
+    font-size: 16px;
+}
+
+.mas-v2-header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* PRZYCISKI */
+.mas-v2-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.mas-v2-btn-primary {
+    background: #10b981;
+    color: white;
+}
+
+.mas-v2-btn-primary:hover {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.mas-v2-btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.mas-v2-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* NAVIGATION */
+.mas-v2-nav {
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0;
+}
+
+.mas-v2-nav-tabs {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.mas-v2-nav-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.mas-v2-nav-tabs li {
+    flex-shrink: 0;
+}
+
+.mas-v2-nav-tab {
+    display: block;
+    padding: 16px 24px;
+    color: #6b7280;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.mas-v2-nav-tab:hover {
+    color: #374151;
+    background: #f9fafb;
+}
+
+.mas-v2-nav-tab.active {
+    color: #3b82f6;
+    border-bottom-color: #3b82f6;
+    background: #f8faff;
+}
+
+/* CONTENT */
+.mas-v2-content {
+    background: white;
+    padding: 30px;
+}
+
+.mas-v2-tab-panel {
+    display: none;
+}
+
+.mas-v2-tab-panel.active {
+    display: block;
+}
+
+.mas-v2-section {
+    margin-bottom: 40px;
+}
+
+.mas-v2-section h2 {
+    font-size: 24px;
+    margin: 0 0 8px 0;
+    color: #111827;
+    font-weight: 700;
+}
+
+.mas-v2-section p {
+    color: #6b7280;
+    margin: 0 0 24px 0;
+    font-size: 16px;
+}
+
+/* GRID I KARTY */
+.mas-v2-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.mas-v2-card {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 24px;
+    transition: all 0.2s ease;
+}
+
+.mas-v2-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-color: #d1d5db;
+}
+
+.mas-v2-card h3 {
+    font-size: 18px;
+    margin: 0 0 20px 0;
+    color: #111827;
+    font-weight: 600;
+}
+
+/* POLA FORMULARZA */
+.mas-v2-field {
+    margin-bottom: 20px;
+}
+
+.mas-v2-field label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.mas-v2-input,
+.mas-v2-select,
+.mas-v2-textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.mas-v2-input:focus,
+.mas-v2-select:focus,
+.mas-v2-textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.mas-v2-color {
+    width: 60px;
+    height: 40px;
+    padding: 2px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.mas-v2-slider {
+    width: 100%;
+    margin: 8px 0;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: #e5e7eb;
+    outline: none;
+}
+
+.mas-v2-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.mas-v2-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.mas-v2-slider-value {
+    display: inline-block;
+    margin-left: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    min-width: 40px;
+}
+
+/* CHECKBOX */
+.mas-v2-checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    color: #374151;
+}
+
+.mas-v2-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.mas-v2-checkbox-mark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d1d5db;
+    border-radius: 4px;
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.mas-v2-checkbox input[type="checkbox"]:checked + .mas-v2-checkbox-mark {
+    background: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.mas-v2-checkbox input[type="checkbox"]:checked + .mas-v2-checkbox-mark::after {
+    content: '✓';
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* PRESETS */
+.mas-v2-presets {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.mas-v2-preset {
+    padding: 10px 20px;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    transition: all 0.2s ease;
+}
+
+.mas-v2-preset:hover,
+.mas-v2-preset.active {
+    border-color: #3b82f6;
+    color: #3b82f6;
+    background: #f8faff;
+}
+
+/* STATUS */
+.mas-v2-status {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mas-v2-status-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+}
+
+.mas-v2-status-value {
+    font-weight: 600;
+    color: #111827;
+}
+
+.mas-v2-status-active {
+    color: #10b981;
+}
+
+/* FOOTER */
+.mas-v2-footer {
+    background: #f9fafb;
+    padding: 20px 30px;
+    border-top: 1px solid #e5e7eb;
+    text-align: center;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+/* MESSAGES */
+#mas-v2-messages {
+    position: fixed;
+    top: 32px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.mas-v2-message {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    min-width: 300px;
+    animation: slideIn 0.3s ease;
+}
+
+.mas-v2-message.success {
+    border-color: #10b981;
+    background: #f0fdf4;
+    color: #065f46;
+}
+
+.mas-v2-message.error {
+    border-color: #ef4444;
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.mas-v2-message.info {
+    border-color: #3b82f6;
+    background: #eff6ff;
+    color: #1e40af;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* RESPONSYWNOŚĆ */
+@media (max-width: 768px) {
+    .mas-v2-wrap {
+        margin: 10px;
+    }
+    
+    .mas-v2-header {
+        padding: 20px;
+    }
+    
+    .mas-v2-header-content {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+    
+    .mas-v2-content {
+        padding: 20px;
+    }
+    
+    .mas-v2-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .mas-v2-nav-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .mas-v2-nav-tab {
+        flex: 1;
+        text-align: center;
+        min-width: 120px;
+    }
+}
+
+/* LOADING STATE */
+.mas-v2-loading {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.mas-v2-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 24px;
+    height: 24px;
+    margin: -12px 0 0 -12px;
+    border: 2px solid #3b82f6;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+    z-index: 1000;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Glassmorphism */
+backdrop-filter: blur(20px) !important;
+
+/* Neon Glow */  
+box-shadow: 0 0 20px var(--mas-primary) !important;
+
+/* Floating */
+position: fixed !important;
+border-radius: 16px !important;
