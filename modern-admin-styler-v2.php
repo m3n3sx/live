@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Definicje stałych
-define('MAS_V2_VERSION', '2.2.0');
+define('MAS_V2_VERSION', '2.5.0');
 define('MAS_V2_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('MAS_V2_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('MAS_V2_PLUGIN_FILE', __FILE__);
@@ -61,9 +61,9 @@ class ModernAdminStylerV2 {
         add_action('init', [$this, 'loadTextdomain']);
         add_action('admin_menu', [$this, 'addAdminMenu']);
         add_action('admin_enqueue_scripts', [$this, 'enqueueAssets']);
-        add_action('wp_enqueue_scripts', [$this, 'enqueueGlobalAssets']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueueGlobalAssets']);
         
-        // AJAX handlers
+        // AJAX handlers - usuń dublowanie
         add_action('wp_ajax_mas_v2_save_settings', [$this, 'ajaxSaveSettings']);
         add_action('wp_ajax_mas_v2_reset_settings', [$this, 'ajaxResetSettings']);
         add_action('wp_ajax_mas_v2_export_settings', [$this, 'ajaxExportSettings']);
@@ -80,6 +80,9 @@ class ModernAdminStylerV2 {
         
         // Body class modifications
         add_filter('admin_body_class', [$this, 'addAdminBodyClasses']);
+        
+        // Menu search and custom blocks
+        add_action('admin_footer', [$this, 'renderMenuSearchAndBlocks']);
         
         // Activation/Deactivation hooks
         register_activation_hook(__FILE__, [$this, 'activate']);
@@ -120,24 +123,22 @@ class ModernAdminStylerV2 {
      * Inicjalizacja serwisów
      */
     public function initServices() {
-        // Na razie używamy legacy mode - nowa architektura będzie dodana później
-        // Ta funkcja jest przygotowana na przyszłe rozszerzenie
-        $this->initLegacyMode();
+        // WYŁĄCZONY - używamy tylko legacy mode żeby uniknąć duplikatów
+        // Nowa architektura jest wyłączona - powodowała konflikty
+        
+        // Nie inicjalizuj AdminController - dubluje hooki
+        // $this->adminController = new \ModernAdminStylerV2\Controllers\AdminController();
+        
+        // Nie inicjalizuj AssetService - ma własne metody enqueue które się dublują
+        // $this->assetService = new \ModernAdminStylerV2\Services\AssetService();
     }
     
     /**
      * Tryb zgodności ze starą wersją
      */
     private function initLegacyMode() {
-        add_action('admin_menu', [$this, 'addAdminMenu']);
-        add_action('admin_enqueue_scripts', [$this, 'enqueueAssets']);
-        add_action('admin_enqueue_scripts', [$this, 'enqueueGlobalAssets']); // CSS na wszystkich stronach
-        add_action('admin_head', [$this, 'outputCustomStyles']); // Style inline
-        add_action('wp_ajax_mas_v2_save_settings', [$this, 'ajaxSaveSettings']);
-        add_action('wp_ajax_mas_v2_reset_settings', [$this, 'ajaxResetSettings']);
-        add_action('wp_ajax_mas_v2_export_settings', [$this, 'ajaxExportSettings']);
-        add_action('wp_ajax_mas_v2_import_settings', [$this, 'ajaxImportSettings']);
-        add_action('wp_ajax_mas_v2_live_preview', [$this, 'ajaxLivePreview']);
+        // Legacy mode jest jedynym aktywnym systemem
+        // Wszystko działa przez main class bez duplikatów
     }
     
     /**
@@ -296,7 +297,15 @@ class ModernAdminStylerV2 {
             return;
         }
         
-        // JS tylko na stronie ustawień
+        // STYLE interface'u wtyczki na stronach ustawień
+        wp_enqueue_style(
+            'mas-v2-interface',
+            MAS_V2_PLUGIN_URL . 'assets/css/mas-v2-main.css',
+            [],
+            MAS_V2_VERSION . '.' . time()
+        );
+        
+        // TYLKO KLUCZOWY JavaScript na stronach ustawień
         wp_enqueue_script(
             'mas-v2-admin',
             MAS_V2_PLUGIN_URL . 'assets/js/admin-modern.js',
@@ -304,6 +313,17 @@ class ModernAdminStylerV2 {
             MAS_V2_VERSION,
             true
         );
+        
+        // Debug script tylko w trybie debug (opcjonalny)
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            wp_enqueue_script(
+                'mas-v2-debug',
+                MAS_V2_PLUGIN_URL . 'assets/js/debug-frontend.js',
+                ['jquery', 'mas-v2-admin'],
+                MAS_V2_VERSION,
+                true
+            );
+        }
         
         wp_enqueue_style('wp-color-picker');
         
@@ -332,15 +352,20 @@ class ModernAdminStylerV2 {
             return;
         }
         
-        // CSS na wszystkich stronach wp-admin (oprócz logowania)
+        // Dodaj wczesny JavaScript PRZED wszystkimi innymi skryptami
+        add_action('admin_head', [$this, 'addEarlyLoadingProtection'], 1);
+        
+        // SKONSOLIDOWANE PLIKI CSS - optymalizacja wydajności
+        
+        // Główny plik CSS (wszystkie style + Live Preview)
         wp_enqueue_style(
-            'mas-v2-global',
-            MAS_V2_PLUGIN_URL . 'assets/css/admin-modern.css',
+            'mas-v2-main',
+            MAS_V2_PLUGIN_URL . 'assets/css/mas-v2-main.css',
             [],
-            MAS_V2_VERSION
+            MAS_V2_VERSION . '.' . time()
         );
         
-        // Lekki JS na wszystkich stronach wp-admin
+        // TYLKO GLOBALNY JavaScript (lekki, bez duplikatów)
         wp_enqueue_script(
             'mas-v2-global',
             MAS_V2_PLUGIN_URL . 'assets/js/admin-global.js',
@@ -353,6 +378,30 @@ class ModernAdminStylerV2 {
         wp_localize_script('mas-v2-global', 'masV2Global', [
             'settings' => $this->getSettings()
         ]);
+    }
+    
+    /**
+     * Dodaje wczesną ochronę przed animacjami podczas ładowania strony
+     */
+    public function addEarlyLoadingProtection() {
+        ?>
+        <script>
+        // NAPRAW PROBLEM "ODLATUJĄCEGO MENU" - Wczesna ochrona
+        (function() {
+            // Dodaj klasę mas-loading NATYCHMIAST
+            document.documentElement.classList.add('mas-loading');
+            document.body.classList.add('mas-loading');
+            
+            // Usuń klasę po pełnym załadowaniu
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(function() {
+                    document.documentElement.classList.remove('mas-loading');
+                    document.body.classList.remove('mas-loading');
+                }, 500);
+            });
+        })();
+        </script>
+        <?php
     }
     
     /**
@@ -424,10 +473,19 @@ class ModernAdminStylerV2 {
                 break;
         }
         
-        // Sprawdź czy formularz został wysłany
+        // Sprawdź czy formularz został wysłany (fallback dla POST)
         if (isset($_POST['mas_v2_nonce']) && wp_verify_nonce($_POST['mas_v2_nonce'], 'mas_v2_nonce')) {
-            $settings = $this->sanitizeSettings($_POST);
-            update_option('mas_v2_settings', $settings);
+            error_log('MAS V2: POST form submitted (non-AJAX)');
+            
+            // Filtruj tylko odpowiednie pola formularza
+            $form_data = $_POST;
+            unset($form_data['mas_v2_nonce'], $form_data['_wp_http_referer'], $form_data['submit']);
+            
+            $settings = $this->sanitizeSettings($form_data);
+            $result = update_option('mas_v2_settings', $settings);
+            
+            error_log('MAS V2: POST save result: ' . ($result ? 'success' : 'failed'));
+            $this->clearCache();
             
             echo '<div class="notice notice-success is-dismissible"><p>' . 
                  __('Ustawienia zostały zapisane!', 'modern-admin-styler-v2') . 
@@ -446,23 +504,49 @@ class ModernAdminStylerV2 {
         // Weryfikacja nonce
         if (!wp_verify_nonce($_POST['nonce'] ?? '', 'mas_v2_nonce')) {
             wp_send_json_error(['message' => __('Błąd bezpieczeństwa', 'modern-admin-styler-v2')]);
+            return;
         }
         
         // Sprawdzenie uprawnień
         if (!current_user_can('manage_options')) {
             wp_send_json_error(['message' => __('Brak uprawnień', 'modern-admin-styler-v2')]);
+            return;
         }
         
         try {
-        // Sanityzacja i zapisanie danych
-            $settings = $this->sanitizeSettings($_POST);
-            update_option('mas_v2_settings', $settings);
+            // Debug info
+            error_log('MAS V2: AJAX Save Settings called');
+            error_log('MAS V2: POST data: ' . print_r($_POST, true));
             
-            wp_send_json_success([
-                'message' => __('Ustawienia zostały zapisane pomyślnie!', 'modern-admin-styler-v2'),
-                'settings' => $settings
-            ]);
+            // Filtruj tylko odpowiednie pola formularza
+            $form_data = $_POST;
+            unset($form_data['nonce'], $form_data['action']);
+            
+            // Sanityzacja i zapisanie danych
+            $old_settings = $this->getSettings();
+            $settings = $this->sanitizeSettings($form_data);
+            $result = update_option('mas_v2_settings', $settings);
+            
+            // update_option() zwraca false, jeśli wartości są takie same, co nie jest błędem.
+            // Uznajemy zapis za udany, jeśli funkcja zwróciła true LUB jeśli nowe ustawienia są identyczne jak stare.
+            $is_success = ($result === true || serialize($settings) === serialize($old_settings));
+            
+            error_log('MAS V2: update_option result: ' . ($result ? 'true (changed)' : 'false (no change or error)'));
+            error_log('MAS V2: Sanitized settings: ' . print_r($settings, true));
+            
+            // Wyczyść cache
+            $this->clearCache();
+            
+            if ($is_success) {
+                wp_send_json_success([
+                    'message' => __('Ustawienia zostały zapisane pomyślnie!', 'modern-admin-styler-v2'),
+                    'settings' => $settings
+                ]);
+            } else {
+                wp_send_json_error(['message' => __('Wystąpił błąd podczas zapisu do bazy danych.', 'modern-admin-styler-v2')]);
+            }
         } catch (Exception $e) {
+            error_log('MAS V2: Save error: ' . $e->getMessage());
             wp_send_json_error(['message' => $e->getMessage()]);
         }
     }
@@ -565,7 +649,11 @@ class ModernAdminStylerV2 {
         }
         
         try {
-            $settings = $this->sanitizeSettings($_POST);
+            // Filtruj tylko odpowiednie pola formularza
+            $form_data = $_POST;
+            unset($form_data['nonce'], $form_data['action']);
+            
+            $settings = $this->sanitizeSettings($form_data);
             $css = $this->generateCSSVariables($settings);
             $css .= $this->generateAdminCSS($settings);
             
@@ -596,90 +684,23 @@ class ModernAdminStylerV2 {
             return;
         }
         
-        $css = $this->generateCSSVariables($settings);
-        $css .= $this->generateAdminCSS($settings);
-        $css .= $this->generateButtonCSS($settings);
-        $css .= $this->generateFormCSS($settings);
-        $css .= $this->generateAdvancedCSS($settings);
-        
-        echo "<style id='mas-v2-dynamic-styles'>\n";
-        echo $css;
-        echo "\n</style>\n";
-        
-        // Custom JavaScript
+        // Generowanie stylów jest teraz scentralizowane i ładowane przez `wp_add_inline_style`
+        // dla lepszej wydajności i uniknięcia FOUC (Flash of Unstyled Content).
+        $dynamic_css = $this->generateCSSVariables($settings);
+
+        // Dodaj style w linii w sposób rekomendowany przez WordPress
+        wp_add_inline_style('mas-v2-global', $dynamic_css);
+
+        // Dodaj niestandardowy JS w bezpieczny sposób
         if (!empty($settings['custom_js'])) {
-            echo "<script>\n";
-            echo "jQuery(document).ready(function($) {\n";
-            echo $settings['custom_js'] . "\n";
-            echo "});\n";
-            echo "</script>\n";
+            wp_add_inline_script('mas-v2-global', $settings['custom_js']);
         }
         
-        // JavaScript do dodawania klas CSS do body
-        ?>
-        <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var body = document.body;
-            
-            // Dodaj klasy dla floating elementów (nowe opcje)
-            <?php if (isset($settings['menu_floating']) && $settings['menu_floating']): ?>
-            body.classList.add('mas-v2-menu-floating');
-            <?php else: ?>
-            body.classList.remove('mas-v2-menu-floating');
-            <?php endif; ?>
-            
-            <?php if (isset($settings['admin_bar_floating']) && $settings['admin_bar_floating']): ?>
-            body.classList.add('mas-v2-admin-bar-floating');
-            <?php else: ?>
-            body.classList.remove('mas-v2-admin-bar-floating');
-            <?php endif; ?>
-            
-            // Dodaj klasy dla glossy efektów
-            <?php if (isset($settings['menu_glossy']) && $settings['menu_glossy']): ?>
-            body.classList.add('mas-v2-menu-glossy');
-            <?php else: ?>
-            body.classList.remove('mas-v2-menu-glossy');
-            <?php endif; ?>
-            
-            <?php if (isset($settings['admin_bar_glossy']) && $settings['admin_bar_glossy']): ?>
-            body.classList.add('mas-v2-admin-bar-glossy');
-            <?php else: ?>
-            body.classList.remove('mas-v2-admin-bar-glossy');
-            <?php endif; ?>
-            
-            // Dodaj klasy dla border radius (nowe opcje)
-            <?php if (isset($settings['menu_border_radius_type']) && $settings['menu_border_radius_type'] === 'individual'): ?>
-            body.classList.add('mas-v2-menu-radius-individual');
-            <?php else: ?>
-            body.classList.remove('mas-v2-menu-radius-individual');
-            <?php endif; ?>
-            
-            <?php if (isset($settings['admin_bar_border_radius_type']) && $settings['admin_bar_border_radius_type'] === 'individual'): ?>
-            body.classList.add('mas-v2-admin-bar-radius-individual');
-            <?php else: ?>
-            body.classList.remove('mas-v2-admin-bar-radius-individual');
-            <?php endif; ?>
-            
-            // Backward compatibility - dodaj klasy dla starych opcji
-            <?php if (isset($settings['menu_detached']) && $settings['menu_detached']): ?>
-            body.classList.add('mas-menu-floating');
-            body.classList.remove('mas-menu-normal');
-            <?php else: ?>
-            body.classList.add('mas-menu-normal');
-            body.classList.remove('mas-menu-floating');
-            <?php endif; ?>
-            
-            <?php if (isset($settings['admin_bar_detached']) && $settings['admin_bar_detached']): ?>
-            body.classList.add('mas-admin-bar-floating');
-            <?php else: ?>
-            body.classList.remove('mas-admin-bar-floating');
-            <?php endif; ?>
-            
-            // Debug
-            console.log('MAS V2: Body classes added:', body.className.split(' ').filter(c => c.startsWith('mas-')));
-        });
-        </script>
-        <?php
+        // Dodaj JavaScript dla dynamicznego zarządzania klasami body
+        $body_classes_js = $this->generateBodyClassesJS($settings);
+        if (!empty($body_classes_js)) {
+            wp_add_inline_script('mas-v2-global', $body_classes_js);
+        }
     }
     
     /**
@@ -707,6 +728,47 @@ class ModernAdminStylerV2 {
     private function generateCSSVariables($settings) {
         $css = ':root {';
         
+        // ADAPTIVE COLOR SYSTEM - Enhanced
+        $colorScheme = $settings['color_scheme'] ?? 'light';
+        
+        // Define adaptive color palettes
+        $colorPalettes = $this->getAdaptiveColorPalettes();
+        $currentPalette = $settings['color_palette'] ?? 'modern-blue';
+        
+        // Get light and dark variants
+        $lightColors = $colorPalettes[$currentPalette]['light'] ?? $colorPalettes['modern-blue']['light'];
+        $darkColors = $colorPalettes[$currentPalette]['dark'] ?? $colorPalettes['modern-blue']['dark'];
+        
+        // Apply colors based on scheme
+        if ($colorScheme === 'light') {
+            $activeColors = $lightColors;
+        } elseif ($colorScheme === 'dark') {
+            $activeColors = $darkColors;
+        } else {
+            // Auto mode - use light as default, dark will be handled by @media
+            $activeColors = $lightColors;
+        }
+        
+        // Generate adaptive color variables
+        $css .= "--mas-primary: {$activeColors['primary']};";
+        $css .= "--mas-secondary: {$activeColors['secondary']};";
+        $css .= "--mas-accent: {$activeColors['accent']};";
+        $css .= "--mas-background: {$activeColors['background']};";
+        $css .= "--mas-surface: {$activeColors['surface']};";
+        $css .= "--mas-text: {$activeColors['text']};";
+        $css .= "--mas-text-secondary: {$activeColors['text_secondary']};";
+        $css .= "--mas-border: {$activeColors['border']};";
+        
+        // Glass morphism variables
+        $css .= "--mas-glass-primary: " . $this->hexToRgba($activeColors['surface'], 0.85) . ";";
+        $css .= "--mas-glass-secondary: " . $this->hexToRgba($activeColors['surface'], 0.6) . ";";
+        $css .= "--mas-glass-border: " . $this->hexToRgba($activeColors['text'], 0.2) . ";";
+        
+        // Accent gradients
+        $css .= "--mas-accent-start: {$activeColors['primary']};";
+        $css .= "--mas-accent-end: {$activeColors['secondary']};";
+        $css .= "--mas-accent-glow: " . $this->hexToRgba($activeColors['primary'], 0.6) . ";";
+        
         // Menu width - normalne i collapsed
         $menuWidth = isset($settings['menu_width']) ? $settings['menu_width'] : 160;
         $css .= "--mas-menu-width: {$menuWidth}px;";
@@ -716,27 +778,27 @@ class ModernAdminStylerV2 {
         $adminBarHeight = isset($settings['admin_bar_height']) ? $settings['admin_bar_height'] : 32;
         $css .= "--mas-admin-bar-height: {$adminBarHeight}px;";
         
-        // Menu margin (dla floating) - nowe ustawienia z fallback
-        $marginType = $settings['menu_detached_margin_type'] ?? 'all';
+        // Menu margin (dla floating) - unified naming
+        $marginType = $settings['menu_margin_type'] ?? 'all';
         if ($marginType === 'all') {
-            $marginAll = $settings['menu_detached_margin_all'] ?? $settings['menu_detached_margin'] ?? 20;
+            $marginAll = $settings['menu_margin_all'] ?? $settings['menu_margin'] ?? 20;
             $css .= "--mas-menu-margin-top: {$marginAll}px;";
             $css .= "--mas-menu-margin-right: {$marginAll}px;";
             $css .= "--mas-menu-margin-bottom: {$marginAll}px;";
             $css .= "--mas-menu-margin-left: {$marginAll}px;";
         } else {
-            $marginTop = $settings['menu_detached_margin_top'] ?? 20;
-            $marginRight = $settings['menu_detached_margin_right'] ?? 20;
-            $marginBottom = $settings['menu_detached_margin_bottom'] ?? 20;
-            $marginLeft = $settings['menu_detached_margin_left'] ?? 20;
+            $marginTop = $settings['menu_margin_top'] ?? 20;
+            $marginRight = $settings['menu_margin_right'] ?? 20;
+            $marginBottom = $settings['menu_margin_bottom'] ?? 20;
+            $marginLeft = $settings['menu_margin_left'] ?? 20;
             $css .= "--mas-menu-margin-top: {$marginTop}px;";
             $css .= "--mas-menu-margin-right: {$marginRight}px;";
             $css .= "--mas-menu-margin-bottom: {$marginBottom}px;";
             $css .= "--mas-menu-margin-left: {$marginLeft}px;";
         }
         
-        // Stary fallback dla kompatybilności
-        $oldMargin = $settings['menu_detached_margin'] ?? 20;
+        // Fallback dla kompatybilności
+        $oldMargin = $settings['menu_margin'] ?? 20;
         $css .= "--mas-menu-margin: {$oldMargin}px;";
         
         // Admin bar margin (dla floating) - nowe ustawienia
@@ -787,649 +849,254 @@ class ModernAdminStylerV2 {
             $css .= "--mas-menu-floating-margin-bottom: {$menuMarginBottom}px;";
             $css .= "--mas-menu-floating-margin-left: {$menuMarginLeft}px;";
         }
+
+        // Admin Bar variables for Live Preview
+        $adminBarTextColor = $settings['admin_bar_text_color'] ?? '#ffffff';
+        $adminBarHoverColor = $settings['admin_bar_hover_color'] ?? '#46a6d8';
+        $adminBarFontSize = $settings['admin_bar_font_size'] ?? 13;
+        $adminBarPadding = $settings['admin_bar_padding'] ?? 8;
+        $adminBarBorderRadiusAll = $settings['admin_bar_border_radius'] ?? 0;
         
+        $css .= "--mas-admin-bar-text-color: {$adminBarTextColor};";
+        $css .= "--mas-admin-bar-hover-color: {$adminBarHoverColor};";
+        $css .= "--mas-admin-bar-font-size: {$adminBarFontSize}px;";
+        $css .= "--mas-admin-bar-padding: {$adminBarPadding}px;";
+        $css .= "--mas-admin-bar-border-radius-all: {$adminBarBorderRadiusAll}px;";
+
+        // Menu variables for Live Preview
+        $menuTextColor = $settings['menu_text_color'] ?? $activeColors['text'];
+        $menuHoverColor = $settings['menu_hover_color'] ?? $activeColors['primary'];
+        $menuActiveBackground = $settings['menu_active_background'] ?? $activeColors['accent'];
+        $menuActiveTextColor = $settings['menu_active_text_color'] ?? '#ffffff';
+        $menuItemHeight = $settings['menu_item_height'] ?? 34;
+        $menuBorderRadiusAll = $settings['menu_border_radius_all'] ?? 0;
+        
+        $css .= "--mas-menu-text-color: {$menuTextColor};";
+        $css .= "--mas-menu-hover-color: {$menuHoverColor};";
+        $css .= "--mas-menu-active-background: {$menuActiveBackground};";
+        $css .= "--mas-menu-active-text-color: {$menuActiveTextColor};";
+        $css .= "--mas-menu-item-height: {$menuItemHeight}px;";
+        $css .= "--mas-menu-border-radius-all: {$menuBorderRadiusAll}px;";
+
+        // Dodaj zmienną dla tła menu
+        $menuBackground = isset($settings['menu_background']) ? $settings['menu_background'] : $activeColors['surface'];
+        $css .= "--mas-menu-background: {$menuBackground};";
+        
+        $css .= '}';
+        
+        // Add auto dark mode support
+        if ($colorScheme === 'auto') {
+            $css .= '@media (prefers-color-scheme: dark) {';
+            $css .= ':root {';
+            $css .= "--mas-primary: {$darkColors['primary']};";
+            $css .= "--mas-secondary: {$darkColors['secondary']};";
+            $css .= "--mas-accent: {$darkColors['accent']};";
+            $css .= "--mas-background: {$darkColors['background']};";
+            $css .= "--mas-surface: {$darkColors['surface']};";
+            $css .= "--mas-text: {$darkColors['text']};";
+            $css .= "--mas-text-secondary: {$darkColors['text_secondary']};";
+            $css .= "--mas-border: {$darkColors['border']};";
+            $css .= "--mas-glass-primary: " . $this->hexToRgba($darkColors['surface'], 0.85) . ";";
+            $css .= "--mas-glass-secondary: " . $this->hexToRgba($darkColors['surface'], 0.6) . ";";
+            $css .= "--mas-glass-border: " . $this->hexToRgba($darkColors['text'], 0.2) . ";";
+            $css .= "--mas-accent-start: {$darkColors['primary']};";
+            $css .= "--mas-accent-end: {$darkColors['secondary']};";
+            $css .= "--mas-accent-glow: " . $this->hexToRgba($darkColors['primary'], 0.6) . ";";
+            $css .= '}';
+            $css .= '}';
+        }
+        
+        // Manual dark mode override
+        $css .= 'body.mas-dark-mode {';
+        $css .= "--mas-primary: {$darkColors['primary']};";
+        $css .= "--mas-secondary: {$darkColors['secondary']};";
+        $css .= "--mas-accent: {$darkColors['accent']};";
+        $css .= "--mas-background: {$darkColors['background']};";
+        $css .= "--mas-surface: {$darkColors['surface']};";
+        $css .= "--mas-text: {$darkColors['text']};";
+        $css .= "--mas-text-secondary: {$darkColors['text_secondary']};";
+        $css .= "--mas-border: {$darkColors['border']};";
+        $css .= "--mas-glass-primary: " . $this->hexToRgba($darkColors['surface'], 0.85) . ";";
+        $css .= "--mas-glass-secondary: " . $this->hexToRgba($darkColors['surface'], 0.6) . ";";
+        $css .= "--mas-glass-border: " . $this->hexToRgba($darkColors['text'], 0.2) . ";";
+        $css .= "--mas-accent-start: {$darkColors['primary']};";
+        $css .= "--mas-accent-end: {$darkColors['secondary']};";
+        $css .= "--mas-accent-glow: " . $this->hexToRgba($darkColors['primary'], 0.6) . ";";
         $css .= '}';
         
         return $css;
     }
     
     /**
-     * Generowanie CSS dla admin area
+     * Define adaptive color palettes for light/dark modes
      */
-    private function generateAdminCSS($settings) {
-        $css = '';
+    private function getAdaptiveColorPalettes() {
+        return [
+            'modern-blue' => [
+                'light' => [
+                    'primary' => '#4A90E2',
+                    'secondary' => '#7BB3F0',
+                    'accent' => '#0073aa',
+                    'background' => '#f8fafc',
+                    'surface' => '#ffffff',
+                    'text' => '#1e293b',
+                    'text_secondary' => '#64748b',
+                    'border' => '#e2e8f0'
+                ],
+                'dark' => [
+                    'primary' => '#60A5FA',
+                    'secondary' => '#93C5FD',
+                    'accent' => '#3B82F6',
+                    'background' => '#0f172a',
+                    'surface' => '#1e293b',
+                    'text' => '#f1f5f9',
+                    'text_secondary' => '#cbd5e1',
+                    'border' => '#334155'
+                ]
+            ],
+            'elegant-purple' => [
+                'light' => [
+                    'primary' => '#8B5CF6',
+                    'secondary' => '#A78BFA',
+                    'accent' => '#7C3AED',
+                    'background' => '#fafafa',
+                    'surface' => '#ffffff',
+                    'text' => '#1f2937',
+                    'text_secondary' => '#6b7280',
+                    'border' => '#e5e7eb'
+                ],
+                'dark' => [
+                    'primary' => '#A78BFA',
+                    'secondary' => '#C4B5FD',
+                    'accent' => '#8B5CF6',
+                    'background' => '#111827',
+                    'surface' => '#1f2937',
+                    'text' => '#f9fafb',
+                    'text_secondary' => '#d1d5db',
+                    'border' => '#374151'
+                ]
+            ],
+            'warm-orange' => [
+                'light' => [
+                    'primary' => '#F59E0B',
+                    'secondary' => '#FBBF24',
+                    'accent' => '#D97706',
+                    'background' => '#fffbeb',
+                    'surface' => '#ffffff',
+                    'text' => '#1c1917',
+                    'text_secondary' => '#78716c',
+                    'border' => '#e7e5e4'
+                ],
+                'dark' => [
+                    'primary' => '#FBBF24',
+                    'secondary' => '#FCD34D',
+                    'accent' => '#F59E0B',
+                    'background' => '#1c1917',
+                    'surface' => '#292524',
+                    'text' => '#fafaf9',
+                    'text_secondary' => '#d6d3d1',
+                    'border' => '#44403c'
+                ]
+            ],
+            'forest-green' => [
+                'light' => [
+                    'primary' => '#10B981',
+                    'secondary' => '#34D399',
+                    'accent' => '#059669',
+                    'background' => '#f0fdf4',
+                    'surface' => '#ffffff',
+                    'text' => '#14532d',
+                    'text_secondary' => '#65a30d',
+                    'border' => '#dcfce7'
+                ],
+                'dark' => [
+                    'primary' => '#34D399',
+                    'secondary' => '#6EE7B7',
+                    'accent' => '#10B981',
+                    'background' => '#14532d',
+                    'surface' => '#166534',
+                    'text' => '#f0fdf4',
+                    'text_secondary' => '#bbf7d0',
+                    'border' => '#15803d'
+                ]
+            ],
+            'crimson-red' => [
+                'light' => [
+                    'primary' => '#EF4444',
+                    'secondary' => '#F87171',
+                    'accent' => '#DC2626',
+                    'background' => '#fef2f2',
+                    'surface' => '#ffffff',
+                    'text' => '#1f2937',
+                    'text_secondary' => '#6b7280',
+                    'border' => '#fecaca'
+                ],
+                'dark' => [
+                    'primary' => '#F87171',
+                    'secondary' => '#FCA5A5',
+                    'accent' => '#EF4444',
+                    'background' => '#1f2937',
+                    'surface' => '#374151',
+                    'text' => '#f9fafb',
+                    'text_secondary' => '#d1d5db',
+                    'border' => '#4b5563'
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * Convert hex color to rgba
+     */
+    private function hexToRgba($hex, $alpha = 1) {
+        $hex = ltrim($hex, '#');
         
-        // Admin Bar CSS
-        $css .= $this->generateAdminBarCSS($settings);
+        if (strlen($hex) === 3) {
+            $hex = str_repeat(substr($hex,0,1), 2).str_repeat(substr($hex,1,1), 2).str_repeat(substr($hex,2,1), 2);
+        }
         
-        // Menu CSS
-        $css .= $this->generateMenuCSS($settings);
+        $r = hexdec(substr($hex, 0, 2));
+        $g = hexdec(substr($hex, 2, 2));
+        $b = hexdec(substr($hex, 4, 2));
         
-        // Content CSS
-        $css .= $this->generateContentCSS($settings);
-        
-        // Button CSS
-        $css .= $this->generateButtonCSS($settings);
-        
-        return $css;
+        return "rgba($r, $g, $b, $alpha)";
     }
     
     /**
-     * Generowanie CSS dla frontend
+     * Adjust color brightness for scrollbar gradients
      */
-    private function generateFrontendCSS($settings) {
-        return $this->generateAdminCSS($settings);
+    private function adjustColorBrightness($hex, $percent) {
+        // Remove # if present
+        $hex = ltrim($hex, '#');
+        
+        // Handle CSS variables - return as is since we can't calculate
+        if (strpos($hex, 'var(') === 0) {
+            return $hex;
+        }
+        
+        // Convert shorthand hex to full
+        if (strlen($hex) === 3) {
+            $hex = str_repeat(substr($hex,0,1), 2).str_repeat(substr($hex,1,1), 2).str_repeat(substr($hex,2,1), 2);
+        }
+        
+        // Convert hex to RGB
+        $r = hexdec(substr($hex, 0, 2));
+        $g = hexdec(substr($hex, 2, 2));
+        $b = hexdec(substr($hex, 4, 2));
+        
+        // Adjust brightness
+        $r = max(0, min(255, $r + ($r * $percent / 100)));
+        $g = max(0, min(255, $g + ($g * $percent / 100)));
+        $b = max(0, min(255, $b + ($b * $percent / 100)));
+        
+        // Convert back to hex
+        $r = str_pad(dechex(round($r)), 2, '0', STR_PAD_LEFT);
+        $g = str_pad(dechex(round($g)), 2, '0', STR_PAD_LEFT);
+        $b = str_pad(dechex(round($b)), 2, '0', STR_PAD_LEFT);
+        
+        return '#' . $r . $g . $b;
     }
-    
-    /**
-     * Generuje CSS dla Admin Bar
-     */
-    private function generateAdminBarCSS($settings) {
-        $css = '';
-        
-        // Podstawowe style admin bar
-        $css .= "#wpadminbar {";
-        if (isset($settings['admin_bar_background'])) {
-            $css .= "background: {$settings['admin_bar_background']} !important;";
-        }
-        if (isset($settings['admin_bar_height'])) {
-            $css .= "height: {$settings['admin_bar_height']}px !important;";
-        }
-        
-        // Zaokrąglenie narożników Admin Bar
-        $cornerType = $settings['admin_bar_corner_radius_type'] ?? 'none';
-        if ($cornerType === 'all' && ($settings['admin_bar_corner_radius_all'] ?? 0) > 0) {
-            $radius = $settings['admin_bar_corner_radius_all'];
-            $css .= "border-radius: {$radius}px;";
-        } elseif ($cornerType === 'individual') {
-            $tl = $settings['admin_bar_corner_radius_top_left'] ?? 0;
-            $tr = $settings['admin_bar_corner_radius_top_right'] ?? 0;
-            $br = $settings['admin_bar_corner_radius_bottom_right'] ?? 0;
-            $bl = $settings['admin_bar_corner_radius_bottom_left'] ?? 0;
-            $css .= "border-radius: {$tl}px {$tr}px {$br}px {$bl}px;";
-        }
-        
-        if (isset($settings['admin_bar_shadow']) && $settings['admin_bar_shadow']) {
-            $css .= "box-shadow: 0 2px 8px rgba(0,0,0,0.1);";
-        }
-        
-        if (isset($settings['admin_bar_glassmorphism']) && $settings['admin_bar_glassmorphism']) {
-            $css .= "backdrop-filter: blur(10px);";
-            $css .= "background: rgba(35, 40, 45, 0.8) !important;";
-        }
-        
-        // Floating Admin Bar (nowa implementacja)
-        if (isset($settings['admin_bar_floating']) && $settings['admin_bar_floating']) {
-            $marginType = $settings['admin_bar_margin_type'] ?? 'all';
-            if ($marginType === 'all') {
-                $margin = $settings['admin_bar_margin'] ?? 10;
-                $css .= "position: fixed !important;";
-                $css .= "top: {$margin}px !important;";
-                $css .= "left: {$margin}px !important;";
-                $css .= "right: {$margin}px !important;";
-                $css .= "width: calc(100% - " . ($margin * 2) . "px) !important;";
-            } else {
-                $marginTop = $settings['admin_bar_margin_top'] ?? 10;
-                $marginRight = $settings['admin_bar_margin_right'] ?? 10;
-                $marginLeft = $settings['admin_bar_margin_left'] ?? 10;
-                $css .= "position: fixed !important;";
-                $css .= "top: {$marginTop}px !important;";
-                $css .= "left: {$marginLeft}px !important;";
-                $css .= "right: {$marginRight}px !important;";
-                $css .= "width: calc(100% - {$marginLeft}px - {$marginRight}px) !important;";
-            }
-            $css .= "z-index: 99999 !important;";
-            $css .= "box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;";
-        }
-        
-        // Glossy effect
-        if (isset($settings['admin_bar_glossy']) && $settings['admin_bar_glossy']) {
-            $css .= "backdrop-filter: blur(20px) !important;";
-            $css .= "-webkit-backdrop-filter: blur(20px) !important;";
-            $css .= "background: rgba(23, 23, 23, 0.8) !important;";
-            $css .= "border: 1px solid rgba(255, 255, 255, 0.1) !important;";
-        }
-        
-        // Border radius - nowa implementacja
-        $borderRadiusType = $settings['admin_bar_border_radius_type'] ?? 'all';
-        if ($borderRadiusType === 'all' && ($settings['admin_bar_border_radius'] ?? 0) > 0) {
-            $radius = $settings['admin_bar_border_radius'];
-            $css .= "border-radius: {$radius}px !important;";
-        } elseif ($borderRadiusType === 'individual') {
-            $radiusValues = [];
-            $radiusValues[] = ($settings['admin_bar_radius_tl'] ?? false) ? '12px' : '0px';
-            $radiusValues[] = ($settings['admin_bar_radius_tr'] ?? false) ? '12px' : '0px';
-            $radiusValues[] = ($settings['admin_bar_radius_br'] ?? false) ? '12px' : '0px';
-            $radiusValues[] = ($settings['admin_bar_radius_bl'] ?? false) ? '12px' : '0px';
-            $css .= "border-radius: " . implode(' ', $radiusValues) . " !important;";
-        }
-        
-        // Backward compatibility dla admin_bar_detached
-        if (isset($settings['admin_bar_detached']) && $settings['admin_bar_detached']) {
-            $css .= "position: fixed !important;";
-            $css .= "top: 10px !important;";
-            $css .= "left: 10px !important;";
-            $css .= "right: 10px !important;";
-            $css .= "width: auto !important;";
-            $css .= "border-radius: 8px;";
-            $css .= "z-index: 99999;";
-        }
-        
-        $css .= "}";
-        
-        // Tekst w admin bar
-        if (isset($settings['admin_bar_text_color']) || isset($settings['admin_bar_font_size'])) {
-            $css .= "#wpadminbar .ab-item,";
-            $css .= "#wpadminbar a.ab-item,";
-            $css .= "#wpadminbar > #wp-toolbar span.ab-label,";
-            $css .= "#wpadminbar > #wp-toolbar span.noticon {";
-            if (isset($settings['admin_bar_text_color'])) {
-                $css .= "color: {$settings['admin_bar_text_color']} !important;";
-            }
-            if (isset($settings['admin_bar_font_size'])) {
-                $css .= "font-size: {$settings['admin_bar_font_size']}px !important;";
-            }
-            $css .= "}";
-        }
-        
-        // Hover effects
-        if (isset($settings['admin_bar_hover_color'])) {
-            $css .= "#wpadminbar .ab-top-menu > li:hover > .ab-item,";
-            $css .= "#wpadminbar .ab-top-menu > li > .ab-item:focus,";
-            $css .= "#wpadminbar.nojq .quicklinks .ab-top-menu > li > .ab-item:focus {";
-            $css .= "color: {$settings['admin_bar_hover_color']} !important;";
-            $css .= "}";
-        }
-        
-        // Admin Bar Submenu styles
-        $submenuBg = isset($settings['admin_bar_background']) ? $settings['admin_bar_background'] : '#32373c';
-        $submenuText = isset($settings['admin_bar_text_color']) ? $settings['admin_bar_text_color'] : '#ffffff';
-        
-        $css .= "#wpadminbar .ab-submenu {";
-        $css .= "background: {$submenuBg} !important;";
-        $css .= "border: 1px solid rgba(255,255,255,0.1) !important;";
-        $css .= "box-shadow: 0 3px 5px rgba(0,0,0,0.2) !important;";
-        $css .= "}";
-        
-        $css .= "#wpadminbar .ab-submenu .ab-item {";
-        $css .= "color: {$submenuText} !important;";
-        $css .= "}";
-        
-        $css .= "#wpadminbar .ab-submenu .ab-item:hover {";
-        if (isset($settings['admin_bar_hover_color'])) {
-            $css .= "color: {$settings['admin_bar_hover_color']} !important;";
-        }
-        $css .= "background: rgba(255,255,255,0.1) !important;";
-        $css .= "}";
-        
-        return $css;
-    }
-    
-    /**
-     * Generuje CSS dla menu administracyjnego
-     */
-    private function generateMenuCSS($settings) {
-        $css = '';
-        
-        // Menu główne - tylko #adminmenu ma kolor tła
-        $menuBg = isset($settings['menu_background']) ? $settings['menu_background'] : '#23282d';
-        $css .= "#adminmenu {";
-        $css .= "background: {$menuBg} !important;";
-        $css .= "background-color: {$menuBg} !important;";
-        $css .= "}";
-        
-        // adminmenuback ukryty, adminmenuwrap bez tła
-        $css .= "#adminmenuback {";
-        $css .= "display: none !important;";
-        $css .= "}";
-        
-        $css .= "#adminmenuwrap {";
-        $css .= "background: transparent !important;";
-        $css .= "background-color: transparent !important;";
-        $css .= "}";
-        
-        // Właściwości tylko dla #adminmenu
-        $css .= "#adminmenu {";
-        
-        // Floating Menu (nowa implementacja)
-        if (isset($settings['menu_floating']) && $settings['menu_floating']) {
-            $marginType = $settings['menu_margin_type'] ?? 'all';
-            if ($marginType === 'all') {
-                $margin = $settings['menu_margin'] ?? 10;
-                $marginTop = $marginLeft = $marginRight = $marginBottom = $margin;
-            } else {
-                $marginTop = $settings['menu_margin_top'] ?? 10;
-                $marginRight = $settings['menu_margin_right'] ?? 10;
-                $marginBottom = $settings['menu_margin_bottom'] ?? 10;
-                $marginLeft = $settings['menu_margin_left'] ?? 10;
-            }
-            
-            $adminBarHeight = isset($settings['admin_bar_height']) ? $settings['admin_bar_height'] : 32;
-            $css .= "position: fixed !important;";
-            $css .= "top: " . ($adminBarHeight + $marginTop) . "px !important;";
-            $css .= "left: {$marginLeft}px !important;";
-            $css .= "bottom: {$marginBottom}px !important;";
-            $css .= "right: auto !important;";
-            $css .= "width: " . ($settings['menu_width'] ?? 160) . "px !important;";
-            $css .= "max-width: " . ($settings['menu_width'] ?? 160) . "px !important;";
-            $css .= "z-index: 9999 !important;";
-            $css .= "box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;";
-        }
-        
-        // Glossy effect (nowa implementacja)
-        if (isset($settings['menu_glossy']) && $settings['menu_glossy']) {
-            $css .= "backdrop-filter: blur(20px) !important;";
-            $css .= "-webkit-backdrop-filter: blur(20px) !important;";
-            
-            // Konwertuj hex na rgba z przezroczystością dla glossy
-            $hexColor = $menuBg;
-            if (strlen($hexColor) == 7) {
-                $r = hexdec(substr($hexColor, 1, 2));
-                $g = hexdec(substr($hexColor, 3, 2));
-                $b = hexdec(substr($hexColor, 5, 2));
-                $css .= "background: rgba({$r}, {$g}, {$b}, 0.8) !important;";
-            } else {
-                $css .= "background: rgba(35, 40, 45, 0.8) !important;";
-            }
-            
-            $css .= "border: 1px solid rgba(255, 255, 255, 0.1) !important;";
-        }
-        
-        // Border radius (nowa implementacja)
-        $borderRadiusType = $settings['menu_border_radius_type'] ?? 'all';
-        if ($borderRadiusType === 'all' && ($settings['menu_border_radius_all'] ?? 0) > 0) {
-            $radius = $settings['menu_border_radius_all'];
-            $css .= "border-radius: {$radius}px !important;";
-        } elseif ($borderRadiusType === 'individual') {
-            $radiusValues = [];
-            $radiusValues[] = ($settings['menu_radius_tl'] ?? false) ? '12px' : '0px';
-            $radiusValues[] = ($settings['menu_radius_tr'] ?? false) ? '12px' : '0px';
-            $radiusValues[] = ($settings['menu_radius_br'] ?? false) ? '12px' : '0px';
-            $radiusValues[] = ($settings['menu_radius_bl'] ?? false) ? '12px' : '0px';
-            $css .= "border-radius: " . implode(' ', $radiusValues) . " !important;";
-        }
-        
-        // Zaokrąglenie narożników Menu (backward compatibility)
-        $cornerType = $settings['corner_radius_type'] ?? 'none';
-        if ($cornerType === 'all' && ($settings['corner_radius_all'] ?? 0) > 0) {
-            $radius = $settings['corner_radius_all'];
-            $css .= "border-radius: {$radius}px !important;";
-        } elseif ($cornerType === 'individual') {
-            $tl = $settings['corner_radius_top_left'] ?? 0;
-            $tr = $settings['corner_radius_top_right'] ?? 0;
-            $br = $settings['corner_radius_bottom_right'] ?? 0;
-            $bl = $settings['corner_radius_bottom_left'] ?? 0;
-            $css .= "border-radius: {$tl}px {$tr}px {$br}px {$bl}px !important;";
-        }
-        
-        if (isset($settings['menu_shadow']) && $settings['menu_shadow']) {
-            $css .= "box-shadow: 2px 0 8px rgba(0,0,0,0.1) !important;";
-        }
-        
-        // Backward compatibility dla menu_glassmorphism
-        if (isset($settings['menu_glassmorphism']) && $settings['menu_glassmorphism']) {
-            $css .= "backdrop-filter: blur(10px) !important;";
-            $css .= "-webkit-backdrop-filter: blur(10px) !important;";
-            
-            // Konwertuj hex na rgba z przezroczystością dla glassmorphism
-            $hexColor = $menuBg;
-            if (strlen($hexColor) == 7) {
-                $r = hexdec(substr($hexColor, 1, 2));
-                $g = hexdec(substr($hexColor, 3, 2));
-                $b = hexdec(substr($hexColor, 5, 2));
-                $css .= "background: rgba({$r}, {$g}, {$b}, 0.8) !important;";
-            } else {
-                $css .= "background: rgba(35, 40, 45, 0.8) !important;";
-            }
-            
-            $css .= "border: 1px solid rgba(255, 255, 255, 0.1) !important;";
-        }
-        
-        if (isset($settings['menu_detached']) && $settings['menu_detached']) {
-            // Nowe ustawienia marginesu z fallback do starych
-            $marginType = $settings['menu_detached_margin_type'] ?? 'all';
-            if ($marginType === 'all') {
-                $marginAll = $settings['menu_detached_margin_all'] ?? $settings['menu_detached_margin'] ?? 20;
-                $marginTop = $marginLeft = $marginRight = $marginBottom = $marginAll;
-            } else {
-                $marginTop = $settings['menu_detached_margin_top'] ?? 20;
-                $marginRight = $settings['menu_detached_margin_right'] ?? 20;
-                $marginBottom = $settings['menu_detached_margin_bottom'] ?? 20;
-                $marginLeft = $settings['menu_detached_margin_left'] ?? 20;
-            }
-            
-            $adminBarHeight = isset($settings['admin_bar_height']) ? $settings['admin_bar_height'] : 32;
-            $css .= "position: fixed !important;";
-            $css .= "top: " . ($adminBarHeight + $marginTop) . "px !important;";
-            $css .= "left: {$marginLeft}px !important;";
-            $css .= "bottom: {$marginBottom}px !important;";
-            $css .= "right: auto !important;";
-            $css .= "width: " . ($settings['menu_width'] ?? 160) . "px !important;";
-            $css .= "max-width: " . ($settings['menu_width'] ?? 160) . "px !important;";
-            $css .= "z-index: 9999 !important;";
-            
-            // Zaokrąglenie narożników dla floating menu - nadpisz domyślne
-            $cornerType = $settings['corner_radius_type'] ?? 'none';
-            if ($cornerType === 'all' && ($settings['corner_radius_all'] ?? 0) > 0) {
-                $radius = $settings['corner_radius_all'];
-                $css .= "border-radius: {$radius}px !important;";
-            } elseif ($cornerType === 'individual') {
-                $tl = $settings['corner_radius_top_left'] ?? 0;
-                $tr = $settings['corner_radius_top_right'] ?? 0;
-                $br = $settings['corner_radius_bottom_right'] ?? 0;
-                $bl = $settings['corner_radius_bottom_left'] ?? 0;
-                $css .= "border-radius: {$tl}px {$tr}px {$br}px {$bl}px !important;";
-            } else {
-                // Domyślne zaokrąglenie dla floating menu
-                $css .= "border-radius: 12px !important;";
-            }
-            
-            $css .= "box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;";
-            $css .= "transition: all 0.3s ease !important;";
-        }
-        
-        $css .= "}";
-        
-        // Jeszcze wyższa specyficzność dla wszystkich elementów menu
-        $css .= "body.wp-admin #adminmenu li, body.wp-admin #adminmenu li.menu-top {";
-        $css .= "background: transparent !important;";
-        $css .= "background-color: transparent !important;";
-        $css .= "}";
-        
-        // Layout zarządzanie przez zmienne CSS i klasy body (zdefiniowane w admin-modern.css)
-        $menuWidth = isset($settings['menu_width']) ? $settings['menu_width'] : 160;
-        
-        // Szerokość dla faktycznego menu - normalne (rozwinięte)
-        $css .= "#adminmenu {";
-        $css .= "width: {$menuWidth}px !important;";
-        $css .= "min-width: {$menuWidth}px !important;";
-        $css .= "max-width: {$menuWidth}px !important;";
-        $css .= "}";
-        
-        // Wrapper dopasowuje się do menu
-        $css .= "#adminmenuwrap {";
-        $css .= "width: {$menuWidth}px !important;";
-        $css .= "min-width: {$menuWidth}px !important;";
-        $css .= "max-width: {$menuWidth}px !important;";
-        $css .= "}";
-        
-        // COLLAPSED MENU - zwinięte menu (tylko ikony)
-        $css .= ".folded #adminmenu {";
-        $css .= "width: 36px !important;";
-        $css .= "min-width: 36px !important;";
-        $css .= "max-width: 36px !important;";
-        $css .= "}";
-        
-        $css .= ".folded #adminmenuwrap {";
-        $css .= "width: 36px !important;";
-        $css .= "min-width: 36px !important;";
-        $css .= "max-width: 36px !important;";
-        $css .= "}";
-        
-        // Responsywne zachowanie
-        $css .= "@media screen and (max-width: 782px) {";
-        $css .= "#adminmenu { width: auto !important; min-width: auto !important; max-width: none !important; }";
-        $css .= "#adminmenuwrap { width: auto !important; min-width: auto !important; max-width: none !important; }";
-        $css .= ".folded #adminmenu, .folded #adminmenuwrap { width: auto !important; min-width: auto !important; max-width: none !important; }";
-        $css .= "}";
-        
-        // Elementy menu
-        if (isset($settings['menu_text_color'])) {
-            $css .= "#adminmenu a { color: {$settings['menu_text_color']} !important; }";
-        }
-        
-        // Hover states
-        if (isset($settings['menu_hover_background']) || isset($settings['menu_hover_text_color'])) {
-            $css .= "#adminmenu li:hover a, #adminmenu li a:focus {";
-            if (isset($settings['menu_hover_background'])) {
-                $css .= "background: {$settings['menu_hover_background']} !important;";
-            }
-            if (isset($settings['menu_hover_text_color'])) {
-                $css .= "color: {$settings['menu_hover_text_color']} !important;";
-            }
-            $css .= "}";
-        }
-        
-        // Aktywne elementy
-        if (isset($settings['menu_active_background']) || isset($settings['menu_active_text_color'])) {
-            $css .= "#adminmenu .wp-has-current-submenu a.wp-has-current-submenu, #adminmenu .current a.menu-top {";
-            if (isset($settings['menu_active_background'])) {
-                $css .= "background: {$settings['menu_active_background']} !important;";
-            }
-            if (isset($settings['menu_active_text_color'])) {
-                $css .= "color: {$settings['menu_active_text_color']} !important;";
-            }
-            $css .= "}";
-        }
-        
-        // Submenu (lewe menu rozwijane)
-        $submenuBg = isset($settings['menu_background']) ? $settings['menu_background'] : '#23282d';
-        $submenuText = isset($settings['menu_text_color']) ? $settings['menu_text_color'] : '#ffffff';
-        $submenuHoverBg = isset($settings['menu_hover_background']) ? $settings['menu_hover_background'] : '#32373c';
-        $submenuHoverText = isset($settings['menu_hover_text_color']) ? $settings['menu_hover_text_color'] : '#00a0d2';
-        
-        // Tło submenu
-        $css .= "#adminmenu .wp-submenu {";
-        $css .= "background: {$submenuBg} !important;";
-        $css .= "border-left: 1px solid rgba(255,255,255,0.1) !important;";
-        $css .= "}";
-        
-        // Elementy submenu
-        $css .= "#adminmenu .wp-submenu a {";
-        $css .= "color: {$submenuText} !important;";
-        $css .= "}";
-        
-        // Hover submenu
-        $css .= "#adminmenu .wp-submenu li:hover a,";
-        $css .= "#adminmenu .wp-submenu li a:focus {";
-        $css .= "background: {$submenuHoverBg} !important;";
-        $css .= "color: {$submenuHoverText} !important;";
-        $css .= "}";
-        
-        // Aktywne submenu
-        if (isset($settings['menu_active_background']) || isset($settings['menu_active_text_color'])) {
-            $css .= "#adminmenu .wp-submenu .current a,";
-            $css .= "#adminmenu .wp-submenu a[aria-current=\"page\"] {";
-            if (isset($settings['menu_active_background'])) {
-                $css .= "background: {$settings['menu_active_background']} !important;";
-            }
-            if (isset($settings['menu_active_text_color'])) {
-                $css .= "color: {$settings['menu_active_text_color']} !important;";
-            }
-            $css .= "}";
-        }
-        
-        // Szerokość submenu (żeby było widoczne)
-        if (isset($settings['menu_width'])) {
-            $css .= "#adminmenu .wp-submenu {";
-            if (isset($settings['menu_detached']) && $settings['menu_detached']) {
-                // Jeśli menu jest detached, submenu powinno być obok niego
-                $css .= "left: " . ($settings['menu_width'] ?? 160) . "px !important;";
-                $css .= "border-radius: 8px !important;";
-                $css .= "box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;";
-                $css .= "border: 1px solid rgba(255, 255, 255, 0.1) !important;";
-                
-                // Glassmorphism dla submenu też jeśli główne menu ma
-                if (isset($settings['menu_glassmorphism']) && $settings['menu_glassmorphism']) {
-                    $css .= "backdrop-filter: blur(10px) !important;";
-                    $css .= "-webkit-backdrop-filter: blur(10px) !important;";
-                    
-                    // Użyj tego samego koloru co główne menu z większą przezroczystością
-                    $hexColor = $submenuBg;
-                    if (strlen($hexColor) == 7) {
-                        $r = hexdec(substr($hexColor, 1, 2));
-                        $g = hexdec(substr($hexColor, 3, 2));
-                        $b = hexdec(substr($hexColor, 5, 2));
-                        $css .= "background: rgba({$r}, {$g}, {$b}, 0.9) !important;";
-                    } else {
-                        $css .= "background: rgba(35, 40, 45, 0.9) !important;";
-                    }
-                }
-            } else {
-                $css .= "left: {$settings['menu_width']}px !important;";
-            }
-            $css .= "min-width: 200px !important;";
-            $css .= "}";
-        }
-        
-        return $css;
-    }
-    
-    /**
-     * Generuje CSS dla obszaru treści
-     */
-    private function generateContentCSS($settings) {
-        $css = '';
-        
-        // Główny kontener treści
-        if (isset($settings['content_background'])) {
-            $css .= "#wpbody-content { background: {$settings['content_background']} !important; }";
-        }
-        
-        if (isset($settings['content_text_color'])) {
-            $css .= "#wpbody-content { color: {$settings['content_text_color']} !important; }";
-        }
-        
-        // Karty/boxy
-        if (isset($settings['content_card_background'])) {
-            $css .= ".postbox, .meta-box-sortables .postbox { background: {$settings['content_card_background']} !important; }";
-        }
-        
-        // Linki
-        if (isset($settings['content_link_color'])) {
-            $css .= "#wpbody-content a { color: {$settings['content_link_color']} !important; }";
-        }
-        
-        return $css;
-    }
-    
-    /**
-     * Generuje CSS dla przycisków
-     */
-    private function generateButtonCSS($settings) {
-        $css = '';
-        
-        // Primary buttons
-        if (isset($settings['button_primary_bg'])) {
-            $css .= ".button-primary { background: {$settings['button_primary_bg']} !important; border-color: {$settings['button_primary_bg']} !important; }";
-        }
-        
-        if (isset($settings['button_primary_text_color'])) {
-            $css .= ".button-primary { color: {$settings['button_primary_text_color']} !important; }";
-        }
-        
-        if (isset($settings['button_primary_hover_bg'])) {
-            $css .= ".button-primary:hover { background: {$settings['button_primary_hover_bg']} !important; border-color: {$settings['button_primary_hover_bg']} !important; }";
-        }
-        
-        // Secondary buttons
-        if (isset($settings['button_secondary_bg'])) {
-            $css .= ".button-secondary { background: {$settings['button_secondary_bg']} !important; border-color: {$settings['button_secondary_bg']} !important; }";
-        }
-        
-        if (isset($settings['button_secondary_text_color'])) {
-            $css .= ".button-secondary { color: {$settings['button_secondary_text_color']} !important; }";
-        }
-        
-        if (isset($settings['button_secondary_hover_bg'])) {
-            $css .= ".button-secondary:hover { background: {$settings['button_secondary_hover_bg']} !important; border-color: {$settings['button_secondary_hover_bg']} !important; }";
-        }
-        
-        // Border radius
-        if (isset($settings['button_border_radius']) && $settings['button_border_radius'] > 0) {
-            $css .= ".button, .button-primary, .button-secondary { border-radius: {$settings['button_border_radius']}px !important; }";
-        }
-        
-        // Shadow
-        if (isset($settings['button_shadow']) && $settings['button_shadow']) {
-            $css .= ".button, .button-primary, .button-secondary { box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important; }";
-        }
-        
-        return $css;
-    }
-    
-    /**
-     * Generuje CSS dla pól formularzy
-     */
-    private function generateFormCSS($settings) {
-        $css = '';
-        
-        // Form fields background
-        if (isset($settings['form_field_bg'])) {
-            $css .= "input[type='text'], input[type='email'], input[type='url'], input[type='password'], input[type='search'], input[type='number'], input[type='tel'], input[type='range'], input[type='date'], input[type='month'], input[type='week'], input[type='time'], input[type='datetime'], input[type='datetime-local'], input[type='color'], select, textarea { background: {$settings['form_field_bg']} !important; }";
-        }
-        
-        // Form fields border
-        if (isset($settings['form_field_border'])) {
-            $css .= "input[type='text'], input[type='email'], input[type='url'], input[type='password'], input[type='search'], input[type='number'], input[type='tel'], input[type='range'], input[type='date'], input[type='month'], input[type='week'], input[type='time'], input[type='datetime'], input[type='datetime-local'], input[type='color'], select, textarea { border-color: {$settings['form_field_border']} !important; }";
-        }
-        
-        // Form fields focus
-        if (isset($settings['form_field_focus_color'])) {
-            $css .= "input[type='text']:focus, input[type='email']:focus, input[type='url']:focus, input[type='password']:focus, input[type='search']:focus, input[type='number']:focus, input[type='tel']:focus, input[type='range']:focus, input[type='date']:focus, input[type='month']:focus, input[type='week']:focus, input[type='time']:focus, input[type='datetime']:focus, input[type='datetime-local']:focus, input[type='color']:focus, select:focus, textarea:focus { border-color: {$settings['form_field_focus_color']} !important; box-shadow: 0 0 0 1px {$settings['form_field_focus_color']} !important; }";
-        }
-        
-        // Form fields border radius
-        if (isset($settings['form_field_border_radius']) && $settings['form_field_border_radius'] > 0) {
-            $css .= "input[type='text'], input[type='email'], input[type='url'], input[type='password'], input[type='search'], input[type='number'], input[type='tel'], input[type='range'], input[type='date'], input[type='month'], input[type='week'], input[type='time'], input[type='datetime'], input[type='datetime-local'], input[type='color'], select, textarea { border-radius: {$settings['form_field_border_radius']}px !important; }";
-        }
-        
-        return $css;
-    }
-    
-    /**
-     * Generuje CSS dla zaawansowanych opcji
-     */
-    private function generateAdvancedCSS($settings) {
-        $css = '';
-        
-        // Compact mode
-        if (isset($settings['compact_mode']) && $settings['compact_mode']) {
-            $css .= "body.mas-compact-mode .wrap { padding: 10px !important; }";
-            $css .= "body.mas-compact-mode .form-table th, body.mas-compact-mode .form-table td { padding: 8px !important; }";
-            $css .= "body.mas-compact-mode .postbox { margin-bottom: 15px !important; }";
-        }
-        
-        // Hide WP version
-        if (isset($settings['hide_wp_version']) && $settings['hide_wp_version']) {
-            $css .= "#footer-upgrade { display: none !important; }";
-        }
-        
-        // Hide help tabs
-        if (isset($settings['hide_help_tabs']) && $settings['hide_help_tabs']) {
-            $css .= "#contextual-help-link-wrap { display: none !important; }";
-        }
-        
-        // Hide screen options
-        if (isset($settings['hide_screen_options']) && $settings['hide_screen_options']) {
-            $css .= "#screen-options-link-wrap { display: none !important; }";
-        }
-        
-        // Hide admin notices
-        if (isset($settings['hide_admin_notices']) && $settings['hide_admin_notices']) {
-            $css .= ".notice, .updated, .error { display: none !important; }";
-        }
-        
-        // Admin bar element hiding
-        if (isset($settings['admin_bar_hide_wp_logo']) && $settings['admin_bar_hide_wp_logo']) {
-            $css .= "#wpadminbar #wp-admin-bar-wp-logo { display: none !important; }";
-        }
-        
-        if (isset($settings['admin_bar_hide_howdy']) && $settings['admin_bar_hide_howdy']) {
-            $css .= "#wpadminbar .ab-top-menu .menupop .ab-item .display-name { display: none !important; }";
-        }
-        
-        if (isset($settings['admin_bar_hide_updates']) && $settings['admin_bar_hide_updates']) {
-            $css .= "#wpadminbar #wp-admin-bar-updates { display: none !important; }";
-        }
-        
-        if (isset($settings['admin_bar_hide_comments']) && $settings['admin_bar_hide_comments']) {
-            $css .= "#wpadminbar #wp-admin-bar-comments { display: none !important; }";
-        }
-        
-        return $css;
-    }
-    
+
     /**
      * Generuje CSS dla strony logowania
      */
@@ -1501,6 +1168,82 @@ class ModernAdminStylerV2 {
             $classes .= ' mas-theme-' . $settings['color_scheme'];
         }
         
+        // Core menu floating class (unified system)
+        if (isset($settings['menu_floating']) && $settings['menu_floating']) {
+            $classes .= ' mas-v2-menu-floating'; // Use unified CSS class
+            
+            if (isset($settings['menu_glassmorphism']) && $settings['menu_glassmorphism']) {
+                $classes .= ' mas-v2-menu-glossy';
+            }
+        }
+        
+        // Add responsive classes (Phase 6)
+        if (!empty($settings['menu_responsive_enabled'])) {
+            $classes .= ' mas-responsive-enabled';
+        }
+        
+        // Add positioning classes
+        $positionType = $settings['menu_position_type'] ?? 'default';
+        if ($positionType !== 'default') {
+            $classes .= ' mas-menu-position-' . $positionType;
+        }
+        
+        // Add floating menu classes
+        if ($positionType === 'floating') {
+            if (!empty($settings['menu_floating_shadow'])) {
+                $classes .= ' mas-floating-shadow';
+            }
+            if (!empty($settings['menu_floating_blur_background'])) {
+                $classes .= ' mas-floating-blur';
+            }
+            if (!empty($settings['menu_floating_auto_hide'])) {
+                $classes .= ' mas-floating-auto-hide';
+            }
+            if (!empty($settings['menu_floating_trigger_hover'])) {
+                $classes .= ' mas-floating-trigger-hover';
+            }
+        }
+        
+        // Add mobile behavior classes
+        if (!empty($settings['menu_responsive_enabled'])) {
+            $mobileBehavior = $settings['menu_mobile_behavior'] ?? 'collapse';
+            $togglePosition = $settings['menu_mobile_toggle_position'] ?? 'top-left';
+            $toggleStyle = $settings['menu_mobile_toggle_style'] ?? 'hamburger';
+            $mobileAnimation = $settings['menu_mobile_animation'] ?? 'slide';
+            
+            $classes .= ' mas-mobile-behavior-' . $mobileBehavior;
+            $classes .= ' mas-toggle-' . $togglePosition;
+            $classes .= ' mas-toggle-' . $toggleStyle;
+            $classes .= ' mas-animation-' . $mobileAnimation;
+        }
+        
+        // Add tablet behavior classes
+        $tabletBehavior = $settings['menu_tablet_behavior'] ?? 'auto';
+        if ($tabletBehavior === 'mobile') {
+            $classes .= ' mas-tablet-behavior-mobile';
+        }
+        
+        if (!empty($settings['menu_tablet_compact'])) {
+            $classes .= ' mas-tablet-compact';
+        }
+        
+        // Add feature classes
+        if (!empty($settings['menu_touch_friendly'])) {
+            $classes .= ' mas-touch-friendly';
+        }
+        
+        if (!empty($settings['menu_swipe_gestures'])) {
+            $classes .= ' mas-swipe-enabled';
+        }
+        
+        if (!empty($settings['menu_reduce_animations_mobile'])) {
+            $classes .= ' mas-reduce-animations';
+        }
+        
+        if (!empty($settings['menu_optimize_performance'])) {
+            $classes .= ' mas-optimize-performance';
+        }
+        
         return $classes;
     }
     
@@ -1524,6 +1267,12 @@ class ModernAdminStylerV2 {
         $sanitized = [];
         
         foreach ($defaults as $key => $default_value) {
+            // Specjalna obsługa boolean - checkboxy nie wysyłają danych gdy nie zaznaczone
+            if (is_bool($default_value)) {
+                $sanitized[$key] = isset($input[$key]) ? (bool) $input[$key] : false;
+                continue;
+            }
+            
             if (!isset($input[$key])) {
                 $sanitized[$key] = $default_value;
                 continue;
@@ -1531,14 +1280,82 @@ class ModernAdminStylerV2 {
             
             $value = $input[$key];
             
-            if (is_bool($default_value)) {
-                $sanitized[$key] = (bool) $value;
+            // Handle arrays (like menu_individual_colors, menu_individual_icons)
+            if (is_array($default_value)) {
+                if (is_array($value)) {
+                    $sanitized[$key] = $this->sanitizeArrayRecursive($value, $default_value);
+                } else {
+                    $sanitized[$key] = $default_value;
+                }
             } elseif (is_int($default_value)) {
                 $sanitized[$key] = (int) $value;
             } elseif ($key === 'custom_css') {
                 $sanitized[$key] = wp_strip_all_tags($value);
             } elseif (strpos($key, 'color') !== false) {
-                $sanitized[$key] = sanitize_hex_color($value);
+                // Obsługa kolorów w różnych formatach
+                if (is_array($value)) {
+                    // Jeśli to tablica, użyj wartości domyślnej
+                    $sanitized[$key] = $default_value;
+                } else {
+                    // Obsługa pustych wartości i formatów #ddd oraz #dddddd
+                    if (empty($value)) {
+                        $sanitized[$key] = $default_value;
+                    } else {
+                        $color = sanitize_hex_color($value);
+                        // Jeśli sanitize_hex_color zwróci null dla #ddd, sprawdź czy jest to prawidłowy 3-znakowy hex
+                        if ($color === null && preg_match('/^#[0-9a-fA-F]{3}$/', $value)) {
+                            // Konwertuj #ddd na #dddddd
+                            $sanitized[$key] = '#' . substr($value, 1, 1) . substr($value, 1, 1) . 
+                                               substr($value, 2, 1) . substr($value, 2, 1) . 
+                                               substr($value, 3, 1) . substr($value, 3, 1);
+                        } else {
+                            $sanitized[$key] = $color ?: $default_value;
+                        }
+                    }
+                }
+            } else {
+                $sanitized[$key] = sanitize_text_field($value);
+            }
+        }
+        
+        return $sanitized;
+    }
+    
+    /**
+     * Sanityzuje tablice rekurencyjnie
+     */
+    private function sanitizeArrayRecursive($input_array, $default_array) {
+        $sanitized = [];
+        
+        foreach ($default_array as $key => $default_value) {
+            if (!isset($input_array[$key])) {
+                $sanitized[$key] = $default_value;
+                continue;
+            }
+            
+            $value = $input_array[$key];
+            
+            if (is_array($default_value)) {
+                $sanitized[$key] = $this->sanitizeArrayRecursive($value, $default_value);
+            } elseif (is_bool($default_value)) {
+                $sanitized[$key] = (bool) $value;
+            } elseif (is_int($default_value)) {
+                $sanitized[$key] = (int) $value;
+            } elseif (strpos($key, 'color') !== false || substr($key, -3) === '_bg' || $key === 'bg' || $key === 'hover_bg') {
+                // Sanityzuj kolory, ale pozwól na puste stringi
+                if (empty($value)) {
+                    $sanitized[$key] = '';
+                } else {
+                    $color = sanitize_hex_color($value);
+                    // Obsługa formatu #ddd
+                    if ($color === null && preg_match('/^#[0-9a-fA-F]{3}$/', $value)) {
+                        $sanitized[$key] = '#' . substr($value, 1, 1) . substr($value, 1, 1) . 
+                                           substr($value, 2, 1) . substr($value, 2, 1) . 
+                                           substr($value, 3, 1) . substr($value, 3, 1);
+                    } else {
+                        $sanitized[$key] = $color ?: '';
+                    }
+                }
             } else {
                 $sanitized[$key] = sanitize_text_field($value);
             }
@@ -1555,7 +1372,9 @@ class ModernAdminStylerV2 {
             // Ogólne
             'enable_plugin' => true,
             'theme' => 'modern',
-            'color_scheme' => 'light',
+            'color_scheme' => 'auto',
+            'color_palette' => 'modern-blue',
+            'auto_dark_mode' => true,
             'font_family' => 'system',
             'font_size' => 14,
             'enable_animations' => true,
@@ -1577,12 +1396,12 @@ class ModernAdminStylerV2 {
             'admin_bar_padding' => 8,
             'admin_bar_border_radius' => 0,
             'admin_bar_shadow' => false,
-            'admin_bar_glassmorphism' => false,
-            'admin_bar_detached' => false,
+            'admin_bar_glassmorphism' => true,
+            'admin_bar_detached' => true,
             
             // Admin Bar - Nowe opcje floating/glossy
-            'admin_bar_floating' => false,
-            'admin_bar_glossy' => false,
+            'admin_bar_floating' => true,
+            'admin_bar_glossy' => true,
             'admin_bar_border_radius_type' => 'all',
             'admin_bar_radius_tl' => false,
             'admin_bar_radius_tr' => false,
@@ -1618,22 +1437,297 @@ class ModernAdminStylerV2 {
             'menu_width' => 160,
             'menu_item_height' => 34,
             'menu_rounded_corners' => false,
-            'menu_shadow' => false,
+            'menu_shadow' => true,
             'menu_compact_mode' => false,
-            'menu_glassmorphism' => false,
-            'menu_detached' => false,
-            'menu_detached_margin' => 20, // Backward compatibility
-            'menu_detached_margin_type' => 'all',
-            'menu_detached_margin_all' => 20,
-            'menu_detached_margin_top' => 20,
-            'menu_detached_margin_right' => 20,
-            'menu_detached_margin_bottom' => 20,
-            'menu_detached_margin_left' => 20,
+            'menu_glassmorphism' => true,
+            'menu_floating' => true,
+            'menu_floating_margin' => 10, // Backward compatibility
+            'menu_floating_margin_type' => 'all',
+            'menu_floating_margin_all' => 10,
+            'menu_floating_margin_top' => 10,
+            'menu_floating_margin_right' => 10,
+            'menu_floating_margin_bottom' => 10,
+            'menu_floating_margin_left' => 10,
             'menu_icons_enabled' => true,
             
-            // Menu - Nowe opcje floating/glossy
-            'menu_floating' => false,
-            'menu_glossy' => false,
+            // Menu - Advanced Individual Styling (Phase 2)
+            'menu_individual_styling' => false,
+            'menu_hover_animation' => 'none', // none, slide, fade, scale, glow
+            'menu_hover_duration' => 300,
+            'menu_hover_easing' => 'ease-in-out',
+            'menu_active_indicator' => 'none', // none, left-border, right-border, full-border, background, glow
+            'menu_active_indicator_color' => '#0073aa',
+            'menu_active_indicator_width' => 3,
+            
+            // Menu - Individual Item Spacing (Phase 2)
+            'menu_item_spacing' => 2, // Vertical spacing between items (0-20px)
+            'menu_item_padding_vertical' => 8, // Internal vertical padding (4-20px)
+            'menu_item_padding_horizontal' => 12, // Internal horizontal padding (8-30px)
+            
+            // Menu - Individual Colors for Elements (Phase 2)
+            'menu_individual_colors' => [
+                'dashboard' => ['bg' => '', 'text' => '', 'hover_bg' => '', 'hover_text' => ''],
+                'posts' => ['bg' => '', 'text' => '', 'hover_bg' => '', 'hover_text' => ''],
+                'pages' => ['bg' => '', 'text' => '', 'hover_bg' => '', 'hover_text' => ''],
+                'media' => ['bg' => '', 'text' => '', 'hover_bg' => '', 'hover_text' => ''],
+                'comments' => ['bg' => '', 'text' => '', 'hover_bg' => '', 'hover_text' => ''],
+                'appearance' => ['bg' => '', 'text' => '', 'hover_bg' => '', 'hover_text' => ''],
+                'plugins' => ['bg' => '', 'text' => '', 'hover_bg' => '', 'hover_text' => ''],
+                'users' => ['bg' => '', 'text' => '', 'hover_bg' => '', 'hover_text' => ''],
+                'tools' => ['bg' => '', 'text' => '', 'hover_bg' => '', 'hover_text' => ''],
+                'settings' => ['bg' => '', 'text' => '', 'hover_bg' => '', 'hover_text' => '']
+            ],
+            
+            // Menu - Custom Icons System (Phase 2)
+            'menu_custom_icons' => false,
+            'menu_icon_library' => 'dashicons', // dashicons, fontawesome, custom
+            'menu_individual_icons' => [
+                'dashboard' => '',
+                'posts' => '',
+                'pages' => '',
+                'media' => '',
+                'comments' => '',
+                'appearance' => '',
+                'plugins' => '',
+                'users' => '',
+                'tools' => '',
+                                 'settings' => ''
+             ],
+             
+             // Menu - Submenu Control and Animations (Phase 3)
+             'submenu_animation' => 'slide', // slide, fade, accordion, none
+             'submenu_animation_duration' => 300,
+             'submenu_indicator_style' => 'arrow', // arrow, plus, chevron, none
+             'submenu_indicator_position' => 'right', // left, right
+             'submenu_indicator_color' => '',
+             'submenu_background' => '',
+             'submenu_text_color' => '',
+             'submenu_hover_background' => '',
+             'submenu_hover_text_color' => '',
+             'submenu_border_left' => true,
+             'submenu_border_color' => '',
+             'submenu_indent' => 20,
+             'submenu_separator' => false,
+             'submenu_separator_color' => '',
+             'submenu_item_spacing' => 1,
+             'submenu_item_padding' => 8,
+             
+             // Menu - Scrollbar Customization (Phase 4)
+             'menu_scrollbar_enabled' => false,
+             'menu_scrollbar_width' => 8, // 4-16px
+             'menu_scrollbar_track_color' => '',
+             'menu_scrollbar_thumb_color' => '',
+             'menu_scrollbar_thumb_hover_color' => '',
+             'menu_scrollbar_corner_radius' => 4, // 0-8px
+             'menu_scrollbar_track_radius' => 4,
+             'menu_scrollbar_auto_hide' => true,
+             'menu_scrollbar_style' => 'modern', // modern, minimal, classic
+             'submenu_scrollbar_enabled' => false,
+             'submenu_scrollbar_width' => 6,
+             'submenu_scrollbar_track_color' => '',
+             'submenu_scrollbar_thumb_color' => '',
+             'submenu_scrollbar_thumb_hover_color' => '',
+             'submenu_scrollbar_style' => 'minimal',
+             
+             // Menu - Search and Custom Blocks (Phase 5)
+             'menu_search_enabled' => false,
+             'menu_search_position' => 'top', // top, bottom, custom
+             'menu_search_placeholder' => '',
+             'menu_search_style' => 'modern', // modern, minimal, compact
+             'menu_search_background' => '',
+             'menu_search_text_color' => '',
+             'menu_search_border_color' => '',
+             'menu_search_focus_color' => '',
+             'menu_search_icon_color' => '',
+             'menu_search_animation' => true,
+             'menu_search_live_filter' => true,
+             'menu_search_highlight_matches' => true,
+             'menu_search_hotkey' => 'ctrl+k',
+             
+             // Custom HTML blocks in menu
+             'menu_custom_blocks_enabled' => false,
+             'menu_custom_blocks' => [
+                 'block_1' => [
+                     'enabled' => false,
+                     'position' => 'top', // top, bottom, before_item, after_item
+                     'target_item' => '', // For before/after positioning
+                     'content' => '',
+                     'style' => 'default', // default, card, minimal, highlight
+                     'background' => '',
+                     'text_color' => '',
+                     'border_color' => '',
+                     'padding' => 'medium', // small, medium, large
+                     'margin' => 'medium',
+                     'border_radius' => 6,
+                     'show_for_roles' => ['all'], // all, admin, editor, etc.
+                     'show_on_pages' => ['all'], // all, dashboard, posts, etc.
+                     'animation' => 'fade' // none, fade, slide, bounce
+                 ],
+                 'block_2' => [
+                     'enabled' => false,
+                     'position' => 'bottom',
+                     'target_item' => '',
+                     'content' => '',
+                     'style' => 'default',
+                     'background' => '',
+                     'text_color' => '',
+                     'border_color' => '',
+                     'padding' => 'medium',
+                     'margin' => 'medium',
+                     'border_radius' => 6,
+                     'show_for_roles' => ['all'],
+                     'show_on_pages' => ['all'],
+                     'animation' => 'fade'
+                 ],
+                 'block_3' => [
+                     'enabled' => false,
+                     'position' => 'top',
+                     'target_item' => '',
+                     'content' => '',
+                     'style' => 'highlight',
+                     'background' => '',
+                     'text_color' => '',
+                     'border_color' => '',
+                     'padding' => 'medium',
+                     'margin' => 'medium',
+                     'border_radius' => 6,
+                     'show_for_roles' => ['all'],
+                     'show_on_pages' => ['all'],
+                     'animation' => 'slide'
+                 ]
+             ],
+             
+             // Menu - Responsive & Positioning (Phase 6)
+             'menu_responsive_enabled' => true,
+             'menu_mobile_breakpoint' => 768, // px
+             'menu_tablet_breakpoint' => 1024, // px
+             
+             // Mobile menu behavior
+             'menu_mobile_behavior' => 'collapse', // collapse, overlay, slide-out, bottom-bar
+             'menu_mobile_toggle_position' => 'top-left', // top-left, top-right, bottom-left, bottom-right
+             'menu_mobile_toggle_style' => 'hamburger', // hamburger, dots, text, icon
+             'menu_mobile_toggle_color' => '',
+             'menu_mobile_overlay_color' => 'rgba(0,0,0,0.8)',
+             'menu_mobile_animation' => 'slide', // slide, fade, scale, none
+             
+             // Tablet adjustments
+             'menu_tablet_width' => 200, // Reduced width on tablets
+             'menu_tablet_compact' => true, // Compact spacing on tablets
+             'menu_tablet_behavior' => 'auto', // auto, desktop, mobile
+             
+             // Menu positioning
+             'menu_position_type' => 'default', // default, fixed, sticky, floating
+             'menu_position_top' => 32, // Distance from top (when fixed/sticky)
+             'menu_position_left' => 0, // Distance from left (when floating)
+             'menu_position_z_index' => 1000, // Z-index for positioning
+             
+             // Floating menu specific
+             'menu_floating_shadow' => true,
+             'menu_floating_blur_background' => true,
+             'menu_floating_auto_hide' => false, // Auto-hide when not in use
+             'menu_floating_trigger_hover' => false, // Show on hover only
+             
+             // Responsive visibility
+             'menu_hide_mobile' => false, // Hide menu completely on mobile
+             'menu_hide_tablet' => false, // Hide menu completely on tablet
+             'menu_hide_items_mobile' => [], // Array of menu items to hide on mobile
+             'menu_hide_items_tablet' => [], // Array of menu items to hide on tablet
+             
+             // Mobile menu customization
+             'menu_mobile_width' => '100%', // Full width or custom
+             'menu_mobile_height' => 'auto', // auto, viewport, custom
+             'menu_mobile_background' => '',
+             'menu_mobile_text_color' => '',
+             'menu_mobile_border_radius' => 0,
+             'menu_mobile_padding' => 'normal', // compact, normal, spacious
+             
+             // Touch interactions
+             'menu_touch_friendly' => true, // Larger touch targets
+             'menu_swipe_gestures' => true, // Swipe to open/close
+             'menu_touch_animation_speed' => 250, // Touch interaction speed
+             
+             // Performance optimizations
+             'menu_lazy_load_mobile' => true, // Lazy load menu items on mobile
+             'menu_reduce_animations_mobile' => true, // Reduce animations on mobile
+             'menu_optimize_performance' => true, // General mobile optimizations
+             
+             // Menu - Premium Features (Phase 7)
+             'menu_premium_enabled' => false,
+             
+             // Template System
+             'menu_template_system' => true,
+             'menu_active_template' => 'default',
+             'menu_custom_templates' => [], // Array of custom templates
+             'menu_template_auto_save' => true,
+             'menu_template_backup' => true,
+             
+             // Conditional Display
+             'menu_conditional_display' => false,
+             'menu_user_role_restrictions' => [], // Array of role-based visibility
+             'menu_page_specific_styling' => [], // Array of page-specific styles
+             'menu_time_based_display' => false,
+             'menu_device_specific_display' => [], // Array of device-specific rules
+             
+             // Advanced Analytics
+             'menu_analytics_enabled' => false,
+             'menu_track_clicks' => false,
+             'menu_track_hover_time' => false,
+             'menu_usage_statistics' => false,
+             'menu_performance_monitoring' => false,
+             
+             // Import/Export System
+             'menu_backup_enabled' => true,
+             'menu_auto_backup' => false,
+             'menu_backup_frequency' => 'weekly', // daily, weekly, monthly
+             'menu_cloud_sync' => false,
+             'menu_export_format' => 'json', // json, xml, css
+             
+             // Multi-site Support
+             'menu_multisite_sync' => false,
+             'menu_network_templates' => false,
+             'menu_site_specific_overrides' => true,
+             
+             // White Label
+             'menu_white_label' => false,
+             'menu_custom_branding' => false,
+             'menu_hide_plugin_info' => false,
+             'menu_custom_admin_footer' => '',
+             
+             // Advanced Scheduling
+             'menu_scheduled_changes' => false,
+             'menu_maintenance_mode' => false,
+             'menu_ab_testing' => false,
+             'menu_rollback_system' => true,
+             
+             // Custom CSS/JS Injection
+             'menu_custom_css_enabled' => false,
+             'menu_custom_css_code' => '',
+             'menu_custom_js_enabled' => false,
+             'menu_custom_js_code' => '',
+             'menu_css_minification' => true,
+             'menu_js_minification' => true,
+             
+             // Performance Monitoring
+             'menu_performance_alerts' => false,
+             'menu_load_time_monitoring' => false,
+             'menu_memory_usage_tracking' => false,
+             'menu_error_logging' => true,
+             
+             // Advanced Security
+             'menu_security_scanning' => false,
+             'menu_access_logging' => false,
+             'menu_ip_restrictions' => [],
+             'menu_rate_limiting' => false,
+             
+             // API Integration
+             'menu_api_enabled' => false,
+             'menu_webhook_support' => false,
+             'menu_external_integrations' => [],
+             'menu_rest_api_endpoints' => true,
+              
+              // Menu - Nowe opcje floating/glossy
+            'menu_floating' => true,
+            'menu_glossy' => true,
             'menu_border_radius_type' => 'all',
             'menu_border_radius_all' => 0,
             'menu_radius_tl' => false,
@@ -1726,6 +1820,62 @@ class ModernAdminStylerV2 {
             'show_css_info' => false,
             'load_only_admin' => true,
             'async_loading' => false,
+            
+            // BRAKUJĄCE DOMYŚLNE KOLORY - HTML5 Color Input Fix
+            'accent_color' => '#0073aa',
+            'bar_text_hover_color' => '#00a0d2',
+            'menu_background_color' => '#23282d',
+            'menu_gradient_start' => '#23282d',
+            'menu_gradient_end' => '#32373c',
+            'menu_hover_color' => '#00a0d2',
+            'menu_active_color' => '#ffffff',
+            'submenu_bg_color' => '#32373c',
+            'submenu_text_color' => '#ffffff',
+            'menu_submenu_background' => '#32373c',
+            'menu_submenu_text_color' => '#ffffff',
+            'submenu_hover_bg_color' => '#0073aa',
+            'submenu_hover_text_color' => '#ffffff',
+            'submenu_active_bg_color' => '#0073aa',
+            'submenu_active_text_color' => '#ffffff',
+            'submenu_border_color' => '#464646',
+            'submenu_separator_color' => '#464646',
+            'content_background_color' => '#f1f1f1',
+            'content_gradient_start' => '#f1f1f1',
+            'content_gradient_end' => '#e0e0e0',
+            'content_text_color' => '#333333',
+            'content_blur_background' => '#ffffff',
+            'button_bg_color' => '#0073aa',
+            'button_text_color' => '#ffffff',
+            'button_hover_bg_color' => '#005a87',
+            'button_hover_text_color' => '#ffffff',
+            'button_primary_text_color' => '#ffffff',
+            'button_secondary_text_color' => '#0073aa',
+            'form_field_bg_color' => '#ffffff',
+            'form_field_border_color' => '#dddddd',
+            'form_field_focus_color' => '#0073aa',
+            'login_background_color' => '#f1f1f1',
+            'login_gradient_start' => '#f1f1f1',
+            'login_gradient_end' => '#e0e0e0',
+            'login_form_background' => '#ffffff',
+            'login_button_background' => '#0073aa',
+            'login_button_text_color' => '#ffffff',
+            'login_bg_color' => '#f1f1f1',
+            'menu_search_background' => '#ffffff',
+            'menu_search_text_color' => '#333333',
+            'menu_search_border_color' => '#dddddd',
+            'menu_search_focus_color' => '#0073aa',
+            'menu_search_icon_color' => '#666666',
+            'menu_scrollbar_track_color' => '#f1f1f1',
+            'menu_scrollbar_thumb_color' => '#cccccc',
+            'menu_scrollbar_thumb_hover_color' => '#999999',
+            'submenu_scrollbar_track_color' => '#f1f1f1',
+            'submenu_scrollbar_thumb_color' => '#cccccc',
+            'submenu_scrollbar_thumb_hover_color' => '#999999',
+            'menu_floating_blur_background' => '#ffffff',
+            'menu_mobile_toggle_color' => '#333333',
+            'menu_mobile_overlay_color' => '#000000',
+            'menu_mobile_background' => '#23282d',
+            'menu_mobile_text_color' => '#ffffff',
         ];
     }
     
@@ -1807,6 +1957,473 @@ class ModernAdminStylerV2 {
         
         // Wyczyść cache obiektów WordPress
         wp_cache_flush();
+    }
+    
+    /**
+     * Renderuje search box i custom bloki w menu (Phase 5)
+     */
+    public function renderMenuSearchAndBlocks() {
+        if (!is_admin() || $this->isLoginPage()) {
+            return;
+        }
+        
+        $settings = $this->getSettings();
+        
+        // Render search if enabled
+        if (isset($settings['menu_search_enabled']) && $settings['menu_search_enabled']) {
+            $this->renderMenuSearch($settings);
+        }
+        
+        // Render custom blocks if enabled
+        if (isset($settings['menu_custom_blocks_enabled']) && $settings['menu_custom_blocks_enabled']) {
+            $this->renderCustomBlocks($settings);
+        }
+    }
+    
+    /**
+     * Renderuje wyszukiwarkę menu
+     */
+    private function renderMenuSearch($settings) {
+        $position = $settings['menu_search_position'] ?? 'top';
+        $style = $settings['menu_search_style'] ?? 'modern';
+        $placeholder = $settings['menu_search_placeholder'] ?? 'Szukaj w menu...';
+        $animation = isset($settings['menu_search_animation']) && $settings['menu_search_animation'];
+        
+        $searchHTML = sprintf(
+            '<div class="mas-menu-search mas-search-%s" data-animation="%s" style="display: none;">
+                <div class="mas-search-container">
+                    %s
+                    <input type="text" 
+                           class="mas-search-input" 
+                           placeholder="%s"
+                           autocomplete="off"
+                           spellcheck="false">
+                    <div class="mas-search-clear" title="Wyczyść" style="display: none;">✕</div>
+                </div>
+                <div class="mas-search-results" style="display: none;"></div>
+            </div>',
+            esc_attr($style),
+            $animation ? 'true' : 'false',
+            $style === 'modern' ? '<div class="mas-search-icon">🔍</div>' : '',
+            esc_attr($placeholder)
+        );
+        
+        // JavaScript to inject search into menu
+        echo "<script>
+        jQuery(document).ready(function($) {
+            var searchHTML = " . json_encode($searchHTML) . ";
+            var position = " . json_encode($position) . ";
+            
+            if ($('#adminmenu').length) {
+                if (position === 'top') {
+                    $('#adminmenu').prepend(searchHTML);
+                } else {
+                    $('#adminmenu').append(searchHTML);
+                }
+                $('.mas-menu-search').show();
+            }
+        });
+        </script>";
+    }
+    
+    /**
+     * Renderuje custom bloki HTML
+     */
+    private function renderCustomBlocks($settings) {
+        $blocks = $settings['menu_custom_blocks'] ?? [];
+        
+        foreach ($blocks as $blockId => $block) {
+            if (!isset($block['enabled']) || !$block['enabled']) {
+                continue;
+            }
+            
+            $content = $block['content'] ?? '';
+            if (empty(trim($content))) {
+                continue;
+            }
+            
+            $position = $block['position'] ?? 'top';
+            $style = $block['style'] ?? 'default';
+            $animation = $block['animation'] ?? 'fade';
+            
+            // Process shortcodes in content
+            $content = do_shortcode($content);
+            
+            // Basic HTML sanitization while allowing most tags
+            $allowedTags = [
+                'div', 'span', 'p', 'a', 'img', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+                'ul', 'ol', 'li', 'br', 'strong', 'em', 'b', 'i', 'u',
+                'code', 'pre', 'blockquote', 'small', 'sub', 'sup'
+            ];
+            
+            $allowedAttributes = [
+                'href', 'src', 'alt', 'title', 'class', 'id', 'style',
+                'target', 'rel', 'data-*'
+            ];
+            
+            $blockHTML = sprintf(
+                '<div class="mas-custom-block mas-block-%s mas-%s" data-animation="%s" style="display: none;">
+                    <div class="mas-block-content">%s</div>
+                </div>',
+                esc_attr($style),
+                esc_attr($blockId),
+                esc_attr($animation),
+                wp_kses($content, array_fill_keys($allowedTags, array_fill_keys($allowedAttributes, true)))
+            );
+            
+            // JavaScript to inject block into menu
+            echo "<script>
+            jQuery(document).ready(function($) {
+                var blockHTML = " . json_encode($blockHTML) . ";
+                var position = " . json_encode($position) . ";
+                var animation = " . json_encode($animation) . ";
+                
+                if ($('#adminmenu').length) {
+                    if (position === 'top') {
+                        $('#adminmenu').prepend(blockHTML);
+                    } else {
+                        $('#adminmenu').append(blockHTML);
+                    }
+                    
+                    var \$block = $('.mas-" . esc_js($blockId) . "');
+                    \$block.show();
+                    
+                    // Apply animation
+                    if (animation !== 'none') {
+                        setTimeout(function() {
+                            \$block.addClass('mas-animate-' + animation);
+                        }, 100);
+                    }
+                }
+            });
+            </script>";
+        }
+    }
+    
+    /**
+     * Generuje CSS dla funkcji Premium (Phase 7)
+     */
+    private function generatePremiumCSS($settings) {
+        $css = "\n/* =================================== */\n";
+        $css .= "/* Premium Features CSS (Phase 7)     */\n";
+        $css .= "/* =================================== */\n\n";
+        
+        // Custom CSS injection
+        if (isset($settings['menu_custom_css_enabled']) && $settings['menu_custom_css_enabled']) {
+            $customCSS = $settings['menu_custom_css_code'] ?? '';
+            if (!empty(trim($customCSS))) {
+                $css .= "\n/* Custom CSS Code */\n";
+                
+                // Basic CSS validation and minification if enabled
+                if (isset($settings['menu_css_minification']) && $settings['menu_css_minification']) {
+                    $customCSS = $this->minifyCSS($customCSS);
+                }
+                
+                $css .= $customCSS . "\n";
+            }
+        }
+        
+        // Conditional display CSS
+        if (isset($settings['menu_conditional_display']) && $settings['menu_conditional_display']) {
+            $css .= $this->generateConditionalDisplayCSS($settings);
+        }
+        
+        // Template-specific CSS
+        $activeTemplate = $settings['menu_active_template'] ?? 'default';
+        if ($activeTemplate !== 'default') {
+            $css .= $this->generateTemplateCSS($activeTemplate, $settings);
+        }
+        
+        // White label CSS (hide plugin info if enabled)
+        if (isset($settings['menu_white_label']) && $settings['menu_white_label']) {
+            $css .= $this->generateWhiteLabelCSS();
+        }
+        
+        // Performance monitoring indicators
+        if (isset($settings['menu_performance_monitoring']) && $settings['menu_performance_monitoring']) {
+            $css .= $this->generatePerformanceIndicatorsCSS();
+        }
+        
+        // Night mode CSS (for time-based display)
+        $css .= "
+        /* Night Mode Styles */
+        body.mas-v2-night-mode #adminmenu {
+            background: #0f172a !important;
+            border-right-color: #1e293b !important;
+        }
+        
+        body.mas-v2-night-mode #adminmenu li a {
+            color: #e2e8f0 !important;
+        }
+        
+        body.mas-v2-night-mode #adminmenu li.wp-has-current-submenu > a,
+        body.mas-v2-night-mode #adminmenu li.current > a {
+            background: #1e40af !important;
+            color: #ffffff !important;
+        }
+        
+        body.mas-v2-night-mode #adminmenu li:hover > a {
+            background: #1e293b !important;
+            color: #f1f5f9 !important;
+        }";
+        
+        return $css;
+    }
+    
+    /**
+     * Generuje CSS dla wyświetlania warunkowego
+     */
+    private function generateConditionalDisplayCSS($settings) {
+        $css = "\n/* Conditional Display CSS */\n";
+        
+        // Page-specific styling
+        $pagePatterns = $settings['menu_page_specific_styling'] ?? [];
+        if (!empty($pagePatterns)) {
+            foreach ($pagePatterns as $index => $pattern) {
+                $safeClass = 'mas-page-' . md5($pattern);
+                $css .= "
+                body.{$safeClass} #adminmenu {
+                    /* Page-specific styles for: {$pattern} */
+                    opacity: 0.9;
+                    border-left: 3px solid #0073aa;
+                }";
+            }
+        }
+        
+        // Role-based styling classes
+        $restrictedRoles = $settings['menu_user_role_restrictions'] ?? [];
+        if (!empty($restrictedRoles)) {
+            foreach ($restrictedRoles as $role) {
+                $css .= "
+                body.role-{$role} #adminmenu {
+                    /* Role-specific styles for: {$role} */
+                    filter: hue-rotate(15deg);
+                }";
+            }
+        }
+        
+        return $css;
+    }
+    
+    /**
+     * Generuje CSS dla aktywnego szablonu
+     */
+    private function generateTemplateCSS($template, $settings) {
+        $css = "\n/* Template CSS: {$template} */\n";
+        
+        switch ($template) {
+            case 'corporate':
+                $css .= "
+                #adminmenu {
+                    background: linear-gradient(180deg, #1e3a5f 0%, #2563eb 100%) !important;
+                    box-shadow: 0 0 20px rgba(37, 99, 235, 0.3) !important;
+                }
+                
+                #adminmenu li a {
+                    font-weight: 500 !important;
+                    letter-spacing: 0.025em !important;
+                }
+                
+                #adminmenu li.wp-has-current-submenu > a {
+                    background: rgba(255, 255, 255, 0.15) !important;
+                    border-left: 3px solid #60a5fa !important;
+                }";
+                break;
+                
+            case 'creative':
+                $css .= "
+                #adminmenu {
+                    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%) !important;
+                    border-radius: 0 15px 15px 0 !important;
+                }
+                
+                #adminmenu li a {
+                    border-radius: 8px !important;
+                    margin: 2px 8px !important;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                }
+                
+                #adminmenu li a:hover {
+                    transform: translateX(5px) !important;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+                }";
+                break;
+                
+            case 'minimal':
+                $css .= "
+                #adminmenu {
+                    background: #f8fafc !important;
+                    border-right: 1px solid #e2e8f0 !important;
+                    box-shadow: none !important;
+                }
+                
+                #adminmenu li a {
+                    color: #334155 !important;
+                    font-weight: 400 !important;
+                    padding: 12px 16px !important;
+                }
+                
+                #adminmenu li a:hover {
+                    background: #f1f5f9 !important;
+                    color: #1e293b !important;
+                }
+                
+                #adminmenu li.wp-has-current-submenu > a {
+                    background: #e2e8f0 !important;
+                    color: #0f172a !important;
+                }";
+                break;
+                
+            case 'dark-mode':
+                $css .= "
+                #adminmenu {
+                    background: #0f172a !important;
+                    border-right: 1px solid #1e293b !important;
+                }
+                
+                #adminmenu li a {
+                    color: #e2e8f0 !important;
+                }
+                
+                #adminmenu li a:hover {
+                    background: #1e293b !important;
+                    color: #f1f5f9 !important;
+                }
+                
+                #adminmenu li.wp-has-current-submenu > a {
+                    background: #1e40af !important;
+                    color: #ffffff !important;
+                }";
+                break;
+        }
+        
+        return $css;
+    }
+    
+    /**
+     * Generuje CSS dla white label
+     */
+    private function generateWhiteLabelCSS() {
+        return "
+        /* White Label CSS */
+        .mas-v2-plugin-info,
+        .mas-v2-branding,
+        #adminmenu .mas-v2-signature {
+            display: none !important;
+        }";
+    }
+    
+    /**
+     * Generuje CSS dla wskaźników wydajności
+     */
+    private function generatePerformanceIndicatorsCSS() {
+        return "
+        /* Performance Indicators CSS */
+        .mas-v2-performance-indicator {
+            position: fixed;
+            top: 32px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-family: monospace;
+            z-index: 99999;
+            pointer-events: none;
+        }
+        
+        .mas-v2-performance-indicator.warning {
+            background: rgba(255, 193, 7, 0.9);
+            color: #000;
+        }
+        
+        .mas-v2-performance-indicator.error {
+            background: rgba(220, 53, 69, 0.9);
+        }";
+    }
+    
+    /**
+     * Minifikacja CSS
+     */
+    private function minifyCSS($css) {
+        // Remove comments
+        $css = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $css);
+        
+        // Remove unnecessary whitespace
+        $css = str_replace(["\r\n", "\r", "\n", "\t", '  ', '    ', '    '], '', $css);
+        
+        // Remove spaces around specific characters
+        $css = str_replace([' {', '{ ', ' }', '} ', ': ', ' :', '; ', ' ;', ', ', ' ,'], ['{', '{', '}', '}', ':', ':', ';', ';', ',', ','], $css);
+        
+        return trim($css);
+    }
+    
+    /**
+     * Generuje JavaScript dla dynamicznego zarządzania klasami body
+     */
+    private function generateBodyClassesJS($settings) {
+        $js = 'document.addEventListener("DOMContentLoaded", function() {';
+        $js .= 'var body = document.body;';
+        
+        // Floating menu classes
+        if (isset($settings['menu_floating']) && $settings['menu_floating']) {
+            $js .= 'body.classList.add("mas-v2-menu-floating");';
+            $js .= 'body.classList.add("mas-menu-floating");';
+            $js .= 'body.classList.remove("mas-menu-normal");';
+        } else {
+            $js .= 'body.classList.remove("mas-v2-menu-floating");';
+            $js .= 'body.classList.add("mas-menu-normal");';
+            $js .= 'body.classList.remove("mas-menu-floating");';
+        }
+        
+        // Admin bar floating
+        if (isset($settings['admin_bar_floating']) && $settings['admin_bar_floating']) {
+            $js .= 'body.classList.add("mas-v2-admin-bar-floating");';
+        } else {
+            $js .= 'body.classList.remove("mas-v2-admin-bar-floating");';
+        }
+        
+        // Admin bar detached (legacy compatibility)
+        if (isset($settings['admin_bar_detached']) && $settings['admin_bar_detached']) {
+            $js .= 'body.classList.add("mas-admin-bar-floating");';
+        } else {
+            $js .= 'body.classList.remove("mas-admin-bar-floating");';
+        }
+        
+        // Glossy effects
+        if (isset($settings['menu_glossy']) && $settings['menu_glossy']) {
+            $js .= 'body.classList.add("mas-v2-menu-glossy");';
+        } else {
+            $js .= 'body.classList.remove("mas-v2-menu-glossy");';
+        }
+        
+        if (isset($settings['admin_bar_glossy']) && $settings['admin_bar_glossy']) {
+            $js .= 'body.classList.add("mas-v2-admin-bar-glossy");';
+        } else {
+            $js .= 'body.classList.remove("mas-v2-admin-bar-glossy");';
+        }
+        
+        // Border radius individual settings
+        if (isset($settings['menu_border_radius_type']) && $settings['menu_border_radius_type'] === 'individual') {
+            $js .= 'body.classList.add("mas-v2-menu-radius-individual");';
+        } else {
+            $js .= 'body.classList.remove("mas-v2-menu-radius-individual");';
+        }
+        
+        if (isset($settings['admin_bar_border_radius_type']) && $settings['admin_bar_border_radius_type'] === 'individual') {
+            $js .= 'body.classList.add("mas-v2-admin-bar-radius-individual");';
+        } else {
+            $js .= 'body.classList.remove("mas-v2-admin-bar-radius-individual");';
+        }
+        
+        // Debug info
+        $js .= 'console.log("MAS V2: Unified styles active on all pages");';
+        $js .= 'console.log("MAS V2: Body classes added:", body.className.split(" ").filter(function(c) { return c.startsWith("mas-"); }));';
+        
+        $js .= '});';
+        
+        return $js;
     }
 }
 

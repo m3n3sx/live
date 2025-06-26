@@ -1,0 +1,524 @@
+/**
+ * Modern Admin Styler V2 - Menu Search & Custom Blocks CSS
+ * Styling for search functionality and custom HTML blocks
+ */
+
+/* ==========================================================================
+   MENU SEARCH STYLES
+   ========================================================================== */
+
+.mas-menu-search {
+    margin: 8px 12px;
+    position: relative;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+.mas-menu-search.mas-search-animate-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Search Container */
+.mas-search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.mas-menu-search.mas-search-focused .mas-search-container {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+/* Search Input */
+.mas-search-input {
+    flex: 1;
+    padding: 8px 12px;
+    background: transparent !important;
+    border: none !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 13px;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.mas-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
+    font-style: italic;
+}
+
+/* Search Icon */
+.mas-search-icon {
+    padding: 0 8px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    pointer-events: none;
+}
+
+/* Clear Button */
+.mas-search-clear {
+    padding: 4px 8px;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    font-size: 12px;
+    display: none;
+    transition: all 0.2s ease;
+}
+
+.mas-search-clear:hover {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Search Styles */
+.mas-search-modern .mas-search-container {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mas-search-minimal .mas-search-container {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+}
+
+.mas-search-compact {
+    margin: 4px 8px;
+}
+
+.mas-search-compact .mas-search-container {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.mas-search-compact .mas-search-input {
+    padding: 6px 8px;
+    font-size: 12px;
+}
+
+/* Search Results */
+.mas-search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(30, 30, 30, 0.95);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    margin-top: 4px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 10000;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    display: none;
+}
+
+.mas-search-header {
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mas-search-result {
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mas-search-result:last-child {
+    border-bottom: none;
+}
+
+.mas-search-result:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(2px);
+}
+
+.mas-result-text {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 13px;
+    flex: 1;
+}
+
+.mas-result-text mark {
+    background: rgba(64, 158, 255, 0.3);
+    color: #4a9eff;
+    padding: 1px 3px;
+    border-radius: 2px;
+}
+
+.mas-result-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+    font-size: 14px;
+}
+
+/* No Results */
+.mas-search-no-results {
+    padding: 20px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.mas-no-results-icon {
+    font-size: 24px;
+    margin-bottom: 8px;
+    opacity: 0.5;
+}
+
+.mas-no-results-text {
+    font-size: 13px;
+    font-style: italic;
+}
+
+/* Search Highlight in Menu */
+.mas-search-highlight {
+    background: rgba(64, 158, 255, 0.3);
+    color: #4a9eff;
+    padding: 1px 3px;
+    border-radius: 2px;
+    font-weight: 600;
+}
+
+/* Hotkey Activation Animation */
+.mas-menu-search.mas-search-hotkey-activated {
+    animation: mas-hotkey-pulse 0.3s ease;
+}
+
+@keyframes mas-hotkey-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Search Notification */
+.mas-search-notification {
+    position: fixed;
+    top: 32px;
+    right: 20px;
+    background: rgba(30, 30, 30, 0.95);
+    color: rgba(255, 255, 255, 0.9);
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    z-index: 100000;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.3s ease;
+}
+
+.mas-search-notification.mas-notification-show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ==========================================================================
+   CUSTOM BLOCKS STYLES
+   ========================================================================== */
+
+.mas-custom-block {
+    margin: 8px 12px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.4s ease;
+}
+
+/* Block Animations */
+.mas-custom-block.mas-animate-fade {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.mas-custom-block.mas-animate-slide {
+    opacity: 1;
+    transform: translateY(0) translateX(0);
+    animation: mas-slide-in 0.4s ease;
+}
+
+.mas-custom-block.mas-animate-bounce {
+    opacity: 1;
+    transform: translateY(0);
+    animation: mas-bounce-in 0.6s ease;
+}
+
+@keyframes mas-slide-in {
+    0% { transform: translateX(-20px) translateY(10px); opacity: 0; }
+    100% { transform: translateX(0) translateY(0); opacity: 1; }
+}
+
+@keyframes mas-bounce-in {
+    0% { transform: translateY(20px) scale(0.9); opacity: 0; }
+    50% { transform: translateY(-5px) scale(1.05); opacity: 0.8; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* Block Content */
+.mas-block-content {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.mas-block-content a {
+    color: #4a9eff;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.mas-block-content a:hover {
+    color: #66b3ff;
+}
+
+/* Block Styles */
+.mas-block-default .mas-block-content {
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mas-block-card .mas-block-content {
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.mas-block-minimal .mas-block-content {
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 3px solid #4a9eff;
+    border-radius: 0 4px 4px 0;
+}
+
+.mas-block-highlight .mas-block-content {
+    padding: 14px;
+    background: linear-gradient(135deg, rgba(74, 158, 255, 0.2), rgba(74, 158, 255, 0.1));
+    border: 1px solid rgba(74, 158, 255, 0.3);
+    border-radius: 6px;
+    box-shadow: 0 0 15px rgba(74, 158, 255, 0.1);
+}
+
+/* Block Content Elements */
+.mas-block-content h1,
+.mas-block-content h2,
+.mas-block-content h3,
+.mas-block-content h4,
+.mas-block-content h5,
+.mas-block-content h6 {
+    color: rgba(255, 255, 255, 0.95);
+    margin: 0 0 8px 0;
+    font-weight: 600;
+}
+
+.mas-block-content p {
+    margin: 0 0 8px 0;
+}
+
+.mas-block-content p:last-child {
+    margin-bottom: 0;
+}
+
+.mas-block-content ul,
+.mas-block-content ol {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.mas-block-content li {
+    margin: 4px 0;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.mas-block-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin: 8px 0;
+}
+
+.mas-block-content code {
+    background: rgba(255, 255, 255, 0.1);
+    color: #66b3ff;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.mas-block-content pre {
+    background: rgba(0, 0, 0, 0.3);
+    color: rgba(255, 255, 255, 0.9);
+    padding: 12px;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin: 8px 0;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+/* ==========================================================================
+   ADMIN INTERFACE STYLES (Search & Blocks Section)
+   ========================================================================== */
+
+.mas-v2-search-config {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mas-v2-search-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+}
+
+.mas-v2-custom-blocks-config {
+    margin-top: 1rem;
+}
+
+.mas-v2-custom-block {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.mas-v2-custom-block:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.mas-v2-block-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 0 1rem 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.mas-v2-inline-toggle {
+    margin: 0;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.mas-v2-block-content {
+    margin-top: 1rem;
+}
+
+.mas-v2-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.9);
+    font-family: monospace;
+    font-size: 13px;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.mas-v2-textarea:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(74, 158, 255, 0.5);
+    box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.2);
+    outline: none;
+}
+
+.mas-v2-textarea::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .mas-menu-search {
+        margin: 6px 8px;
+    }
+    
+    .mas-search-input {
+        padding: 6px 8px;
+        font-size: 12px;
+    }
+    
+    .mas-custom-block {
+        margin: 6px 8px;
+    }
+    
+    .mas-v2-search-features {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .mas-v2-block-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .mas-v2-inline-toggle {
+        align-self: flex-end;
+    }
+}
+
+/* ==========================================================================
+   SCROLLBAR STYLING FOR SEARCH RESULTS
+   ========================================================================== */
+
+.mas-search-results::-webkit-scrollbar {
+    width: 6px;
+}
+
+.mas-search-results::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.mas-search-results::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.mas-search-results::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+} 

@@ -1,0 +1,841 @@
+{
+  "config": {
+    "configFile": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright.config.js",
+    "rootDir": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/global-setup.js",
+    "globalTeardown": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/global-teardown.js",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 2
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ],
+      [
+        "line",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "Mobile Chrome",
+        "name": "Mobile Chrome",
+        "testDir": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "Google Chrome",
+        "name": "Google Chrome",
+        "testDir": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.53.1",
+    "workers": 2,
+    "webServer": {
+      "command": "echo \"WordPress should be running on localhost:10013\"",
+      "port": 10013,
+      "reuseExistingServer": true,
+      "timeout": 5000
+    }
+  },
+  "suites": [
+    {
+      "title": "manual-menu-animation-test.spec.js",
+      "file": "manual-menu-animation-test.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "Manual Menu Animation Test - Dokładne sprawdzenie \"odlatującego menu\"",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 22434,
+                  "error": {
+                    "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n",
+                    "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n\n    at /home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js:48:16",
+                    "location": {
+                      "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                      "column": 16,
+                      "line": 48
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 46 |\u001b[39m     \n \u001b[90m 47 |\u001b[39m     \u001b[90m// Sprawdź pozycję menu natychmiast po załadowaniu\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForSelector(\u001b[32m'#adminmenu'\u001b[39m\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 49 |\u001b[39m     \n \u001b[90m 50 |\u001b[39m     \u001b[90m// Śledź pozycję menu w różnych momentach\u001b[39m\n \u001b[90m 51 |\u001b[39m     \u001b[36mconst\u001b[39m positions \u001b[33m=\u001b[39m []\u001b[33m;\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                        "column": 16,
+                        "line": 48
+                      },
+                      "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n\n\n\u001b[0m \u001b[90m 46 |\u001b[39m     \n \u001b[90m 47 |\u001b[39m     \u001b[90m// Sprawdź pozycję menu natychmiast po załadowaniu\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForSelector(\u001b[32m'#adminmenu'\u001b[39m\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 49 |\u001b[39m     \n \u001b[90m 50 |\u001b[39m     \u001b[90m// Śledź pozycję menu w różnych momentach\u001b[39m\n \u001b[90m 51 |\u001b[39m     \u001b[36mconst\u001b[39m positions \u001b[33m=\u001b[39m []\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js:48:16\u001b[22m"
+                    }
+                  ],
+                  "stdout": [
+                    {
+                      "text": "🎯 TEST ANIMACJI MENU - Szczegółowe sprawdzenie problem \"odlatującego menu\"\n"
+                    },
+                    {
+                      "text": "✅ Zalogowano do WordPress\n"
+                    },
+                    {
+                      "text": "🔍 TEST 1: Sprawdzanie zarządzania klasą .mas-loading\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading na początku: false\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading po 100ms: false\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading po 600ms: false\n"
+                    },
+                    {
+                      "text": "🔍 TEST 2: Śledzenie pozycji menu podczas ładowania\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-06-26T16:01:41.631Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--chromium/test-failed-1.png"
+                    },
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--chromium/video.webm"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--chromium/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                    "column": 16,
+                    "line": 48
+                  }
+                },
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 23187,
+                  "error": {
+                    "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n",
+                    "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n\n    at /home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js:48:16",
+                    "location": {
+                      "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                      "column": 16,
+                      "line": 48
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 46 |\u001b[39m     \n \u001b[90m 47 |\u001b[39m     \u001b[90m// Sprawdź pozycję menu natychmiast po załadowaniu\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForSelector(\u001b[32m'#adminmenu'\u001b[39m\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 49 |\u001b[39m     \n \u001b[90m 50 |\u001b[39m     \u001b[90m// Śledź pozycję menu w różnych momentach\u001b[39m\n \u001b[90m 51 |\u001b[39m     \u001b[36mconst\u001b[39m positions \u001b[33m=\u001b[39m []\u001b[33m;\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                        "column": 16,
+                        "line": 48
+                      },
+                      "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n\n\n\u001b[0m \u001b[90m 46 |\u001b[39m     \n \u001b[90m 47 |\u001b[39m     \u001b[90m// Sprawdź pozycję menu natychmiast po załadowaniu\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForSelector(\u001b[32m'#adminmenu'\u001b[39m\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 49 |\u001b[39m     \n \u001b[90m 50 |\u001b[39m     \u001b[90m// Śledź pozycję menu w różnych momentach\u001b[39m\n \u001b[90m 51 |\u001b[39m     \u001b[36mconst\u001b[39m positions \u001b[33m=\u001b[39m []\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js:48:16\u001b[22m"
+                    }
+                  ],
+                  "stdout": [
+                    {
+                      "text": "🎯 TEST ANIMACJI MENU - Szczegółowe sprawdzenie problem \"odlatującego menu\"\n"
+                    },
+                    {
+                      "text": "✅ Zalogowano do WordPress\n"
+                    },
+                    {
+                      "text": "🔍 TEST 1: Sprawdzanie zarządzania klasą .mas-loading\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading na początku: false\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading po 100ms: false\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading po 600ms: false\n"
+                    },
+                    {
+                      "text": "🔍 TEST 2: Śledzenie pozycji menu podczas ładowania\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 1,
+                  "startTime": "2025-06-26T16:02:05.052Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--chromium-retry1/test-failed-1.png"
+                    },
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--chromium-retry1/video.webm"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--chromium-retry1/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--chromium-retry1/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                    "column": 16,
+                    "line": 48
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "e2a203545b64c259f567-449d619a40a7e39a79e2",
+          "file": "manual-menu-animation-test.spec.js",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "Manual Menu Animation Test - Dokładne sprawdzenie \"odlatującego menu\"",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
+                  "status": "failed",
+                  "duration": 18537,
+                  "error": {
+                    "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n",
+                    "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n\n    at /home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js:48:16",
+                    "location": {
+                      "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                      "column": 16,
+                      "line": 48
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 46 |\u001b[39m     \n \u001b[90m 47 |\u001b[39m     \u001b[90m// Sprawdź pozycję menu natychmiast po załadowaniu\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForSelector(\u001b[32m'#adminmenu'\u001b[39m\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 49 |\u001b[39m     \n \u001b[90m 50 |\u001b[39m     \u001b[90m// Śledź pozycję menu w różnych momentach\u001b[39m\n \u001b[90m 51 |\u001b[39m     \u001b[36mconst\u001b[39m positions \u001b[33m=\u001b[39m []\u001b[33m;\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                        "column": 16,
+                        "line": 48
+                      },
+                      "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n\n\n\u001b[0m \u001b[90m 46 |\u001b[39m     \n \u001b[90m 47 |\u001b[39m     \u001b[90m// Sprawdź pozycję menu natychmiast po załadowaniu\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForSelector(\u001b[32m'#adminmenu'\u001b[39m\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 49 |\u001b[39m     \n \u001b[90m 50 |\u001b[39m     \u001b[90m// Śledź pozycję menu w różnych momentach\u001b[39m\n \u001b[90m 51 |\u001b[39m     \u001b[36mconst\u001b[39m positions \u001b[33m=\u001b[39m []\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js:48:16\u001b[22m"
+                    }
+                  ],
+                  "stdout": [
+                    {
+                      "text": "🎯 TEST ANIMACJI MENU - Szczegółowe sprawdzenie problem \"odlatującego menu\"\n"
+                    },
+                    {
+                      "text": "✅ Zalogowano do WordPress\n"
+                    },
+                    {
+                      "text": "🔍 TEST 1: Sprawdzanie zarządzania klasą .mas-loading\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading na początku: false\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading po 100ms: false\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading po 600ms: false\n"
+                    },
+                    {
+                      "text": "🔍 TEST 2: Śledzenie pozycji menu podczas ładowania\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-06-26T16:01:41.601Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--firefox/test-failed-1.png"
+                    },
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--firefox/video.webm"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--firefox/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                    "column": 16,
+                    "line": 48
+                  }
+                },
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 1,
+                  "status": "failed",
+                  "duration": 19298,
+                  "error": {
+                    "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n",
+                    "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n\n    at /home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js:48:16",
+                    "location": {
+                      "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                      "column": 16,
+                      "line": 48
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 46 |\u001b[39m     \n \u001b[90m 47 |\u001b[39m     \u001b[90m// Sprawdź pozycję menu natychmiast po załadowaniu\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForSelector(\u001b[32m'#adminmenu'\u001b[39m\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 49 |\u001b[39m     \n \u001b[90m 50 |\u001b[39m     \u001b[90m// Śledź pozycję menu w różnych momentach\u001b[39m\n \u001b[90m 51 |\u001b[39m     \u001b[36mconst\u001b[39m positions \u001b[33m=\u001b[39m []\u001b[33m;\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                        "column": 16,
+                        "line": 48
+                      },
+                      "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n\n\n\u001b[0m \u001b[90m 46 |\u001b[39m     \n \u001b[90m 47 |\u001b[39m     \u001b[90m// Sprawdź pozycję menu natychmiast po załadowaniu\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForSelector(\u001b[32m'#adminmenu'\u001b[39m\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 49 |\u001b[39m     \n \u001b[90m 50 |\u001b[39m     \u001b[90m// Śledź pozycję menu w różnych momentach\u001b[39m\n \u001b[90m 51 |\u001b[39m     \u001b[36mconst\u001b[39m positions \u001b[33m=\u001b[39m []\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js:48:16\u001b[22m"
+                    }
+                  ],
+                  "stdout": [
+                    {
+                      "text": "🎯 TEST ANIMACJI MENU - Szczegółowe sprawdzenie problem \"odlatującego menu\"\n"
+                    },
+                    {
+                      "text": "✅ Zalogowano do WordPress\n"
+                    },
+                    {
+                      "text": "🔍 TEST 1: Sprawdzanie zarządzania klasą .mas-loading\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading na początku: false\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading po 100ms: false\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading po 600ms: false\n"
+                    },
+                    {
+                      "text": "🔍 TEST 2: Śledzenie pozycji menu podczas ładowania\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 1,
+                  "startTime": "2025-06-26T16:02:01.898Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--firefox-retry1/test-failed-1.png"
+                    },
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--firefox-retry1/video.webm"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--firefox-retry1/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--firefox-retry1/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                    "column": 16,
+                    "line": 48
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "e2a203545b64c259f567-b05d36e79b49e766cc00",
+          "file": "manual-menu-animation-test.spec.js",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "Manual Menu Animation Test - Dokładne sprawdzenie \"odlatującego menu\"",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "Mobile Chrome",
+              "projectName": "Mobile Chrome",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 1,
+                  "status": "failed",
+                  "duration": 17367,
+                  "error": {
+                    "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n",
+                    "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n\n    at /home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js:48:16",
+                    "location": {
+                      "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                      "column": 16,
+                      "line": 48
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 46 |\u001b[39m     \n \u001b[90m 47 |\u001b[39m     \u001b[90m// Sprawdź pozycję menu natychmiast po załadowaniu\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForSelector(\u001b[32m'#adminmenu'\u001b[39m\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 49 |\u001b[39m     \n \u001b[90m 50 |\u001b[39m     \u001b[90m// Śledź pozycję menu w różnych momentach\u001b[39m\n \u001b[90m 51 |\u001b[39m     \u001b[36mconst\u001b[39m positions \u001b[33m=\u001b[39m []\u001b[33m;\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                        "column": 16,
+                        "line": 48
+                      },
+                      "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n\n\n\u001b[0m \u001b[90m 46 |\u001b[39m     \n \u001b[90m 47 |\u001b[39m     \u001b[90m// Sprawdź pozycję menu natychmiast po załadowaniu\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForSelector(\u001b[32m'#adminmenu'\u001b[39m\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 49 |\u001b[39m     \n \u001b[90m 50 |\u001b[39m     \u001b[90m// Śledź pozycję menu w różnych momentach\u001b[39m\n \u001b[90m 51 |\u001b[39m     \u001b[36mconst\u001b[39m positions \u001b[33m=\u001b[39m []\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js:48:16\u001b[22m"
+                    }
+                  ],
+                  "stdout": [
+                    {
+                      "text": "🎯 TEST ANIMACJI MENU - Szczegółowe sprawdzenie problem \"odlatującego menu\"\n"
+                    },
+                    {
+                      "text": "✅ Zalogowano do WordPress\n"
+                    },
+                    {
+                      "text": "🔍 TEST 1: Sprawdzanie zarządzania klasą .mas-loading\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading na początku: false\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading po 100ms: false\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading po 600ms: false\n"
+                    },
+                    {
+                      "text": "🔍 TEST 2: Śledzenie pozycji menu podczas ładowania\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-06-26T16:02:22.827Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--Mobile-Chrome/test-failed-1.png"
+                    },
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--Mobile-Chrome/video.webm"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--Mobile-Chrome/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                    "column": 16,
+                    "line": 48
+                  }
+                },
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 1,
+                  "status": "failed",
+                  "duration": 16675,
+                  "error": {
+                    "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n",
+                    "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n\n    at /home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js:48:16",
+                    "location": {
+                      "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                      "column": 16,
+                      "line": 48
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 46 |\u001b[39m     \n \u001b[90m 47 |\u001b[39m     \u001b[90m// Sprawdź pozycję menu natychmiast po załadowaniu\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForSelector(\u001b[32m'#adminmenu'\u001b[39m\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 49 |\u001b[39m     \n \u001b[90m 50 |\u001b[39m     \u001b[90m// Śledź pozycję menu w różnych momentach\u001b[39m\n \u001b[90m 51 |\u001b[39m     \u001b[36mconst\u001b[39m positions \u001b[33m=\u001b[39m []\u001b[33m;\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                        "column": 16,
+                        "line": 48
+                      },
+                      "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n\n\n\u001b[0m \u001b[90m 46 |\u001b[39m     \n \u001b[90m 47 |\u001b[39m     \u001b[90m// Sprawdź pozycję menu natychmiast po załadowaniu\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForSelector(\u001b[32m'#adminmenu'\u001b[39m\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 49 |\u001b[39m     \n \u001b[90m 50 |\u001b[39m     \u001b[90m// Śledź pozycję menu w różnych momentach\u001b[39m\n \u001b[90m 51 |\u001b[39m     \u001b[36mconst\u001b[39m positions \u001b[33m=\u001b[39m []\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js:48:16\u001b[22m"
+                    }
+                  ],
+                  "stdout": [
+                    {
+                      "text": "🎯 TEST ANIMACJI MENU - Szczegółowe sprawdzenie problem \"odlatującego menu\"\n"
+                    },
+                    {
+                      "text": "✅ Zalogowano do WordPress\n"
+                    },
+                    {
+                      "text": "🔍 TEST 1: Sprawdzanie zarządzania klasą .mas-loading\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading na początku: false\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading po 100ms: false\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading po 600ms: false\n"
+                    },
+                    {
+                      "text": "🔍 TEST 2: Śledzenie pozycji menu podczas ładowania\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 1,
+                  "startTime": "2025-06-26T16:02:41.046Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--Mobile-Chrome-retry1/test-failed-1.png"
+                    },
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--Mobile-Chrome-retry1/video.webm"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--Mobile-Chrome-retry1/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--Mobile-Chrome-retry1/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                    "column": 16,
+                    "line": 48
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "e2a203545b64c259f567-8ab6c484ea20466190fd",
+          "file": "manual-menu-animation-test.spec.js",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "Manual Menu Animation Test - Dokładne sprawdzenie \"odlatującego menu\"",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "Google Chrome",
+              "projectName": "Google Chrome",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 16485,
+                  "error": {
+                    "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n",
+                    "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n\n    at /home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js:48:16",
+                    "location": {
+                      "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                      "column": 16,
+                      "line": 48
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 46 |\u001b[39m     \n \u001b[90m 47 |\u001b[39m     \u001b[90m// Sprawdź pozycję menu natychmiast po załadowaniu\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForSelector(\u001b[32m'#adminmenu'\u001b[39m\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 49 |\u001b[39m     \n \u001b[90m 50 |\u001b[39m     \u001b[90m// Śledź pozycję menu w różnych momentach\u001b[39m\n \u001b[90m 51 |\u001b[39m     \u001b[36mconst\u001b[39m positions \u001b[33m=\u001b[39m []\u001b[33m;\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                        "column": 16,
+                        "line": 48
+                      },
+                      "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n\n\n\u001b[0m \u001b[90m 46 |\u001b[39m     \n \u001b[90m 47 |\u001b[39m     \u001b[90m// Sprawdź pozycję menu natychmiast po załadowaniu\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForSelector(\u001b[32m'#adminmenu'\u001b[39m\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 49 |\u001b[39m     \n \u001b[90m 50 |\u001b[39m     \u001b[90m// Śledź pozycję menu w różnych momentach\u001b[39m\n \u001b[90m 51 |\u001b[39m     \u001b[36mconst\u001b[39m positions \u001b[33m=\u001b[39m []\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js:48:16\u001b[22m"
+                    }
+                  ],
+                  "stdout": [
+                    {
+                      "text": "🎯 TEST ANIMACJI MENU - Szczegółowe sprawdzenie problem \"odlatującego menu\"\n"
+                    },
+                    {
+                      "text": "✅ Zalogowano do WordPress\n"
+                    },
+                    {
+                      "text": "🔍 TEST 1: Sprawdzanie zarządzania klasą .mas-loading\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading na początku: false\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading po 100ms: false\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading po 600ms: false\n"
+                    },
+                    {
+                      "text": "🔍 TEST 2: Śledzenie pozycji menu podczas ładowania\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-06-26T16:02:29.428Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--Google-Chrome/test-failed-1.png"
+                    },
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--Google-Chrome/video.webm"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--Google-Chrome/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                    "column": 16,
+                    "line": 48
+                  }
+                },
+                {
+                  "workerIndex": 7,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 17346,
+                  "error": {
+                    "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n",
+                    "stack": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n\n    at /home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js:48:16",
+                    "location": {
+                      "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                      "column": 16,
+                      "line": 48
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 46 |\u001b[39m     \n \u001b[90m 47 |\u001b[39m     \u001b[90m// Sprawdź pozycję menu natychmiast po załadowaniu\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForSelector(\u001b[32m'#adminmenu'\u001b[39m\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 49 |\u001b[39m     \n \u001b[90m 50 |\u001b[39m     \u001b[90m// Śledź pozycję menu w różnych momentach\u001b[39m\n \u001b[90m 51 |\u001b[39m     \u001b[36mconst\u001b[39m positions \u001b[33m=\u001b[39m []\u001b[33m;\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                        "column": 16,
+                        "line": 48
+                      },
+                      "message": "TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#adminmenu') to be visible\u001b[22m\n\n\n\u001b[0m \u001b[90m 46 |\u001b[39m     \n \u001b[90m 47 |\u001b[39m     \u001b[90m// Sprawdź pozycję menu natychmiast po załadowaniu\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 48 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForSelector(\u001b[32m'#adminmenu'\u001b[39m\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m10000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 49 |\u001b[39m     \n \u001b[90m 50 |\u001b[39m     \u001b[90m// Śledź pozycję menu w różnych momentach\u001b[39m\n \u001b[90m 51 |\u001b[39m     \u001b[36mconst\u001b[39m positions \u001b[33m=\u001b[39m []\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js:48:16\u001b[22m"
+                    }
+                  ],
+                  "stdout": [
+                    {
+                      "text": "🎯 TEST ANIMACJI MENU - Szczegółowe sprawdzenie problem \"odlatującego menu\"\n"
+                    },
+                    {
+                      "text": "✅ Zalogowano do WordPress\n"
+                    },
+                    {
+                      "text": "🔍 TEST 1: Sprawdzanie zarządzania klasą .mas-loading\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading na początku: false\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading po 100ms: false\n"
+                    },
+                    {
+                      "text": "📋 Klasa .mas-loading po 600ms: false\n"
+                    },
+                    {
+                      "text": "🔍 TEST 2: Śledzenie pozycji menu podczas ładowania\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 1,
+                  "startTime": "2025-06-26T16:02:46.893Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--Google-Chrome-retry1/test-failed-1.png"
+                    },
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--Google-Chrome-retry1/video.webm"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--Google-Chrome-retry1/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/test-artifacts/manual-menu-animation-test-75f8a-awdzenie-odlatującego-menu--Google-Chrome-retry1/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/home/ooxo/Local Sites/x/app/public/wp-content/plugins/modern-admin-styler-v2/tests/playwright/manual-menu-animation-test.spec.js",
+                    "column": 16,
+                    "line": 48
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "e2a203545b64c259f567-d29e0c2e88142d6c234c",
+          "file": "manual-menu-animation-test.spec.js",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-06-26T16:01:40.288Z",
+    "duration": 84369.352,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 4,
+    "flaky": 0
+  }
+}

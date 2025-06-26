@@ -102,7 +102,7 @@ if (!$is_main_page) {
                     <button type="button" class="mas-v2-btn mas-v2-btn-secondary" id="mas-v2-export-btn">
                         <?php esc_html_e('Export', 'modern-admin-styler-v2'); ?>
                     </button>
-                    <button type="submit" form="mas-v2-settings-form" class="mas-v2-btn mas-v2-btn-primary">
+                    <button type="submit" form="mas-v2-settings-form" id="mas-v2-save-btn" class="mas-v2-btn mas-v2-btn-primary">
                         <?php esc_html_e('Zapisz ustawienia', 'modern-admin-styler-v2'); ?>
                     </button>
                 </div>
@@ -232,9 +232,43 @@ if (!$is_main_page) {
                                         <?php esc_html_e('Ciemny', 'modern-admin-styler-v2'); ?>
                                     </option>
                                     <option value="auto" <?php selected($settings['color_scheme'] ?? '', 'auto'); ?>>
-                                        <?php esc_html_e('Automatyczny', 'modern-admin-styler-v2'); ?>
+                                        <?php esc_html_e('Automatyczny (system)', 'modern-admin-styler-v2'); ?>
                                     </option>
                                 </select>
+                        </div>
+                            
+                            <div class="mas-v2-field">
+                                <label for="color_palette" class="mas-v2-label">
+                                    <?php esc_html_e('Paleta kolorów', 'modern-admin-styler-v2'); ?>
+                                </label>
+                                <select id="color_palette" name="color_palette" class="mas-v2-input">
+                                    <option value="modern-blue" <?php selected($settings['color_palette'] ?? '', 'modern-blue'); ?>>
+                                        <?php esc_html_e('Nowoczesny niebieski', 'modern-admin-styler-v2'); ?>
+                                    </option>
+                                    <option value="elegant-purple" <?php selected($settings['color_palette'] ?? '', 'elegant-purple'); ?>>
+                                        <?php esc_html_e('Elegancki fiolet', 'modern-admin-styler-v2'); ?>
+                                    </option>
+                                    <option value="warm-orange" <?php selected($settings['color_palette'] ?? '', 'warm-orange'); ?>>
+                                        <?php esc_html_e('Ciepły pomarańcz', 'modern-admin-styler-v2'); ?>
+                                    </option>
+                                    <option value="forest-green" <?php selected($settings['color_palette'] ?? '', 'forest-green'); ?>>
+                                        <?php esc_html_e('Leśna zieleń', 'modern-admin-styler-v2'); ?>
+                                    </option>
+                                    <option value="crimson-red" <?php selected($settings['color_palette'] ?? '', 'crimson-red'); ?>>
+                                        <?php esc_html_e('Karmazynowa czerwień', 'modern-admin-styler-v2'); ?>
+                                    </option>
+                                </select>
+                            </div>
+                            
+                            <div class="mas-v2-field">
+                            <label class="mas-v2-checkbox">
+                                <input type="checkbox" 
+                                       name="auto_dark_mode" 
+                                       value="1" 
+                                       <?php checked($settings['auto_dark_mode'] ?? true); ?>>
+                                <span class="mas-v2-checkbox-mark"></span>
+                                <?php esc_html_e('Automatyczne wykrywanie ciemnego motywu (jak telefon)', 'modern-admin-styler-v2'); ?>
+                                </label>
                         </div>
                             
                             <div class="mas-v2-field">
@@ -876,12 +910,12 @@ if (!$is_main_page) {
                             
                             <div class="mas-v2-field">
                             <label for="menu_bg" class="mas-v2-label">
-                                    <?php esc_html_e('Tło menu', 'modern-admin-styler-v2'); ?>
+                                <?php esc_html_e('Tło menu', 'modern-admin-styler-v2'); ?>
                                 </label>
                             <input type="color" 
-                                   id="menu_bg" 
-                                   name="menu_bg" 
-                                   value="<?php echo esc_attr($settings['menu_bg'] ?? '#23282d'); ?>" 
+                                   id="menu_background" 
+                                   name="menu_background" 
+                                   value="<?php echo esc_attr($settings['menu_background'] ?? '#23282d'); ?>" 
                                    class="mas-v2-input">
                             </div>
                             
@@ -915,23 +949,48 @@ if (!$is_main_page) {
                                 <input type="range" 
                                        id="menu_width" 
                                        name="menu_width" 
-                                       min="140" 
-                                   max="300" 
+                                       min="120" 
+                                   max="400" 
                                        value="<?php echo esc_attr($settings['menu_width'] ?? 160); ?>" 
                                        class="mas-v2-slider">
                             </div>
                             
                             <div class="mas-v2-field">
-                            <label for="menu_border_radius" class="mas-v2-label">
-                                <?php esc_html_e('Zaokrąglenie rogów menu', 'modern-admin-styler-v2'); ?>
-                                <span class="mas-v2-slider-value" data-target="menu_border_radius"><?php echo esc_html($settings['menu_border_radius'] ?? 0); ?>px</span>
+                                <label for="menu_item_height" class="mas-v2-label">
+                                    <?php esc_html_e('Wysokość elementów menu', 'modern-admin-styler-v2'); ?>
+                                    <span class="mas-v2-slider-value" data-target="menu_item_height"><?php echo esc_html($settings['menu_item_height'] ?? 34); ?>px</span>
                                 </label>
                                 <input type="range" 
-                                   id="menu_border_radius" 
-                                   name="menu_border_radius" 
+                                       id="menu_item_height" 
+                                       name="menu_item_height" 
+                                       min="28" 
+                                       max="50" 
+                                       value="<?php echo esc_attr($settings['menu_item_height'] ?? 34); ?>" 
+                                       class="mas-v2-slider">
+                            </div>
+                            
+                            <div class="mas-v2-field">
+                                <label class="mas-v2-checkbox">
+                                    <input type="checkbox" 
+                                           name="menu_compact_mode" 
+                                           value="1" 
+                                           <?php checked($settings['menu_compact_mode'] ?? false); ?>>
+                                    <span class="mas-v2-checkbox-mark"></span>
+                                    <?php esc_html_e('Tryb kompaktowy (mniejsze odstępy)', 'modern-admin-styler-v2'); ?>
+                                </label>
+                            </div>
+                            
+                            <div class="mas-v2-field">
+                            <label for="menu_border_radius_all" class="mas-v2-label">
+                                <?php esc_html_e('Zaokrąglenie rogów menu', 'modern-admin-styler-v2'); ?>
+                                <span class="mas-v2-slider-value" data-target="menu_border_radius_all"><?php echo esc_html($settings['menu_border_radius_all'] ?? 0); ?>px</span>
+                                </label>
+                                <input type="range" 
+                                   id="menu_border_radius_all" 
+                                   name="menu_border_radius_all" 
                                    min="0" 
                                    max="30" 
-                                   value="<?php echo esc_attr($settings['menu_border_radius'] ?? 0); ?>" 
+                                   value="<?php echo esc_attr($settings['menu_border_radius_all'] ?? 0); ?>" 
                                        class="mas-v2-slider">
                         </div>
                             
@@ -963,11 +1022,11 @@ if (!$is_main_page) {
                                 <div class="mas-v2-field">
                             <label class="mas-v2-checkbox">
                                 <input type="checkbox" 
-                                       name="menu_glossy" 
+                                       name="menu_glassmorphism" 
                                        value="1" 
-                                       <?php checked($settings['menu_glossy'] ?? false); ?>>
+                                       <?php checked($settings['menu_glassmorphism'] ?? false); ?>>
                                 <span class="mas-v2-checkbox-mark"></span>
-                                <?php esc_html_e('Efekt glossy menu bocznego', 'modern-admin-styler-v2'); ?>
+                                <?php esc_html_e('Efekt glassmorphism (rozmycie tła)', 'modern-admin-styler-v2'); ?>
                                     </label>
                                 </div>
 
@@ -1360,6 +1419,317 @@ if (!$is_main_page) {
                 </div>
             </div>
 
+            <!-- Menu Advanced Tab -->
+            <div id="menu-advanced" class="mas-v2-tab-content <?php echo ($is_main_page || $active_tab === 'menu-advanced') ? 'active' : ''; ?>" role="tabpanel" <?php echo (!$is_main_page && $active_tab !== 'menu-advanced') ? 'style="display: none;"' : ''; ?>>
+                <div class="mas-v2-card">
+                    <div class="mas-v2-card-header">
+                        <h2 class="mas-v2-card-title">
+                            🔧 <?php esc_html_e('Menu - Opcje zaawansowane', 'modern-admin-styler-v2'); ?>
+                        </h2>
+                        <p class="mas-v2-card-description">
+                            <?php esc_html_e('Zaawansowane opcje stylowania i animacji menu bocznego', 'modern-admin-styler-v2'); ?>
+                        </p>
+                    </div>
+                    
+                    <h3 style="margin-top: 1rem; color: rgba(255,255,255,0.9);">🎭 <?php esc_html_e('Animacje i efekty hover', 'modern-admin-styler-v2'); ?></h3>
+                    
+                    <div class="mas-v2-field">
+                        <label for="menu_hover_animation" class="mas-v2-label">
+                            <?php esc_html_e('Animacja hover', 'modern-admin-styler-v2'); ?>
+                        </label>
+                        <select id="menu_hover_animation" name="menu_hover_animation" class="mas-v2-input">
+                            <option value="none" <?php selected($settings['menu_hover_animation'] ?? '', 'none'); ?>>
+                                <?php esc_html_e('Brak animacji', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="slide" <?php selected($settings['menu_hover_animation'] ?? '', 'slide'); ?>>
+                                <?php esc_html_e('Wysuwanie', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="fade" <?php selected($settings['menu_hover_animation'] ?? '', 'fade'); ?>>
+                                <?php esc_html_e('Zanikanie', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="scale" <?php selected($settings['menu_hover_animation'] ?? '', 'scale'); ?>>
+                                <?php esc_html_e('Skalowanie', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="glow" <?php selected($settings['menu_hover_animation'] ?? '', 'glow'); ?>>
+                                <?php esc_html_e('Poświata', 'modern-admin-styler-v2'); ?>
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <div class="mas-v2-field">
+                        <label for="menu_hover_duration" class="mas-v2-label">
+                            <?php esc_html_e('Czas trwania animacji', 'modern-admin-styler-v2'); ?>
+                            <span class="mas-v2-slider-value" data-target="menu_hover_duration"><?php echo esc_html($settings['menu_hover_duration'] ?? 300); ?>ms</span>
+                        </label>
+                        <input type="range" 
+                               id="menu_hover_duration" 
+                               name="menu_hover_duration" 
+                               min="100" 
+                               max="1000" 
+                               step="50"
+                               value="<?php echo esc_attr($settings['menu_hover_duration'] ?? 300); ?>" 
+                               class="mas-v2-slider">
+                    </div>
+                    
+                    <div class="mas-v2-field">
+                        <label for="menu_hover_easing" class="mas-v2-label">
+                            <?php esc_html_e('Typ przejścia', 'modern-admin-styler-v2'); ?>
+                        </label>
+                        <select id="menu_hover_easing" name="menu_hover_easing" class="mas-v2-input">
+                            <option value="ease" <?php selected($settings['menu_hover_easing'] ?? '', 'ease'); ?>>
+                                <?php esc_html_e('Łagodne (ease)', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="ease-in-out" <?php selected($settings['menu_hover_easing'] ?? '', 'ease-in-out'); ?>>
+                                <?php esc_html_e('Łagodne wchodzenie i wychodzenie', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="ease-in" <?php selected($settings['menu_hover_easing'] ?? '', 'ease-in'); ?>>
+                                <?php esc_html_e('Łagodne wchodzenie', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="ease-out" <?php selected($settings['menu_hover_easing'] ?? '', 'ease-out'); ?>>
+                                <?php esc_html_e('Łagodne wychodzenie', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="linear" <?php selected($settings['menu_hover_easing'] ?? '', 'linear'); ?>>
+                                <?php esc_html_e('Liniowe', 'modern-admin-styler-v2'); ?>
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <h3 style="margin-top: 2rem; color: rgba(255,255,255,0.9);">🎯 <?php esc_html_e('Wskaźnik aktywnego elementu', 'modern-admin-styler-v2'); ?></h3>
+                    
+                    <div class="mas-v2-field">
+                        <label for="menu_active_indicator" class="mas-v2-label">
+                            <?php esc_html_e('Typ wskaźnika', 'modern-admin-styler-v2'); ?>
+                        </label>
+                        <select id="menu_active_indicator" name="menu_active_indicator" class="mas-v2-input">
+                            <option value="none" <?php selected($settings['menu_active_indicator'] ?? '', 'none'); ?>>
+                                <?php esc_html_e('Brak wskaźnika', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="left-border" <?php selected($settings['menu_active_indicator'] ?? '', 'left-border'); ?>>
+                                <?php esc_html_e('Lewa krawędź', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="right-border" <?php selected($settings['menu_active_indicator'] ?? '', 'right-border'); ?>>
+                                <?php esc_html_e('Prawa krawędź', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="full-border" <?php selected($settings['menu_active_indicator'] ?? '', 'full-border'); ?>>
+                                <?php esc_html_e('Pełne obramowanie', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="background" <?php selected($settings['menu_active_indicator'] ?? '', 'background'); ?>>
+                                <?php esc_html_e('Podświetlenie tła', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="glow" <?php selected($settings['menu_active_indicator'] ?? '', 'glow'); ?>>
+                                <?php esc_html_e('Poświata dookoła', 'modern-admin-styler-v2'); ?>
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <div class="mas-v2-field conditional-field" data-show-when="menu_active_indicator" data-show-value-not="none,background">
+                        <label for="menu_active_indicator_color" class="mas-v2-label">
+                            <?php esc_html_e('Kolor wskaźnika', 'modern-admin-styler-v2'); ?>
+                        </label>
+                        <input type="color" 
+                               id="menu_active_indicator_color" 
+                               name="menu_active_indicator_color" 
+                               value="<?php echo esc_attr($settings['menu_active_indicator_color'] ?? '#0073aa'); ?>" 
+                               class="mas-v2-input">
+                    </div>
+                    
+                    <div class="mas-v2-field conditional-field" data-show-when="menu_active_indicator" data-show-value="left-border,right-border,full-border">
+                        <label for="menu_active_indicator_width" class="mas-v2-label">
+                            <?php esc_html_e('Szerokość wskaźnika', 'modern-admin-styler-v2'); ?>
+                            <span class="mas-v2-slider-value" data-target="menu_active_indicator_width"><?php echo esc_html($settings['menu_active_indicator_width'] ?? 3); ?>px</span>
+                        </label>
+                        <input type="range" 
+                               id="menu_active_indicator_width" 
+                               name="menu_active_indicator_width" 
+                               min="1" 
+                               max="10" 
+                               value="<?php echo esc_attr($settings['menu_active_indicator_width'] ?? 3); ?>" 
+                               class="mas-v2-slider">
+                    </div>
+                    
+                    <h3 style="margin-top: 2rem; color: rgba(255,255,255,0.9);">📏 <?php esc_html_e('Odstępy i paddingि', 'modern-admin-styler-v2'); ?></h3>
+                    
+                    <div class="mas-v2-field">
+                        <label for="menu_item_spacing" class="mas-v2-label">
+                            <?php esc_html_e('Pionowe odstępy między elementami', 'modern-admin-styler-v2'); ?>
+                            <span class="mas-v2-slider-value" data-target="menu_item_spacing"><?php echo esc_html($settings['menu_item_spacing'] ?? 2); ?>px</span>
+                        </label>
+                        <input type="range" 
+                               id="menu_item_spacing" 
+                               name="menu_item_spacing" 
+                               min="0" 
+                               max="20" 
+                               value="<?php echo esc_attr($settings['menu_item_spacing'] ?? 2); ?>" 
+                               class="mas-v2-slider">
+                    </div>
+                    
+                    <div class="mas-v2-field">
+                        <label for="menu_item_padding_vertical" class="mas-v2-label">
+                            <?php esc_html_e('Wewnętrzny odstęp pionowy', 'modern-admin-styler-v2'); ?>
+                            <span class="mas-v2-slider-value" data-target="menu_item_padding_vertical"><?php echo esc_html($settings['menu_item_padding_vertical'] ?? 8); ?>px</span>
+                        </label>
+                        <input type="range" 
+                               id="menu_item_padding_vertical" 
+                               name="menu_item_padding_vertical" 
+                               min="4" 
+                               max="20" 
+                               value="<?php echo esc_attr($settings['menu_item_padding_vertical'] ?? 8); ?>" 
+                               class="mas-v2-slider">
+                    </div>
+                    
+                    <div class="mas-v2-field">
+                        <label for="menu_item_padding_horizontal" class="mas-v2-label">
+                            <?php esc_html_e('Wewnętrzny odstęp poziomy', 'modern-admin-styler-v2'); ?>
+                            <span class="mas-v2-slider-value" data-target="menu_item_padding_horizontal"><?php echo esc_html($settings['menu_item_padding_horizontal'] ?? 12); ?>px</span>
+                        </label>
+                        <input type="range" 
+                               id="menu_item_padding_horizontal" 
+                               name="menu_item_padding_horizontal" 
+                               min="8" 
+                               max="30" 
+                               value="<?php echo esc_attr($settings['menu_item_padding_horizontal'] ?? 12); ?>" 
+                               class="mas-v2-slider">
+                    </div>
+                    
+                    <h3 style="margin-top: 2rem; color: rgba(255,255,255,0.9);">🎨 <?php esc_html_e('Indywidualne kolory elementów', 'modern-admin-styler-v2'); ?></h3>
+                    
+                    <div class="mas-v2-field">
+                        <label class="mas-v2-checkbox">
+                            <input type="checkbox" 
+                                   name="menu_individual_styling" 
+                                   id="menu_individual_styling"
+                                   value="1" 
+                                   <?php checked($settings['menu_individual_styling'] ?? false); ?>>
+                            <span class="mas-v2-checkbox-mark"></span>
+                            <?php esc_html_e('Włącz indywidualne stylowanie elementów menu', 'modern-admin-styler-v2'); ?>
+                        </label>
+                        <small class="mas-v2-help-text">
+                            <?php esc_html_e('Pozwala ustawić różne kolory dla każdego elementu menu osobno', 'modern-admin-styler-v2'); ?>
+                        </small>
+                    </div>
+                    
+                    <div class="mas-v2-individual-colors conditional-field" data-show-when="menu_individual_styling" data-show-value="1">
+                        <?php 
+                        $menu_items = [
+                            'dashboard' => __('Kokpit', 'modern-admin-styler-v2'),
+                            'posts' => __('Wpisy', 'modern-admin-styler-v2'),
+                            'pages' => __('Strony', 'modern-admin-styler-v2'),
+                            'media' => __('Multimedia', 'modern-admin-styler-v2'),
+                            'comments' => __('Komentarze', 'modern-admin-styler-v2'),
+                            'appearance' => __('Wygląd', 'modern-admin-styler-v2'),
+                            'plugins' => __('Wtyczki', 'modern-admin-styler-v2'),
+                            'users' => __('Użytkownicy', 'modern-admin-styler-v2'),
+                            'tools' => __('Narzędzia', 'modern-admin-styler-v2'),
+                            'settings' => __('Ustawienia', 'modern-admin-styler-v2')
+                        ];
+                        
+                        foreach ($menu_items as $item_key => $item_name): 
+                            $colors = $settings['menu_individual_colors'][$item_key] ?? ['bg' => '', 'text' => '', 'hover_bg' => '', 'hover_text' => ''];
+                        ?>
+                        <div class="mas-v2-individual-item-colors">
+                            <h4 class="mas-v2-item-title"><?php echo esc_html($item_name); ?></h4>
+                            <div class="mas-v2-color-row">
+                                <div class="mas-v2-color-field">
+                                    <label for="menu_individual_colors_<?php echo esc_attr($item_key); ?>_bg" class="mas-v2-label-mini">
+                                        <?php esc_html_e('Tło', 'modern-admin-styler-v2'); ?>
+                                    </label>
+                                    <input type="color" 
+                                           id="menu_individual_colors_<?php echo esc_attr($item_key); ?>_bg" 
+                                           name="menu_individual_colors[<?php echo esc_attr($item_key); ?>][bg]" 
+                                           value="<?php echo esc_attr($colors['bg']); ?>" 
+                                           class="mas-v2-color-mini">
+                                </div>
+                                <div class="mas-v2-color-field">
+                                    <label for="menu_individual_colors_<?php echo esc_attr($item_key); ?>_text" class="mas-v2-label-mini">
+                                        <?php esc_html_e('Tekst', 'modern-admin-styler-v2'); ?>
+                                    </label>
+                                    <input type="color" 
+                                           id="menu_individual_colors_<?php echo esc_attr($item_key); ?>_text" 
+                                           name="menu_individual_colors[<?php echo esc_attr($item_key); ?>][text]" 
+                                           value="<?php echo esc_attr($colors['text']); ?>" 
+                                           class="mas-v2-color-mini">
+                                </div>
+                                <div class="mas-v2-color-field">
+                                    <label for="menu_individual_colors_<?php echo esc_attr($item_key); ?>_hover_bg" class="mas-v2-label-mini">
+                                        <?php esc_html_e('Hover tło', 'modern-admin-styler-v2'); ?>
+                                    </label>
+                                    <input type="color" 
+                                           id="menu_individual_colors_<?php echo esc_attr($item_key); ?>_hover_bg" 
+                                           name="menu_individual_colors[<?php echo esc_attr($item_key); ?>][hover_bg]" 
+                                           value="<?php echo esc_attr($colors['hover_bg']); ?>" 
+                                           class="mas-v2-color-mini">
+                                </div>
+                                <div class="mas-v2-color-field">
+                                    <label for="menu_individual_colors_<?php echo esc_attr($item_key); ?>_hover_text" class="mas-v2-label-mini">
+                                        <?php esc_html_e('Hover tekst', 'modern-admin-styler-v2'); ?>
+                                    </label>
+                                    <input type="color" 
+                                           id="menu_individual_colors_<?php echo esc_attr($item_key); ?>_hover_text" 
+                                           name="menu_individual_colors[<?php echo esc_attr($item_key); ?>][hover_text]" 
+                                           value="<?php echo esc_attr($colors['hover_text']); ?>" 
+                                           class="mas-v2-color-mini">
+                                </div>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                    
+                    <h3 style="margin-top: 2rem; color: rgba(255,255,255,0.9);">🎭 <?php esc_html_e('Niestandardowe ikony', 'modern-admin-styler-v2'); ?></h3>
+                    
+                    <div class="mas-v2-field">
+                        <label class="mas-v2-checkbox">
+                            <input type="checkbox" 
+                                   name="menu_custom_icons" 
+                                   id="menu_custom_icons"
+                                   value="1" 
+                                   <?php checked($settings['menu_custom_icons'] ?? false); ?>>
+                            <span class="mas-v2-checkbox-mark"></span>
+                            <?php esc_html_e('Włącz niestandardowe ikony menu', 'modern-admin-styler-v2'); ?>
+                        </label>
+                    </div>
+                    
+                    <div class="mas-v2-field conditional-field" data-show-when="menu_custom_icons" data-show-value="1">
+                        <label for="menu_icon_library" class="mas-v2-label">
+                            <?php esc_html_e('Biblioteka ikon', 'modern-admin-styler-v2'); ?>
+                        </label>
+                        <select id="menu_icon_library" name="menu_icon_library" class="mas-v2-input">
+                            <option value="dashicons" <?php selected($settings['menu_icon_library'] ?? '', 'dashicons'); ?>>
+                                <?php esc_html_e('Dashicons (domyślne WordPress)', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="fontawesome" <?php selected($settings['menu_icon_library'] ?? '', 'fontawesome'); ?>>
+                                <?php esc_html_e('Font Awesome (wymagane załadowanie)', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="custom" <?php selected($settings['menu_icon_library'] ?? '', 'custom'); ?>>
+                                <?php esc_html_e('Niestandardowe (URL/SVG)', 'modern-admin-styler-v2'); ?>
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <div class="mas-v2-custom-icons conditional-field" data-show-when="menu_custom_icons" data-show-value="1">
+                        <h4><?php esc_html_e('Ikony dla poszczególnych elementów:', 'modern-admin-styler-v2'); ?></h4>
+                        <small class="mas-v2-help-text">
+                            <?php esc_html_e('Dashicons: wpisz klasę (np. dashicons-admin-home). Font Awesome: wpisz klasę (np. fas fa-home). Custom: wpisz URL do SVG.', 'modern-admin-styler-v2'); ?>
+                        </small>
+                        
+                        <?php foreach ($menu_items as $item_key => $item_name): 
+                            $icon = $settings['menu_individual_icons'][$item_key] ?? '';
+                        ?>
+                        <div class="mas-v2-icon-field">
+                            <label for="menu_individual_icons_<?php echo esc_attr($item_key); ?>" class="mas-v2-label-mini">
+                                <?php echo esc_html($item_name); ?>
+                            </label>
+                            <input type="text" 
+                                   id="menu_individual_icons_<?php echo esc_attr($item_key); ?>" 
+                                   name="menu_individual_icons[<?php echo esc_attr($item_key); ?>]" 
+                                   value="<?php echo esc_attr($icon); ?>" 
+                                   placeholder="<?php esc_attr_e('Klasa ikony lub URL', 'modern-admin-styler-v2'); ?>"
+                                   class="mas-v2-input-mini">
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+
             <!-- Submenu Tab -->
             <div id="submenu" class="mas-v2-tab-content <?php echo ($is_main_page || $active_tab === 'submenu') ? 'active' : ''; ?>" role="tabpanel" <?php echo (!$is_main_page && $active_tab !== 'submenu') ? 'style="display: none;"' : ''; ?>>
                 <div class="mas-v2-card">
@@ -1518,6 +1888,184 @@ if (!$is_main_page) {
                             <option value="right" <?php selected($settings['submenu_position'] ?? '', 'right'); ?>>
                                 <?php esc_html_e('Po prawej stronie', 'modern-admin-styler-v2'); ?>
                             </option>
+                        </select>
+                    </div>
+                    
+                    <h3 style="margin-top: 2rem; color: rgba(255,255,255,0.9);">🎬 <?php esc_html_e('Animacje podmenu', 'modern-admin-styler-v2'); ?></h3>
+                    
+                    <div class="mas-v2-field">
+                        <label for="submenu_animation" class="mas-v2-label">
+                            <?php esc_html_e('Typ animacji otwierania', 'modern-admin-styler-v2'); ?>
+                        </label>
+                        <select id="submenu_animation" name="submenu_animation" class="mas-v2-input">
+                            <option value="slide" <?php selected($settings['submenu_animation'] ?? '', 'slide'); ?>>
+                                <?php esc_html_e('Wysuwanie (slide)', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="fade" <?php selected($settings['submenu_animation'] ?? '', 'fade'); ?>>
+                                <?php esc_html_e('Zanikanie (fade)', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="accordion" <?php selected($settings['submenu_animation'] ?? '', 'accordion'); ?>>
+                                <?php esc_html_e('Akordeon', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="none" <?php selected($settings['submenu_animation'] ?? '', 'none'); ?>>
+                                <?php esc_html_e('Brak animacji', 'modern-admin-styler-v2'); ?>
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <div class="mas-v2-field">
+                        <label for="submenu_animation_duration" class="mas-v2-label">
+                            <?php esc_html_e('Czas trwania animacji', 'modern-admin-styler-v2'); ?>
+                            <span class="mas-v2-slider-value" data-target="submenu_animation_duration"><?php echo esc_html($settings['submenu_animation_duration'] ?? 300); ?>ms</span>
+                        </label>
+                        <input type="range" 
+                               id="submenu_animation_duration" 
+                               name="submenu_animation_duration" 
+                               min="100" 
+                               max="800" 
+                               step="50"
+                               value="<?php echo esc_attr($settings['submenu_animation_duration'] ?? 300); ?>" 
+                               class="mas-v2-slider">
+                    </div>
+                    
+                    <h3 style="margin-top: 2rem; color: rgba(255,255,255,0.9);">🔽 <?php esc_html_e('Wskaźniki podmenu', 'modern-admin-styler-v2'); ?></h3>
+                    
+                    <div class="mas-v2-field">
+                        <label for="submenu_indicator_style" class="mas-v2-label">
+                            <?php esc_html_e('Styl wskaźnika', 'modern-admin-styler-v2'); ?>
+                        </label>
+                        <select id="submenu_indicator_style" name="submenu_indicator_style" class="mas-v2-input">
+                            <option value="arrow" <?php selected($settings['submenu_indicator_style'] ?? '', 'arrow'); ?>>
+                                <?php esc_html_e('Strzałka ▶', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="plus" <?php selected($settings['submenu_indicator_style'] ?? '', 'plus'); ?>>
+                                <?php esc_html_e('Plus +', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="chevron" <?php selected($settings['submenu_indicator_style'] ?? '', 'chevron'); ?>>
+                                <?php esc_html_e('Chevron ›', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="none" <?php selected($settings['submenu_indicator_style'] ?? '', 'none'); ?>>
+                                <?php esc_html_e('Brak wskaźnika', 'modern-admin-styler-v2'); ?>
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <div class="mas-v2-field conditional-field" data-show-when="submenu_indicator_style" data-show-value-not="none">
+                        <label for="submenu_indicator_position" class="mas-v2-label">
+                            <?php esc_html_e('Pozycja wskaźnika', 'modern-admin-styler-v2'); ?>
+                        </label>
+                        <select id="submenu_indicator_position" name="submenu_indicator_position" class="mas-v2-input">
+                            <option value="right" <?php selected($settings['submenu_indicator_position'] ?? '', 'right'); ?>>
+                                <?php esc_html_e('Po prawej stronie', 'modern-admin-styler-v2'); ?>
+                            </option>
+                            <option value="left" <?php selected($settings['submenu_indicator_position'] ?? '', 'left'); ?>>
+                                <?php esc_html_e('Po lewej stronie', 'modern-admin-styler-v2'); ?>
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <div class="mas-v2-field conditional-field" data-show-when="submenu_indicator_style" data-show-value-not="none">
+                        <label for="submenu_indicator_color" class="mas-v2-label">
+                            <?php esc_html_e('Kolor wskaźnika', 'modern-admin-styler-v2'); ?>
+                        </label>
+                        <input type="color" 
+                               id="submenu_indicator_color" 
+                               name="submenu_indicator_color" 
+                               value="<?php echo esc_attr($settings['submenu_indicator_color'] ?? ''); ?>" 
+                               class="mas-v2-input">
+                        <small class="mas-v2-help-text">
+                            <?php esc_html_e('Pozostaw puste aby użyć domyślnego koloru', 'modern-admin-styler-v2'); ?>
+                        </small>
+                    </div>
+                    
+                    <h3 style="margin-top: 2rem; color: rgba(255,255,255,0.9);">📏 <?php esc_html_e('Odstępy podmenu', 'modern-admin-styler-v2'); ?></h3>
+                    
+                    <div class="mas-v2-field">
+                        <label for="submenu_indent" class="mas-v2-label">
+                            <?php esc_html_e('Wcięcie podmenu', 'modern-admin-styler-v2'); ?>
+                            <span class="mas-v2-slider-value" data-target="submenu_indent"><?php echo esc_html($settings['submenu_indent'] ?? 20); ?>px</span>
+                        </label>
+                        <input type="range" 
+                               id="submenu_indent" 
+                               name="submenu_indent" 
+                               min="0" 
+                               max="50" 
+                               value="<?php echo esc_attr($settings['submenu_indent'] ?? 20); ?>" 
+                               class="mas-v2-slider">
+                    </div>
+                    
+                    <div class="mas-v2-field">
+                        <label for="submenu_item_spacing" class="mas-v2-label">
+                            <?php esc_html_e('Odstępy między elementami', 'modern-admin-styler-v2'); ?>
+                            <span class="mas-v2-slider-value" data-target="submenu_item_spacing"><?php echo esc_html($settings['submenu_item_spacing'] ?? 1); ?>px</span>
+                        </label>
+                        <input type="range" 
+                               id="submenu_item_spacing" 
+                               name="submenu_item_spacing" 
+                               min="0" 
+                               max="10" 
+                               value="<?php echo esc_attr($settings['submenu_item_spacing'] ?? 1); ?>" 
+                               class="mas-v2-slider">
+                    </div>
+                    
+                    <div class="mas-v2-field">
+                        <label for="submenu_item_padding" class="mas-v2-label">
+                            <?php esc_html_e('Wewnętrzny padding elementów', 'modern-admin-styler-v2'); ?>
+                            <span class="mas-v2-slider-value" data-target="submenu_item_padding"><?php echo esc_html($settings['submenu_item_padding'] ?? 8); ?>px</span>
+                        </label>
+                        <input type="range" 
+                               id="submenu_item_padding" 
+                               name="submenu_item_padding" 
+                               min="4" 
+                               max="20" 
+                               value="<?php echo esc_attr($settings['submenu_item_padding'] ?? 8); ?>" 
+                               class="mas-v2-slider">
+                    </div>
+                    
+                    <h3 style="margin-top: 2rem; color: rgba(255,255,255,0.9);">🎨 <?php esc_html_e('Separatory i obramowania', 'modern-admin-styler-v2'); ?></h3>
+                    
+                    <div class="mas-v2-field">
+                        <label class="mas-v2-checkbox">
+                            <input type="checkbox" 
+                                   name="submenu_border_left" 
+                                   value="1" 
+                                   <?php checked($settings['submenu_border_left'] ?? true); ?>>
+                            <span class="mas-v2-checkbox-mark"></span>
+                            <?php esc_html_e('Lewa krawędź podmenu', 'modern-admin-styler-v2'); ?>
+                        </label>
+                    </div>
+                    
+                    <div class="mas-v2-field conditional-field" data-show-when="submenu_border_left" data-show-value="1">
+                        <label for="submenu_border_color" class="mas-v2-label">
+                            <?php esc_html_e('Kolor obramowania', 'modern-admin-styler-v2'); ?>
+                        </label>
+                        <input type="color" 
+                               id="submenu_border_color" 
+                               name="submenu_border_color" 
+                               value="<?php echo esc_attr($settings['submenu_border_color'] ?? ''); ?>" 
+                               class="mas-v2-input">
+                    </div>
+                    
+                    <div class="mas-v2-field">
+                        <label class="mas-v2-checkbox">
+                            <input type="checkbox" 
+                                   name="submenu_separator" 
+                                   value="1" 
+                                   <?php checked($settings['submenu_separator'] ?? false); ?>>
+                            <span class="mas-v2-checkbox-mark"></span>
+                            <?php esc_html_e('Separatory między elementami', 'modern-admin-styler-v2'); ?>
+                        </label>
+                    </div>
+                    
+                    <div class="mas-v2-field conditional-field" data-show-when="submenu_separator" data-show-value="1">
+                        <label for="submenu_separator_color" class="mas-v2-label">
+                            <?php esc_html_e('Kolor separatorów', 'modern-admin-styler-v2'); ?>
+                        </label>
+                        <input type="color" 
+                               id="submenu_separator_color" 
+                               name="submenu_separator_color" 
+                               value="<?php echo esc_attr($settings['submenu_separator_color'] ?? ''); ?>" 
+                               class="mas-v2-input">
                             <option value="left" <?php selected($settings['submenu_position'] ?? '', 'left'); ?>>
                                 <?php esc_html_e('Po lewej stronie', 'modern-admin-styler-v2'); ?>
                             </option>
@@ -2420,10 +2968,1441 @@ if (!$is_main_page) {
                                    value="<?php echo esc_attr($settings['form_field_focus_color'] ?? '#0073aa'); ?>" 
                                    class="mas-v2-input">
                     </div>
-                </div>
-            </div>
-
-            <!-- Advanced Tab -->
+                    
+                    <h3 style="margin-top: 2rem; color: rgba(255,255,255,0.9);">🎨 <?php esc_html_e('Kolory podmenu', 'modern-admin-styler-v2'); ?></h3>
+                    
+                    <div class="mas-v2-field">
+                        <label for="submenu_background" class="mas-v2-label">
+                            <?php esc_html_e('Tło podmenu', 'modern-admin-styler-v2'); ?>
+                        </label>
+                        <input type="color" 
+                               id="submenu_background" 
+                               name="submenu_background" 
+                               value="<?php echo esc_attr($settings['submenu_background'] ?? ''); ?>" 
+                               class="mas-v2-input">
+                        <small class="mas-v2-help-text">
+                            <?php esc_html_e('Pozostaw puste aby użyć koloru z motywu', 'modern-admin-styler-v2'); ?>
+                        </small>
+                    </div>
+                    
+                    <div class="mas-v2-field">
+                        <label for="submenu_text_color" class="mas-v2-label">
+                            <?php esc_html_e('Kolor tekstu podmenu', 'modern-admin-styler-v2'); ?>
+                        </label>
+                        <input type="color" 
+                               id="submenu_text_color" 
+                               name="submenu_text_color" 
+                               value="<?php echo esc_attr($settings['submenu_text_color'] ?? ''); ?>" 
+                               class="mas-v2-input">
+                    </div>
+                    
+                    <div class="mas-v2-field">
+                        <label for="submenu_hover_background" class="mas-v2-label">
+                            <?php esc_html_e('Tło hover podmenu', 'modern-admin-styler-v2'); ?>
+                        </label>
+                        <input type="color" 
+                               id="submenu_hover_background" 
+                               name="submenu_hover_background" 
+                               value="<?php echo esc_attr($settings['submenu_hover_background'] ?? ''); ?>" 
+                               class="mas-v2-input">
+                    </div>
+                    
+                    <div class="mas-v2-field">
+                        <label for="submenu_hover_text_color" class="mas-v2-label">
+                            <?php esc_html_e('Kolor tekstu hover podmenu', 'modern-admin-styler-v2'); ?>
+                        </label>
+                        <input type="color" 
+                               id="submenu_hover_text_color" 
+                               name="submenu_hover_text_color" 
+                               value="<?php echo esc_attr($settings['submenu_hover_text_color'] ?? ''); ?>" 
+                                                              class="mas-v2-input">
+                     </div>
+                 </div>
+             </div>
+             
+             <!-- Scrollbar Customization Section - Phase 4 -->
+             <div class="mas-v2-section">
+                 <h2 class="mas-v2-section-title">
+                     📜 <?php esc_html_e('Pasek przewijania', 'modern-admin-styler-v2'); ?>
+                 </h2>
+                 <div class="mas-v2-section-content">
+                     
+                     <h3 style="margin-top: 1rem; color: rgba(255,255,255,0.9);">🎛️ <?php esc_html_e('Główne menu scrollbar', 'modern-admin-styler-v2'); ?></h3>
+                     
+                     <div class="mas-v2-field">
+                         <label class="mas-v2-checkbox">
+                             <input type="checkbox" 
+                                    name="menu_scrollbar_enabled" 
+                                    id="menu_scrollbar_enabled"
+                                    value="1" 
+                                    <?php checked($settings['menu_scrollbar_enabled'] ?? false); ?>>
+                             <span class="mas-v2-checkbox-mark"></span>
+                             <?php esc_html_e('Włącz niestandardowy scrollbar dla menu', 'modern-admin-styler-v2'); ?>
+                         </label>
+                         <small class="mas-v2-help-text">
+                             <?php esc_html_e('Zastępuje domyślny scrollbar przeglądarki własnym designem', 'modern-admin-styler-v2'); ?>
+                         </small>
+                     </div>
+                     
+                     <div class="mas-v2-scrollbar-config conditional-field" data-show-when="menu_scrollbar_enabled" data-show-value="1">
+                         
+                         <div class="mas-v2-field">
+                             <label for="menu_scrollbar_style" class="mas-v2-label">
+                                 <?php esc_html_e('Styl scrollbar', 'modern-admin-styler-v2'); ?>
+                             </label>
+                             <select id="menu_scrollbar_style" name="menu_scrollbar_style" class="mas-v2-input">
+                                 <option value="modern" <?php selected($settings['menu_scrollbar_style'] ?? '', 'modern'); ?>>
+                                     <?php esc_html_e('Nowoczesny (cień, gradient)', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                                 <option value="minimal" <?php selected($settings['menu_scrollbar_style'] ?? '', 'minimal'); ?>>
+                                     <?php esc_html_e('Minimalny (płaski)', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                                 <option value="classic" <?php selected($settings['menu_scrollbar_style'] ?? '', 'classic'); ?>>
+                                     <?php esc_html_e('Klasyczny (przypomina system)', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                             </select>
+                         </div>
+                         
+                         <div class="mas-v2-field">
+                             <label for="menu_scrollbar_width" class="mas-v2-label">
+                                 <?php esc_html_e('Szerokość scrollbar', 'modern-admin-styler-v2'); ?>
+                                 <span class="mas-v2-slider-value" data-target="menu_scrollbar_width"><?php echo esc_html($settings['menu_scrollbar_width'] ?? 8); ?>px</span>
+                             </label>
+                             <input type="range" 
+                                    id="menu_scrollbar_width" 
+                                    name="menu_scrollbar_width" 
+                                    min="4" 
+                                    max="16" 
+                                    value="<?php echo esc_attr($settings['menu_scrollbar_width'] ?? 8); ?>" 
+                                    class="mas-v2-slider">
+                         </div>
+                         
+                         <div class="mas-v2-field">
+                             <label for="menu_scrollbar_corner_radius" class="mas-v2-label">
+                                 <?php esc_html_e('Zaokrąglenie rogów', 'modern-admin-styler-v2'); ?>
+                                 <span class="mas-v2-slider-value" data-target="menu_scrollbar_corner_radius"><?php echo esc_html($settings['menu_scrollbar_corner_radius'] ?? 4); ?>px</span>
+                             </label>
+                             <input type="range" 
+                                    id="menu_scrollbar_corner_radius" 
+                                    name="menu_scrollbar_corner_radius" 
+                                    min="0" 
+                                    max="8" 
+                                    value="<?php echo esc_attr($settings['menu_scrollbar_corner_radius'] ?? 4); ?>" 
+                                    class="mas-v2-slider">
+                         </div>
+                         
+                         <div class="mas-v2-field">
+                             <label class="mas-v2-checkbox">
+                                 <input type="checkbox" 
+                                        name="menu_scrollbar_auto_hide" 
+                                        value="1" 
+                                        <?php checked($settings['menu_scrollbar_auto_hide'] ?? true); ?>>
+                                 <span class="mas-v2-checkbox-mark"></span>
+                                 <?php esc_html_e('Auto-ukrywanie scrollbar', 'modern-admin-styler-v2'); ?>
+                             </label>
+                             <small class="mas-v2-help-text">
+                                 <?php esc_html_e('Scrollbar pojawia się tylko podczas przewijania', 'modern-admin-styler-v2'); ?>
+                             </small>
+                         </div>
+                         
+                         <div class="mas-v2-color-grid">
+                             <div class="mas-v2-field">
+                                 <label for="menu_scrollbar_track_color" class="mas-v2-label">
+                                     <?php esc_html_e('Kolor ścieżki', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <input type="color" 
+                                        id="menu_scrollbar_track_color" 
+                                        name="menu_scrollbar_track_color" 
+                                        value="<?php echo esc_attr($settings['menu_scrollbar_track_color'] ?? ''); ?>" 
+                                        class="mas-v2-input">
+                                 <small class="mas-v2-help-text">
+                                     <?php esc_html_e('Tło scrollbar', 'modern-admin-styler-v2'); ?>
+                                 </small>
+                             </div>
+                             
+                             <div class="mas-v2-field">
+                                 <label for="menu_scrollbar_thumb_color" class="mas-v2-label">
+                                     <?php esc_html_e('Kolor suwaka', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <input type="color" 
+                                        id="menu_scrollbar_thumb_color" 
+                                        name="menu_scrollbar_thumb_color" 
+                                        value="<?php echo esc_attr($settings['menu_scrollbar_thumb_color'] ?? ''); ?>" 
+                                        class="mas-v2-input">
+                                 <small class="mas-v2-help-text">
+                                     <?php esc_html_e('Kolor głównego elementu', 'modern-admin-styler-v2'); ?>
+                                 </small>
+                             </div>
+                             
+                             <div class="mas-v2-field">
+                                 <label for="menu_scrollbar_thumb_hover_color" class="mas-v2-label">
+                                     <?php esc_html_e('Kolor hover suwaka', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <input type="color" 
+                                        id="menu_scrollbar_thumb_hover_color" 
+                                        name="menu_scrollbar_thumb_hover_color" 
+                                        value="<?php echo esc_attr($settings['menu_scrollbar_thumb_hover_color'] ?? ''); ?>" 
+                                        class="mas-v2-input">
+                                 <small class="mas-v2-help-text">
+                                     <?php esc_html_e('Kolor przy najechaniu', 'modern-admin-styler-v2'); ?>
+                                 </small>
+                             </div>
+                         </div>
+                         
+                     </div>
+                     
+                     <h3 style="margin-top: 2rem; color: rgba(255,255,255,0.9);">📋 <?php esc_html_e('Submenu scrollbar', 'modern-admin-styler-v2'); ?></h3>
+                     
+                     <div class="mas-v2-field">
+                         <label class="mas-v2-checkbox">
+                             <input type="checkbox" 
+                                    name="submenu_scrollbar_enabled" 
+                                    id="submenu_scrollbar_enabled"
+                                    value="1" 
+                                    <?php checked($settings['submenu_scrollbar_enabled'] ?? false); ?>>
+                             <span class="mas-v2-checkbox-mark"></span>
+                             <?php esc_html_e('Włącz niestandardowy scrollbar dla podmenu', 'modern-admin-styler-v2'); ?>
+                         </label>
+                         <small class="mas-v2-help-text">
+                             <?php esc_html_e('Oddzielna konfiguracja dla rozwijanych podmenu', 'modern-admin-styler-v2'); ?>
+                         </small>
+                     </div>
+                     
+                     <div class="mas-v2-submenu-scrollbar-config conditional-field" data-show-when="submenu_scrollbar_enabled" data-show-value="1">
+                         
+                         <div class="mas-v2-field">
+                             <label for="submenu_scrollbar_style" class="mas-v2-label">
+                                 <?php esc_html_e('Styl submenu scrollbar', 'modern-admin-styler-v2'); ?>
+                             </label>
+                             <select id="submenu_scrollbar_style" name="submenu_scrollbar_style" class="mas-v2-input">
+                                 <option value="minimal" <?php selected($settings['submenu_scrollbar_style'] ?? '', 'minimal'); ?>>
+                                     <?php esc_html_e('Minimalny (zalecany)', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                                 <option value="modern" <?php selected($settings['submenu_scrollbar_style'] ?? '', 'modern'); ?>>
+                                     <?php esc_html_e('Nowoczesny', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                                 <option value="classic" <?php selected($settings['submenu_scrollbar_style'] ?? '', 'classic'); ?>>
+                                     <?php esc_html_e('Klasyczny', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                             </select>
+                         </div>
+                         
+                         <div class="mas-v2-field">
+                             <label for="submenu_scrollbar_width" class="mas-v2-label">
+                                 <?php esc_html_e('Szerokość submenu scrollbar', 'modern-admin-styler-v2'); ?>
+                                 <span class="mas-v2-slider-value" data-target="submenu_scrollbar_width"><?php echo esc_html($settings['submenu_scrollbar_width'] ?? 6); ?>px</span>
+                             </label>
+                             <input type="range" 
+                                    id="submenu_scrollbar_width" 
+                                    name="submenu_scrollbar_width" 
+                                    min="3" 
+                                    max="12" 
+                                    value="<?php echo esc_attr($settings['submenu_scrollbar_width'] ?? 6); ?>" 
+                                    class="mas-v2-slider">
+                         </div>
+                         
+                         <div class="mas-v2-color-grid">
+                             <div class="mas-v2-field">
+                                 <label for="submenu_scrollbar_track_color" class="mas-v2-label">
+                                     <?php esc_html_e('Kolor ścieżki submenu', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <input type="color" 
+                                        id="submenu_scrollbar_track_color" 
+                                        name="submenu_scrollbar_track_color" 
+                                        value="<?php echo esc_attr($settings['submenu_scrollbar_track_color'] ?? ''); ?>" 
+                                        class="mas-v2-input">
+                             </div>
+                             
+                             <div class="mas-v2-field">
+                                 <label for="submenu_scrollbar_thumb_color" class="mas-v2-label">
+                                     <?php esc_html_e('Kolor suwaka submenu', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <input type="color" 
+                                        id="submenu_scrollbar_thumb_color" 
+                                        name="submenu_scrollbar_thumb_color" 
+                                        value="<?php echo esc_attr($settings['submenu_scrollbar_thumb_color'] ?? ''); ?>" 
+                                        class="mas-v2-input">
+                             </div>
+                             
+                             <div class="mas-v2-field">
+                                 <label for="submenu_scrollbar_thumb_hover_color" class="mas-v2-label">
+                                     <?php esc_html_e('Kolor hover submenu', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <input type="color" 
+                                        id="submenu_scrollbar_thumb_hover_color" 
+                                        name="submenu_scrollbar_thumb_hover_color" 
+                                        value="<?php echo esc_attr($settings['submenu_scrollbar_thumb_hover_color'] ?? ''); ?>" 
+                                        class="mas-v2-input">
+                             </div>
+                         </div>
+                         
+                     </div>
+                     
+                                  </div>
+             </div>
+             
+             <!-- Search & Custom Blocks Section - Phase 5 -->
+             <div class="mas-v2-section">
+                 <h2 class="mas-v2-section-title">
+                     🔍 <?php esc_html_e('Wyszukiwarka i Custom Bloki', 'modern-admin-styler-v2'); ?>
+                 </h2>
+                 <div class="mas-v2-section-content">
+                     
+                     <h3 style="margin-top: 1rem; color: rgba(255,255,255,0.9);">🔎 <?php esc_html_e('Wyszukiwarka menu', 'modern-admin-styler-v2'); ?></h3>
+                     
+                     <div class="mas-v2-field">
+                         <label class="mas-v2-checkbox">
+                             <input type="checkbox" 
+                                    name="menu_search_enabled" 
+                                    id="menu_search_enabled"
+                                    value="1" 
+                                    <?php checked($settings['menu_search_enabled'] ?? false); ?>>
+                             <span class="mas-v2-checkbox-mark"></span>
+                             <?php esc_html_e('Włącz wyszukiwarkę w menu', 'modern-admin-styler-v2'); ?>
+                         </label>
+                         <small class="mas-v2-help-text">
+                             <?php esc_html_e('Dodaje pole wyszukiwania do menu z live filtering', 'modern-admin-styler-v2'); ?>
+                         </small>
+                     </div>
+                     
+                     <div class="mas-v2-search-config conditional-field" data-show-when="menu_search_enabled" data-show-value="1">
+                         
+                         <div class="mas-v2-field">
+                             <label for="menu_search_position" class="mas-v2-label">
+                                 <?php esc_html_e('Pozycja wyszukiwarki', 'modern-admin-styler-v2'); ?>
+                             </label>
+                             <select id="menu_search_position" name="menu_search_position" class="mas-v2-input">
+                                 <option value="top" <?php selected($settings['menu_search_position'] ?? '', 'top'); ?>>
+                                     <?php esc_html_e('U góry menu', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                                 <option value="bottom" <?php selected($settings['menu_search_position'] ?? '', 'bottom'); ?>>
+                                     <?php esc_html_e('U dołu menu', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                             </select>
+                         </div>
+                         
+                         <div class="mas-v2-field">
+                             <label for="menu_search_style" class="mas-v2-label">
+                                 <?php esc_html_e('Styl wyszukiwarki', 'modern-admin-styler-v2'); ?>
+                             </label>
+                             <select id="menu_search_style" name="menu_search_style" class="mas-v2-input">
+                                 <option value="modern" <?php selected($settings['menu_search_style'] ?? '', 'modern'); ?>>
+                                     <?php esc_html_e('Nowoczesny (ikona, animacje)', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                                 <option value="minimal" <?php selected($settings['menu_search_style'] ?? '', 'minimal'); ?>>
+                                     <?php esc_html_e('Minimalny (clean)', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                                 <option value="compact" <?php selected($settings['menu_search_style'] ?? '', 'compact'); ?>>
+                                     <?php esc_html_e('Kompaktowy (mały)', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                             </select>
+                         </div>
+                         
+                         <div class="mas-v2-field">
+                             <label for="menu_search_placeholder" class="mas-v2-label">
+                                 <?php esc_html_e('Tekst placeholder', 'modern-admin-styler-v2'); ?>
+                             </label>
+                             <input type="text" 
+                                    id="menu_search_placeholder" 
+                                    name="menu_search_placeholder" 
+                                    value="<?php echo esc_attr($settings['menu_search_placeholder'] ?? ''); ?>" 
+                                    placeholder="<?php esc_attr_e('np. Szukaj w menu...', 'modern-admin-styler-v2'); ?>"
+                                    class="mas-v2-input">
+                             <small class="mas-v2-help-text">
+                                 <?php esc_html_e('Pozostaw puste dla domyślnego tekstu', 'modern-admin-styler-v2'); ?>
+                             </small>
+                         </div>
+                         
+                         <div class="mas-v2-field">
+                             <label for="menu_search_hotkey" class="mas-v2-label">
+                                 <?php esc_html_e('Skrót klawiszowy', 'modern-admin-styler-v2'); ?>
+                             </label>
+                             <select id="menu_search_hotkey" name="menu_search_hotkey" class="mas-v2-input">
+                                 <option value="ctrl+k" <?php selected($settings['menu_search_hotkey'] ?? '', 'ctrl+k'); ?>>
+                                     <?php esc_html_e('Ctrl+K (popularne)', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                                 <option value="ctrl+slash" <?php selected($settings['menu_search_hotkey'] ?? '', 'ctrl+slash'); ?>>
+                                     <?php esc_html_e('Ctrl+/', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                                 <option value="alt+s" <?php selected($settings['menu_search_hotkey'] ?? '', 'alt+s'); ?>>
+                                     <?php esc_html_e('Alt+S', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                                 <option value="none" <?php selected($settings['menu_search_hotkey'] ?? '', 'none'); ?>>
+                                     <?php esc_html_e('Wyłączone', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                             </select>
+                         </div>
+                         
+                         <div class="mas-v2-search-features">
+                             <div class="mas-v2-field">
+                                 <label class="mas-v2-checkbox">
+                                     <input type="checkbox" 
+                                            name="menu_search_animation" 
+                                            value="1" 
+                                            <?php checked($settings['menu_search_animation'] ?? true); ?>>
+                                     <span class="mas-v2-checkbox-mark"></span>
+                                     <?php esc_html_e('Animacje wyszukiwarki', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                             </div>
+                             
+                             <div class="mas-v2-field">
+                                 <label class="mas-v2-checkbox">
+                                     <input type="checkbox" 
+                                            name="menu_search_live_filter" 
+                                            value="1" 
+                                            <?php checked($settings['menu_search_live_filter'] ?? true); ?>>
+                                     <span class="mas-v2-checkbox-mark"></span>
+                                     <?php esc_html_e('Live filtering (filtrowanie na żywo)', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                             </div>
+                             
+                             <div class="mas-v2-field">
+                                 <label class="mas-v2-checkbox">
+                                     <input type="checkbox" 
+                                            name="menu_search_highlight_matches" 
+                                            value="1" 
+                                            <?php checked($settings['menu_search_highlight_matches'] ?? true); ?>>
+                                     <span class="mas-v2-checkbox-mark"></span>
+                                     <?php esc_html_e('Podświetlanie dopasowań', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                             </div>
+                         </div>
+                         
+                         <h4 style="margin-top: 1.5rem; color: rgba(255,255,255,0.8);"><?php esc_html_e('Kolory wyszukiwarki', 'modern-admin-styler-v2'); ?></h4>
+                         
+                         <div class="mas-v2-color-grid">
+                             <div class="mas-v2-field">
+                                 <label for="menu_search_background" class="mas-v2-label">
+                                     <?php esc_html_e('Tło', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <input type="color" 
+                                        id="menu_search_background" 
+                                        name="menu_search_background" 
+                                        value="<?php echo esc_attr($settings['menu_search_background'] ?? ''); ?>" 
+                                        class="mas-v2-input">
+                             </div>
+                             
+                             <div class="mas-v2-field">
+                                 <label for="menu_search_text_color" class="mas-v2-label">
+                                     <?php esc_html_e('Tekst', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <input type="color" 
+                                        id="menu_search_text_color" 
+                                        name="menu_search_text_color" 
+                                        value="<?php echo esc_attr($settings['menu_search_text_color'] ?? ''); ?>" 
+                                        class="mas-v2-input">
+                             </div>
+                             
+                             <div class="mas-v2-field">
+                                 <label for="menu_search_border_color" class="mas-v2-label">
+                                     <?php esc_html_e('Obramowanie', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <input type="color" 
+                                        id="menu_search_border_color" 
+                                        name="menu_search_border_color" 
+                                        value="<?php echo esc_attr($settings['menu_search_border_color'] ?? ''); ?>" 
+                                        class="mas-v2-input">
+                             </div>
+                             
+                             <div class="mas-v2-field">
+                                 <label for="menu_search_focus_color" class="mas-v2-label">
+                                     <?php esc_html_e('Focus/Aktywne', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <input type="color" 
+                                        id="menu_search_focus_color" 
+                                        name="menu_search_focus_color" 
+                                        value="<?php echo esc_attr($settings['menu_search_focus_color'] ?? ''); ?>" 
+                                        class="mas-v2-input">
+                             </div>
+                             
+                             <div class="mas-v2-field">
+                                 <label for="menu_search_icon_color" class="mas-v2-label">
+                                     <?php esc_html_e('Ikona', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <input type="color" 
+                                        id="menu_search_icon_color" 
+                                        name="menu_search_icon_color" 
+                                        value="<?php echo esc_attr($settings['menu_search_icon_color'] ?? ''); ?>" 
+                                        class="mas-v2-input">
+                             </div>
+                         </div>
+                         
+                     </div>
+                     
+                     <h3 style="margin-top: 2rem; color: rgba(255,255,255,0.9);">📦 <?php esc_html_e('Custom HTML Bloki', 'modern-admin-styler-v2'); ?></h3>
+                     
+                     <div class="mas-v2-field">
+                         <label class="mas-v2-checkbox">
+                             <input type="checkbox" 
+                                    name="menu_custom_blocks_enabled" 
+                                    id="menu_custom_blocks_enabled"
+                                    value="1" 
+                                    <?php checked($settings['menu_custom_blocks_enabled'] ?? false); ?>>
+                             <span class="mas-v2-checkbox-mark"></span>
+                             <?php esc_html_e('Włącz niestandardowe bloki HTML', 'modern-admin-styler-v2'); ?>
+                         </label>
+                         <small class="mas-v2-help-text">
+                             <?php esc_html_e('Pozwala dodać własną treść HTML w menu (banery, linki, informacje)', 'modern-admin-styler-v2'); ?>
+                         </small>
+                     </div>
+                     
+                     <div class="mas-v2-custom-blocks-config conditional-field" data-show-when="menu_custom_blocks_enabled" data-show-value="1">
+                         
+                         <?php for ($i = 1; $i <= 3; $i++): 
+                             $block = $settings['menu_custom_blocks']["block_$i"] ?? [];
+                         ?>
+                         <div class="mas-v2-custom-block" data-block="<?php echo $i; ?>">
+                             <h4 class="mas-v2-block-title">
+                                 📄 <?php echo sprintf(esc_html__('Blok %d', 'modern-admin-styler-v2'), $i); ?>
+                                 <label class="mas-v2-checkbox mas-v2-inline-toggle">
+                                     <input type="checkbox" 
+                                            name="menu_custom_blocks[block_<?php echo $i; ?>][enabled]" 
+                                            value="1" 
+                                            <?php checked($block['enabled'] ?? false); ?>>
+                                     <span class="mas-v2-checkbox-mark"></span>
+                                     <?php esc_html_e('Włącz', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                             </h4>
+                             
+                             <div class="mas-v2-block-content conditional-field" data-show-when="menu_custom_blocks[block_<?php echo $i; ?>][enabled]" data-show-value="1">
+                                 
+                                 <div class="mas-v2-field">
+                                     <label for="block_<?php echo $i; ?>_content" class="mas-v2-label">
+                                         <?php esc_html_e('Treść HTML', 'modern-admin-styler-v2'); ?>
+                                     </label>
+                                     <textarea id="block_<?php echo $i; ?>_content" 
+                                               name="menu_custom_blocks[block_<?php echo $i; ?>][content]" 
+                                               rows="4" 
+                                               placeholder="<?php esc_attr_e('<div>Twoja treść HTML...</div>', 'modern-admin-styler-v2'); ?>"
+                                               class="mas-v2-textarea"><?php echo esc_textarea($block['content'] ?? ''); ?></textarea>
+                                     <small class="mas-v2-help-text">
+                                         <?php esc_html_e('Możesz użyć HTML, shortcodes WordPress, podstawowe style CSS', 'modern-admin-styler-v2'); ?>
+                                     </small>
+                                 </div>
+                                 
+                                 <div class="mas-v2-field-row">
+                                     <div class="mas-v2-field">
+                                         <label for="block_<?php echo $i; ?>_position" class="mas-v2-label">
+                                             <?php esc_html_e('Pozycja', 'modern-admin-styler-v2'); ?>
+                                         </label>
+                                         <select id="block_<?php echo $i; ?>_position" 
+                                                 name="menu_custom_blocks[block_<?php echo $i; ?>][position]" 
+                                                 class="mas-v2-input">
+                                             <option value="top" <?php selected($block['position'] ?? '', 'top'); ?>>
+                                                 <?php esc_html_e('Góra menu', 'modern-admin-styler-v2'); ?>
+                                             </option>
+                                             <option value="bottom" <?php selected($block['position'] ?? '', 'bottom'); ?>>
+                                                 <?php esc_html_e('Dół menu', 'modern-admin-styler-v2'); ?>
+                                             </option>
+                                         </select>
+                                     </div>
+                                     
+                                     <div class="mas-v2-field">
+                                         <label for="block_<?php echo $i; ?>_style" class="mas-v2-label">
+                                             <?php esc_html_e('Styl', 'modern-admin-styler-v2'); ?>
+                                         </label>
+                                         <select id="block_<?php echo $i; ?>_style" 
+                                                 name="menu_custom_blocks[block_<?php echo $i; ?>][style]" 
+                                                 class="mas-v2-input">
+                                             <option value="default" <?php selected($block['style'] ?? '', 'default'); ?>>
+                                                 <?php esc_html_e('Domyślny', 'modern-admin-styler-v2'); ?>
+                                             </option>
+                                             <option value="card" <?php selected($block['style'] ?? '', 'card'); ?>>
+                                                 <?php esc_html_e('Karta (z cieniem)', 'modern-admin-styler-v2'); ?>
+                                             </option>
+                                             <option value="minimal" <?php selected($block['style'] ?? '', 'minimal'); ?>>
+                                                 <?php esc_html_e('Minimalny', 'modern-admin-styler-v2'); ?>
+                                             </option>
+                                             <option value="highlight" <?php selected($block['style'] ?? '', 'highlight'); ?>>
+                                                 <?php esc_html_e('Wyróżniony', 'modern-admin-styler-v2'); ?>
+                                             </option>
+                                         </select>
+                                     </div>
+                                     
+                                     <div class="mas-v2-field">
+                                         <label for="block_<?php echo $i; ?>_animation" class="mas-v2-label">
+                                             <?php esc_html_e('Animacja', 'modern-admin-styler-v2'); ?>
+                                         </label>
+                                         <select id="block_<?php echo $i; ?>_animation" 
+                                                 name="menu_custom_blocks[block_<?php echo $i; ?>][animation]" 
+                                                 class="mas-v2-input">
+                                             <option value="none" <?php selected($block['animation'] ?? '', 'none'); ?>>
+                                                 <?php esc_html_e('Brak', 'modern-admin-styler-v2'); ?>
+                                             </option>
+                                             <option value="fade" <?php selected($block['animation'] ?? '', 'fade'); ?>>
+                                                 <?php esc_html_e('Fade', 'modern-admin-styler-v2'); ?>
+                                             </option>
+                                             <option value="slide" <?php selected($block['animation'] ?? '', 'slide'); ?>>
+                                                 <?php esc_html_e('Slide', 'modern-admin-styler-v2'); ?>
+                                             </option>
+                                             <option value="bounce" <?php selected($block['animation'] ?? '', 'bounce'); ?>>
+                                                 <?php esc_html_e('Bounce', 'modern-admin-styler-v2'); ?>
+                                             </option>
+                                         </select>
+                                     </div>
+                                 </div>
+                                 
+                             </div>
+                         </div>
+                         <?php endfor; ?>
+                         
+                     </div>
+                     
+                 </div>
+             </div>
+             
+             <!-- Responsive & Positioning Section - Phase 6 -->
+             <div class="mas-v2-section">
+                 <h2 class="mas-v2-section-title">
+                     📱 <?php esc_html_e('Responsywność i Pozycjonowanie', 'modern-admin-styler-v2'); ?>
+                 </h2>
+                 <div class="mas-v2-section-content">
+                     
+                     <h3 style="margin-top: 1rem; color: rgba(255,255,255,0.9);">🔧 <?php esc_html_e('Ustawienia responsywności', 'modern-admin-styler-v2'); ?></h3>
+                     
+                     <div class="mas-v2-field">
+                         <label class="mas-v2-checkbox">
+                             <input type="checkbox" 
+                                    name="menu_responsive_enabled" 
+                                    id="menu_responsive_enabled"
+                                    value="1" 
+                                    <?php checked($settings['menu_responsive_enabled'] ?? true); ?>>
+                             <span class="mas-v2-checkbox-mark"></span>
+                             <?php esc_html_e('Włącz responsywne menu', 'modern-admin-styler-v2'); ?>
+                         </label>
+                         <small class="mas-v2-help-text">
+                             <?php esc_html_e('Automatyczne dostosowywanie menu do różnych urządzeń', 'modern-admin-styler-v2'); ?>
+                         </small>
+                     </div>
+                     
+                     <div class="mas-v2-responsive-config conditional-field" data-show-when="menu_responsive_enabled" data-show-value="1">
+                         
+                         <div class="mas-v2-field-row">
+                             <div class="mas-v2-field">
+                                 <label for="menu_mobile_breakpoint" class="mas-v2-label">
+                                     <?php esc_html_e('Breakpoint mobile (px)', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <input type="range" 
+                                        id="menu_mobile_breakpoint" 
+                                        name="menu_mobile_breakpoint" 
+                                        min="320" 
+                                        max="1024" 
+                                        step="1" 
+                                        value="<?php echo esc_attr($settings['menu_mobile_breakpoint'] ?? 768); ?>" 
+                                        class="mas-v2-range">
+                                 <span class="mas-v2-range-value"><?php echo esc_html($settings['menu_mobile_breakpoint'] ?? 768); ?>px</span>
+                             </div>
+                             
+                             <div class="mas-v2-field">
+                                 <label for="menu_tablet_breakpoint" class="mas-v2-label">
+                                     <?php esc_html_e('Breakpoint tablet (px)', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <input type="range" 
+                                        id="menu_tablet_breakpoint" 
+                                        name="menu_tablet_breakpoint" 
+                                        min="768" 
+                                        max="1440" 
+                                        step="1" 
+                                        value="<?php echo esc_attr($settings['menu_tablet_breakpoint'] ?? 1024); ?>" 
+                                        class="mas-v2-range">
+                                 <span class="mas-v2-range-value"><?php echo esc_html($settings['menu_tablet_breakpoint'] ?? 1024); ?>px</span>
+                             </div>
+                         </div>
+                         
+                         <h4 style="margin-top: 2rem; color: rgba(255,255,255,0.8);"><?php esc_html_e('Zachowanie na mobile', 'modern-admin-styler-v2'); ?></h4>
+                         
+                         <div class="mas-v2-field">
+                             <label for="menu_mobile_behavior" class="mas-v2-label">
+                                 <?php esc_html_e('Typ menu mobile', 'modern-admin-styler-v2'); ?>
+                             </label>
+                             <select id="menu_mobile_behavior" name="menu_mobile_behavior" class="mas-v2-input">
+                                 <option value="collapse" <?php selected($settings['menu_mobile_behavior'] ?? '', 'collapse'); ?>>
+                                     <?php esc_html_e('Collapse (zwijane)', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                                 <option value="overlay" <?php selected($settings['menu_mobile_behavior'] ?? '', 'overlay'); ?>>
+                                     <?php esc_html_e('Overlay (nakładka)', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                                 <option value="slide-out" <?php selected($settings['menu_mobile_behavior'] ?? '', 'slide-out'); ?>>
+                                     <?php esc_html_e('Slide-out (wysuwane)', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                                 <option value="bottom-bar" <?php selected($settings['menu_mobile_behavior'] ?? '', 'bottom-bar'); ?>>
+                                     <?php esc_html_e('Bottom bar (dolny pasek)', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                             </select>
+                         </div>
+                         
+                         <div class="mas-v2-field-row">
+                             <div class="mas-v2-field">
+                                 <label for="menu_mobile_toggle_position" class="mas-v2-label">
+                                     <?php esc_html_e('Pozycja toggle', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <select id="menu_mobile_toggle_position" name="menu_mobile_toggle_position" class="mas-v2-input">
+                                     <option value="top-left" <?php selected($settings['menu_mobile_toggle_position'] ?? '', 'top-left'); ?>>
+                                         <?php esc_html_e('Góra-lewo', 'modern-admin-styler-v2'); ?>
+                                     </option>
+                                     <option value="top-right" <?php selected($settings['menu_mobile_toggle_position'] ?? '', 'top-right'); ?>>
+                                         <?php esc_html_e('Góra-prawo', 'modern-admin-styler-v2'); ?>
+                                     </option>
+                                     <option value="bottom-left" <?php selected($settings['menu_mobile_toggle_position'] ?? '', 'bottom-left'); ?>>
+                                         <?php esc_html_e('Dół-lewo', 'modern-admin-styler-v2'); ?>
+                                     </option>
+                                     <option value="bottom-right" <?php selected($settings['menu_mobile_toggle_position'] ?? '', 'bottom-right'); ?>>
+                                         <?php esc_html_e('Dół-prawo', 'modern-admin-styler-v2'); ?>
+                                     </option>
+                                 </select>
+                             </div>
+                             
+                             <div class="mas-v2-field">
+                                 <label for="menu_mobile_toggle_style" class="mas-v2-label">
+                                     <?php esc_html_e('Styl toggle', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <select id="menu_mobile_toggle_style" name="menu_mobile_toggle_style" class="mas-v2-input">
+                                     <option value="hamburger" <?php selected($settings['menu_mobile_toggle_style'] ?? '', 'hamburger'); ?>>
+                                         <?php esc_html_e('Hamburger (≡)', 'modern-admin-styler-v2'); ?>
+                                     </option>
+                                     <option value="dots" <?php selected($settings['menu_mobile_toggle_style'] ?? '', 'dots'); ?>>
+                                         <?php esc_html_e('Dots (⋯)', 'modern-admin-styler-v2'); ?>
+                                     </option>
+                                     <option value="text" <?php selected($settings['menu_mobile_toggle_style'] ?? '', 'text'); ?>>
+                                         <?php esc_html_e('Text (Menu)', 'modern-admin-styler-v2'); ?>
+                                     </option>
+                                     <option value="icon" <?php selected($settings['menu_mobile_toggle_style'] ?? '', 'icon'); ?>>
+                                         <?php esc_html_e('Icon (⚙)', 'modern-admin-styler-v2'); ?>
+                                     </option>
+                                 </select>
+                             </div>
+                             
+                             <div class="mas-v2-field">
+                                 <label for="menu_mobile_animation" class="mas-v2-label">
+                                     <?php esc_html_e('Animacja mobile', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <select id="menu_mobile_animation" name="menu_mobile_animation" class="mas-v2-input">
+                                     <option value="slide" <?php selected($settings['menu_mobile_animation'] ?? '', 'slide'); ?>>
+                                         <?php esc_html_e('Slide', 'modern-admin-styler-v2'); ?>
+                                     </option>
+                                     <option value="fade" <?php selected($settings['menu_mobile_animation'] ?? '', 'fade'); ?>>
+                                         <?php esc_html_e('Fade', 'modern-admin-styler-v2'); ?>
+                                     </option>
+                                     <option value="scale" <?php selected($settings['menu_mobile_animation'] ?? '', 'scale'); ?>>
+                                         <?php esc_html_e('Scale', 'modern-admin-styler-v2'); ?>
+                                     </option>
+                                     <option value="none" <?php selected($settings['menu_mobile_animation'] ?? '', 'none'); ?>>
+                                         <?php esc_html_e('Brak', 'modern-admin-styler-v2'); ?>
+                                     </option>
+                                 </select>
+                             </div>
+                         </div>
+                         
+                         <h4 style="margin-top: 2rem; color: rgba(255,255,255,0.8);"><?php esc_html_e('Pozycjonowanie menu', 'modern-admin-styler-v2'); ?></h4>
+                         
+                         <div class="mas-v2-field">
+                             <label for="menu_position_type" class="mas-v2-label">
+                                 <?php esc_html_e('Typ pozycjonowania', 'modern-admin-styler-v2'); ?>
+                             </label>
+                             <select id="menu_position_type" name="menu_position_type" class="mas-v2-input">
+                                 <option value="default" <?php selected($settings['menu_position_type'] ?? '', 'default'); ?>>
+                                     <?php esc_html_e('Domyślne (relative)', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                                 <option value="fixed" <?php selected($settings['menu_position_type'] ?? '', 'fixed'); ?>>
+                                     <?php esc_html_e('Fixed (stałe do viewport)', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                                 <option value="sticky" <?php selected($settings['menu_position_type'] ?? '', 'sticky'); ?>>
+                                     <?php esc_html_e('Sticky (przyklejone)', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                                 <option value="floating" <?php selected($settings['menu_position_type'] ?? '', 'floating'); ?>>
+                                     <?php esc_html_e('Floating (unoszące się)', 'modern-admin-styler-v2'); ?>
+                                 </option>
+                             </select>
+                         </div>
+                         
+                         <div class="mas-v2-positioning-controls conditional-field" data-show-when="menu_position_type" data-show-value="fixed,sticky,floating">
+                             <div class="mas-v2-field-row">
+                                 <div class="mas-v2-field">
+                                     <label for="menu_position_top" class="mas-v2-label">
+                                         <?php esc_html_e('Odległość od góry (px)', 'modern-admin-styler-v2'); ?>
+                                     </label>
+                                     <input type="range" 
+                                            id="menu_position_top" 
+                                            name="menu_position_top" 
+                                            min="0" 
+                                            max="200" 
+                                            step="1" 
+                                            value="<?php echo esc_attr($settings['menu_position_top'] ?? 32); ?>" 
+                                            class="mas-v2-range">
+                                     <span class="mas-v2-range-value"><?php echo esc_html($settings['menu_position_top'] ?? 32); ?>px</span>
+                                 </div>
+                                 
+                                 <div class="mas-v2-field">
+                                     <label for="menu_position_left" class="mas-v2-label">
+                                         <?php esc_html_e('Odległość od lewej (px)', 'modern-admin-styler-v2'); ?>
+                                     </label>
+                                     <input type="range" 
+                                            id="menu_position_left" 
+                                            name="menu_position_left" 
+                                            min="-100" 
+                                            max="100" 
+                                            step="1" 
+                                            value="<?php echo esc_attr($settings['menu_position_left'] ?? 0); ?>" 
+                                            class="mas-v2-range">
+                                     <span class="mas-v2-range-value"><?php echo esc_html($settings['menu_position_left'] ?? 0); ?>px</span>
+                                 </div>
+                                 
+                                 <div class="mas-v2-field">
+                                     <label for="menu_position_z_index" class="mas-v2-label">
+                                         <?php esc_html_e('Z-index', 'modern-admin-styler-v2'); ?>
+                                     </label>
+                                     <input type="range" 
+                                            id="menu_position_z_index" 
+                                            name="menu_position_z_index" 
+                                            min="1" 
+                                            max="9999" 
+                                            step="1" 
+                                            value="<?php echo esc_attr($settings['menu_position_z_index'] ?? 1000); ?>" 
+                                            class="mas-v2-range">
+                                     <span class="mas-v2-range-value"><?php echo esc_html($settings['menu_position_z_index'] ?? 1000); ?></span>
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         <div class="mas-v2-floating-controls conditional-field" data-show-when="menu_position_type" data-show-value="floating">
+                             <h4 style="margin-top: 1.5rem; color: rgba(255,255,255,0.8);"><?php esc_html_e('Opcje floating menu', 'modern-admin-styler-v2'); ?></h4>
+                             
+                             <div class="mas-v2-floating-features">
+                                 <div class="mas-v2-field">
+                                     <label class="mas-v2-checkbox">
+                                         <input type="checkbox" 
+                                                name="menu_floating_shadow" 
+                                                value="1" 
+                                                <?php checked($settings['menu_floating_shadow'] ?? true); ?>>
+                                         <span class="mas-v2-checkbox-mark"></span>
+                                         <?php esc_html_e('Cień pod menu', 'modern-admin-styler-v2'); ?>
+                                     </label>
+                                 </div>
+                                 
+                                 <div class="mas-v2-field">
+                                     <label class="mas-v2-checkbox">
+                                         <input type="checkbox" 
+                                                name="menu_floating_blur_background" 
+                                                value="1" 
+                                                <?php checked($settings['menu_floating_blur_background'] ?? true); ?>>
+                                         <span class="mas-v2-checkbox-mark"></span>
+                                         <?php esc_html_e('Blur tła', 'modern-admin-styler-v2'); ?>
+                                     </label>
+                                 </div>
+                                 
+                                 <div class="mas-v2-field">
+                                     <label class="mas-v2-checkbox">
+                                         <input type="checkbox" 
+                                                name="menu_floating_auto_hide" 
+                                                value="1" 
+                                                <?php checked($settings['menu_floating_auto_hide'] ?? false); ?>>
+                                         <span class="mas-v2-checkbox-mark"></span>
+                                         <?php esc_html_e('Auto-ukrywanie', 'modern-admin-styler-v2'); ?>
+                                     </label>
+                                 </div>
+                                 
+                                 <div class="mas-v2-field">
+                                     <label class="mas-v2-checkbox">
+                                         <input type="checkbox" 
+                                                name="menu_floating_trigger_hover" 
+                                                value="1" 
+                                                <?php checked($settings['menu_floating_trigger_hover'] ?? false); ?>>
+                                         <span class="mas-v2-checkbox-mark"></span>
+                                         <?php esc_html_e('Pokaż tylko na hover', 'modern-admin-styler-v2'); ?>
+                                     </label>
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         <h4 style="margin-top: 2rem; color: rgba(255,255,255,0.8);"><?php esc_html_e('Kolory mobile/overlay', 'modern-admin-styler-v2'); ?></h4>
+                         
+                         <div class="mas-v2-color-grid">
+                             <div class="mas-v2-field">
+                                 <label for="menu_mobile_toggle_color" class="mas-v2-label">
+                                     <?php esc_html_e('Kolor toggle', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <input type="color" 
+                                        id="menu_mobile_toggle_color" 
+                                        name="menu_mobile_toggle_color" 
+                                        value="<?php echo esc_attr($settings['menu_mobile_toggle_color'] ?? ''); ?>" 
+                                        class="mas-v2-input">
+                             </div>
+                             
+                             <div class="mas-v2-field">
+                                 <label for="menu_mobile_overlay_color" class="mas-v2-label">
+                                     <?php esc_html_e('Kolor overlay', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <input type="text" 
+                                        id="menu_mobile_overlay_color" 
+                                        name="menu_mobile_overlay_color" 
+                                        value="<?php echo esc_attr($settings['menu_mobile_overlay_color'] ?? 'rgba(0,0,0,0.8)'); ?>" 
+                                        placeholder="rgba(0,0,0,0.8)"
+                                        class="mas-v2-input">
+                             </div>
+                             
+                             <div class="mas-v2-field">
+                                 <label for="menu_mobile_background" class="mas-v2-label">
+                                     <?php esc_html_e('Tło menu mobile', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <input type="color" 
+                                        id="menu_mobile_background" 
+                                        name="menu_mobile_background" 
+                                        value="<?php echo esc_attr($settings['menu_mobile_background'] ?? ''); ?>" 
+                                        class="mas-v2-input">
+                             </div>
+                             
+                             <div class="mas-v2-field">
+                                 <label for="menu_mobile_text_color" class="mas-v2-label">
+                                     <?php esc_html_e('Tekst menu mobile', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <input type="color" 
+                                        id="menu_mobile_text_color" 
+                                        name="menu_mobile_text_color" 
+                                        value="<?php echo esc_attr($settings['menu_mobile_text_color'] ?? ''); ?>" 
+                                        class="mas-v2-input">
+                             </div>
+                         </div>
+                         
+                         <h4 style="margin-top: 2rem; color: rgba(255,255,255,0.8);"><?php esc_html_e('Optymalizacje wydajności', 'modern-admin-styler-v2'); ?></h4>
+                         
+                         <div class="mas-v2-performance-features">
+                             <div class="mas-v2-field">
+                                 <label class="mas-v2-checkbox">
+                                     <input type="checkbox" 
+                                            name="menu_touch_friendly" 
+                                            value="1" 
+                                            <?php checked($settings['menu_touch_friendly'] ?? true); ?>>
+                                     <span class="mas-v2-checkbox-mark"></span>
+                                     <?php esc_html_e('Touch-friendly (większe obszary dotykowe)', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                             </div>
+                             
+                             <div class="mas-v2-field">
+                                 <label class="mas-v2-checkbox">
+                                     <input type="checkbox" 
+                                            name="menu_swipe_gestures" 
+                                            value="1" 
+                                            <?php checked($settings['menu_swipe_gestures'] ?? true); ?>>
+                                     <span class="mas-v2-checkbox-mark"></span>
+                                     <?php esc_html_e('Gesty swipe (przesuwanie palcem)', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                             </div>
+                             
+                             <div class="mas-v2-field">
+                                 <label class="mas-v2-checkbox">
+                                     <input type="checkbox" 
+                                            name="menu_reduce_animations_mobile" 
+                                            value="1" 
+                                            <?php checked($settings['menu_reduce_animations_mobile'] ?? true); ?>>
+                                     <span class="mas-v2-checkbox-mark"></span>
+                                     <?php esc_html_e('Ograniczone animacje na mobile', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                             </div>
+                             
+                             <div class="mas-v2-field">
+                                 <label class="mas-v2-checkbox">
+                                     <input type="checkbox" 
+                                            name="menu_optimize_performance" 
+                                            value="1" 
+                                            <?php checked($settings['menu_optimize_performance'] ?? true); ?>>
+                                     <span class="mas-v2-checkbox-mark"></span>
+                                     <?php esc_html_e('Optymalizacje wydajności', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                             </div>
+                         </div>
+                         
+                     </div>
+                     
+                 </div>
+             </div>
+             
+             <!-- Premium Features Section - Phase 7 -->
+             <div class="mas-v2-section">
+                 <h2 class="mas-v2-section-title">
+                     💎 <?php esc_html_e('Funkcje Premium', 'modern-admin-styler-v2'); ?>
+                 </h2>
+                 <div class="mas-v2-section-content">
+                     
+                     <div class="mas-v2-premium-notice">
+                         <div class="mas-v2-premium-header">
+                             <span class="mas-v2-premium-badge">PRO</span>
+                             <h3><?php esc_html_e('Odblokuj pełny potencjał Modern Admin Styler V2', 'modern-admin-styler-v2'); ?></h3>
+                         </div>
+                         <p><?php esc_html_e('Zaawansowane funkcje dla profesjonalnych aplikacji WordPress', 'modern-admin-styler-v2'); ?></p>
+                     </div>
+                     
+                     <div class="mas-v2-field">
+                         <label class="mas-v2-checkbox">
+                             <input type="checkbox" 
+                                    name="menu_premium_enabled" 
+                                    id="menu_premium_enabled"
+                                    value="1" 
+                                    <?php checked($settings['menu_premium_enabled'] ?? false); ?>>
+                             <span class="mas-v2-checkbox-mark"></span>
+                             <?php esc_html_e('Włącz funkcje Premium', 'modern-admin-styler-v2'); ?>
+                         </label>
+                         <small class="mas-v2-help-text">
+                             <?php esc_html_e('Aktywuje zaawansowane opcje dla enterprise-level customizacji', 'modern-admin-styler-v2'); ?>
+                         </small>
+                     </div>
+                     
+                     <div class="mas-v2-premium-content conditional-field" data-show-when="menu_premium_enabled" data-show-value="1">
+                         
+                         <h3 style="margin-top: 2rem; color: rgba(255,255,255,0.9);">🎨 <?php esc_html_e('System Szablonów', 'modern-admin-styler-v2'); ?></h3>
+                         
+                         <div class="mas-v2-template-system">
+                             <div class="mas-v2-field">
+                                 <label class="mas-v2-checkbox">
+                                     <input type="checkbox" 
+                                            name="menu_template_system" 
+                                            value="1" 
+                                            <?php checked($settings['menu_template_system'] ?? true); ?>>
+                                     <span class="mas-v2-checkbox-mark"></span>
+                                     <?php esc_html_e('Aktywuj system szablonów', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <small class="mas-v2-help-text">
+                                     <?php esc_html_e('Zapisuj, ładuj i dziel się konfiguracjami menu', 'modern-admin-styler-v2'); ?>
+                                 </small>
+                             </div>
+                             
+                             <div class="mas-v2-field-row">
+                                 <div class="mas-v2-field">
+                                     <label for="menu_active_template" class="mas-v2-label">
+                                         <?php esc_html_e('Aktywny szablon', 'modern-admin-styler-v2'); ?>
+                                     </label>
+                                     <select id="menu_active_template" name="menu_active_template" class="mas-v2-input">
+                                         <option value="default" <?php selected($settings['menu_active_template'] ?? '', 'default'); ?>>
+                                             <?php esc_html_e('Domyślny', 'modern-admin-styler-v2'); ?>
+                                         </option>
+                                         <option value="corporate" <?php selected($settings['menu_active_template'] ?? '', 'corporate'); ?>>
+                                             <?php esc_html_e('Corporate', 'modern-admin-styler-v2'); ?>
+                                         </option>
+                                         <option value="creative" <?php selected($settings['menu_active_template'] ?? '', 'creative'); ?>>
+                                             <?php esc_html_e('Creative', 'modern-admin-styler-v2'); ?>
+                                         </option>
+                                         <option value="minimal" <?php selected($settings['menu_active_template'] ?? '', 'minimal'); ?>>
+                                             <?php esc_html_e('Minimal', 'modern-admin-styler-v2'); ?>
+                                         </option>
+                                         <option value="dark-mode" <?php selected($settings['menu_active_template'] ?? '', 'dark-mode'); ?>>
+                                             <?php esc_html_e('Dark Mode', 'modern-admin-styler-v2'); ?>
+                                         </option>
+                                         <option value="custom" <?php selected($settings['menu_active_template'] ?? '', 'custom'); ?>>
+                                             <?php esc_html_e('Niestandardowy', 'modern-admin-styler-v2'); ?>
+                                         </option>
+                                     </select>
+                                 </div>
+                                 
+                                 <div class="mas-v2-template-actions">
+                                     <button type="button" class="mas-v2-btn mas-v2-btn-primary" id="save-template">
+                                         💾 <?php esc_html_e('Zapisz szablon', 'modern-admin-styler-v2'); ?>
+                                     </button>
+                                     <button type="button" class="mas-v2-btn mas-v2-btn-secondary" id="load-template">
+                                         📁 <?php esc_html_e('Załaduj szablon', 'modern-admin-styler-v2'); ?>
+                                     </button>
+                                     <button type="button" class="mas-v2-btn mas-v2-btn-secondary" id="export-template">
+                                         📤 <?php esc_html_e('Eksportuj', 'modern-admin-styler-v2'); ?>
+                                     </button>
+                                     <button type="button" class="mas-v2-btn mas-v2-btn-secondary" id="import-template">
+                                         📥 <?php esc_html_e('Importuj', 'modern-admin-styler-v2'); ?>
+                                     </button>
+                                 </div>
+                             </div>
+                             
+                             <div class="mas-v2-template-features">
+                                 <div class="mas-v2-field">
+                                     <label class="mas-v2-checkbox">
+                                         <input type="checkbox" 
+                                                name="menu_template_auto_save" 
+                                                value="1" 
+                                                <?php checked($settings['menu_template_auto_save'] ?? true); ?>>
+                                         <span class="mas-v2-checkbox-mark"></span>
+                                         <?php esc_html_e('Auto-zapisywanie zmian', 'modern-admin-styler-v2'); ?>
+                                     </label>
+                                 </div>
+                                 
+                                 <div class="mas-v2-field">
+                                     <label class="mas-v2-checkbox">
+                                         <input type="checkbox" 
+                                                name="menu_template_backup" 
+                                                value="1" 
+                                                <?php checked($settings['menu_template_backup'] ?? true); ?>>
+                                         <span class="mas-v2-checkbox-mark"></span>
+                                         <?php esc_html_e('Automatyczne kopie zapasowe', 'modern-admin-styler-v2'); ?>
+                                     </label>
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         <h3 style="margin-top: 2rem; color: rgba(255,255,255,0.9);">🎯 <?php esc_html_e('Wyświetlanie Warunkowe', 'modern-admin-styler-v2'); ?></h3>
+                         
+                         <div class="mas-v2-conditional-display">
+                             <div class="mas-v2-field">
+                                 <label class="mas-v2-checkbox">
+                                     <input type="checkbox" 
+                                            name="menu_conditional_display" 
+                                            id="menu_conditional_display"
+                                            value="1" 
+                                            <?php checked($settings['menu_conditional_display'] ?? false); ?>>
+                                     <span class="mas-v2-checkbox-mark"></span>
+                                     <?php esc_html_e('Włącz wyświetlanie warunkowe', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <small class="mas-v2-help-text">
+                                     <?php esc_html_e('Kontroluj wygląd menu na podstawie użytkownika, strony, czasu', 'modern-admin-styler-v2'); ?>
+                                 </small>
+                             </div>
+                             
+                             <div class="mas-v2-conditional-controls conditional-field" data-show-when="menu_conditional_display" data-show-value="1">
+                                 
+                                 <h4 style="margin-top: 1.5rem; color: rgba(255,255,255,0.8);"><?php esc_html_e('Ograniczenia ról użytkowników', 'modern-admin-styler-v2'); ?></h4>
+                                 
+                                 <div class="mas-v2-role-restrictions">
+                                     <?php
+                                     $roles = get_editable_roles();
+                                     foreach ($roles as $role_key => $role_data) :
+                                     ?>
+                                     <div class="mas-v2-field">
+                                         <label class="mas-v2-checkbox">
+                                             <input type="checkbox" 
+                                                    name="menu_user_role_restrictions[]" 
+                                                    value="<?php echo esc_attr($role_key); ?>"
+                                                    <?php checked(in_array($role_key, $settings['menu_user_role_restrictions'] ?? [])); ?>>
+                                             <span class="mas-v2-checkbox-mark"></span>
+                                             <?php echo esc_html($role_data['name']); ?>
+                                         </label>
+                                     </div>
+                                     <?php endforeach; ?>
+                                 </div>
+                                 
+                                 <h4 style="margin-top: 1.5rem; color: rgba(255,255,255,0.8);"><?php esc_html_e('Stylowanie specyficzne dla stron', 'modern-admin-styler-v2'); ?></h4>
+                                 
+                                 <div class="mas-v2-page-specific">
+                                     <div class="mas-v2-field">
+                                         <label for="menu_page_patterns" class="mas-v2-label">
+                                             <?php esc_html_e('Wzorce URL stron (jeden na linię)', 'modern-admin-styler-v2'); ?>
+                                         </label>
+                                         <textarea id="menu_page_patterns" 
+                                                   name="menu_page_patterns" 
+                                                   class="mas-v2-textarea"
+                                                   rows="4"
+                                                   placeholder="edit.php&#10;post.php&#10;admin.php?page=*&#10;users.php"><?php echo esc_textarea(implode("\n", $settings['menu_page_specific_styling'] ?? [])); ?></textarea>
+                                         <small class="mas-v2-help-text">
+                                             <?php esc_html_e('Użyj * jako wildcard. Przykłady: admin.php?page=*, edit.php, post.php', 'modern-admin-styler-v2'); ?>
+                                         </small>
+                                     </div>
+                                 </div>
+                                 
+                                 <h4 style="margin-top: 1.5rem; color: rgba(255,255,255,0.8);"><?php esc_html_e('Wyświetlanie oparte na czasie', 'modern-admin-styler-v2'); ?></h4>
+                                 
+                                 <div class="mas-v2-field">
+                                     <label class="mas-v2-checkbox">
+                                         <input type="checkbox" 
+                                                name="menu_time_based_display" 
+                                                value="1" 
+                                                <?php checked($settings['menu_time_based_display'] ?? false); ?>>
+                                         <span class="mas-v2-checkbox-mark"></span>
+                                         <?php esc_html_e('Aktywuj harmonogram zmian', 'modern-admin-styler-v2'); ?>
+                                     </label>
+                                     <small class="mas-v2-help-text">
+                                         <?php esc_html_e('Automatyczne przełączanie stylów w określonych godzinach/dniach', 'modern-admin-styler-v2'); ?>
+                                     </small>
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         <h3 style="margin-top: 2rem; color: rgba(255,255,255,0.9);">📊 <?php esc_html_e('Zaawansowana Analityka', 'modern-admin-styler-v2'); ?></h3>
+                         
+                         <div class="mas-v2-analytics">
+                             <div class="mas-v2-field">
+                                 <label class="mas-v2-checkbox">
+                                     <input type="checkbox" 
+                                            name="menu_analytics_enabled" 
+                                            id="menu_analytics_enabled"
+                                            value="1" 
+                                            <?php checked($settings['menu_analytics_enabled'] ?? false); ?>>
+                                     <span class="mas-v2-checkbox-mark"></span>
+                                     <?php esc_html_e('Włącz analitykę menu', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                                 <small class="mas-v2-help-text">
+                                     <?php esc_html_e('Śledź interakcje użytkowników z menu', 'modern-admin-styler-v2'); ?>
+                                 </small>
+                             </div>
+                             
+                             <div class="mas-v2-analytics-options conditional-field" data-show-when="menu_analytics_enabled" data-show-value="1">
+                                 <div class="mas-v2-analytics-grid">
+                                     <div class="mas-v2-field">
+                                         <label class="mas-v2-checkbox">
+                                             <input type="checkbox" 
+                                                    name="menu_track_clicks" 
+                                                    value="1" 
+                                                    <?php checked($settings['menu_track_clicks'] ?? false); ?>>
+                                             <span class="mas-v2-checkbox-mark"></span>
+                                             <?php esc_html_e('Śledź kliknięcia', 'modern-admin-styler-v2'); ?>
+                                         </label>
+                                     </div>
+                                     
+                                     <div class="mas-v2-field">
+                                         <label class="mas-v2-checkbox">
+                                             <input type="checkbox" 
+                                                    name="menu_track_hover_time" 
+                                                    value="1" 
+                                                    <?php checked($settings['menu_track_hover_time'] ?? false); ?>>
+                                             <span class="mas-v2-checkbox-mark"></span>
+                                             <?php esc_html_e('Czas hover', 'modern-admin-styler-v2'); ?>
+                                         </label>
+                                     </div>
+                                     
+                                     <div class="mas-v2-field">
+                                         <label class="mas-v2-checkbox">
+                                             <input type="checkbox" 
+                                                    name="menu_usage_statistics" 
+                                                    value="1" 
+                                                    <?php checked($settings['menu_usage_statistics'] ?? false); ?>>
+                                             <span class="mas-v2-checkbox-mark"></span>
+                                             <?php esc_html_e('Statystyki użycia', 'modern-admin-styler-v2'); ?>
+                                         </label>
+                                     </div>
+                                     
+                                     <div class="mas-v2-field">
+                                         <label class="mas-v2-checkbox">
+                                             <input type="checkbox" 
+                                                    name="menu_performance_monitoring" 
+                                                    value="1" 
+                                                    <?php checked($settings['menu_performance_monitoring'] ?? false); ?>>
+                                             <span class="mas-v2-checkbox-mark"></span>
+                                             <?php esc_html_e('Monitoring wydajności', 'modern-admin-styler-v2'); ?>
+                                         </label>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         <h3 style="margin-top: 2rem; color: rgba(255,255,255,0.9);">💾 <?php esc_html_e('System Backup i Synchronizacji', 'modern-admin-styler-v2'); ?></h3>
+                         
+                         <div class="mas-v2-backup-system">
+                             <div class="mas-v2-field">
+                                 <label class="mas-v2-checkbox">
+                                     <input type="checkbox" 
+                                            name="menu_backup_enabled" 
+                                            id="menu_backup_enabled"
+                                            value="1" 
+                                            <?php checked($settings['menu_backup_enabled'] ?? true); ?>>
+                                     <span class="mas-v2-checkbox-mark"></span>
+                                     <?php esc_html_e('Aktywuj system backup', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                             </div>
+                             
+                             <div class="mas-v2-backup-options conditional-field" data-show-when="menu_backup_enabled" data-show-value="1">
+                                 <div class="mas-v2-field-row">
+                                     <div class="mas-v2-field">
+                                         <label class="mas-v2-checkbox">
+                                             <input type="checkbox" 
+                                                    name="menu_auto_backup" 
+                                                    value="1" 
+                                                    <?php checked($settings['menu_auto_backup'] ?? false); ?>>
+                                             <span class="mas-v2-checkbox-mark"></span>
+                                             <?php esc_html_e('Automatyczne kopie zapasowe', 'modern-admin-styler-v2'); ?>
+                                         </label>
+                                     </div>
+                                     
+                                     <div class="mas-v2-field">
+                                         <label for="menu_backup_frequency" class="mas-v2-label">
+                                             <?php esc_html_e('Częstotliwość backup', 'modern-admin-styler-v2'); ?>
+                                         </label>
+                                         <select id="menu_backup_frequency" name="menu_backup_frequency" class="mas-v2-input">
+                                             <option value="daily" <?php selected($settings['menu_backup_frequency'] ?? '', 'daily'); ?>>
+                                                 <?php esc_html_e('Codziennie', 'modern-admin-styler-v2'); ?>
+                                             </option>
+                                             <option value="weekly" <?php selected($settings['menu_backup_frequency'] ?? '', 'weekly'); ?>>
+                                                 <?php esc_html_e('Tygodniowo', 'modern-admin-styler-v2'); ?>
+                                             </option>
+                                             <option value="monthly" <?php selected($settings['menu_backup_frequency'] ?? '', 'monthly'); ?>>
+                                                 <?php esc_html_e('Miesięcznie', 'modern-admin-styler-v2'); ?>
+                                             </option>
+                                         </select>
+                                     </div>
+                                     
+                                     <div class="mas-v2-field">
+                                         <label for="menu_export_format" class="mas-v2-label">
+                                             <?php esc_html_e('Format eksportu', 'modern-admin-styler-v2'); ?>
+                                         </label>
+                                         <select id="menu_export_format" name="menu_export_format" class="mas-v2-input">
+                                             <option value="json" <?php selected($settings['menu_export_format'] ?? '', 'json'); ?>>
+                                                 <?php esc_html_e('JSON', 'modern-admin-styler-v2'); ?>
+                                             </option>
+                                             <option value="xml" <?php selected($settings['menu_export_format'] ?? '', 'xml'); ?>>
+                                                 <?php esc_html_e('XML', 'modern-admin-styler-v2'); ?>
+                                             </option>
+                                             <option value="css" <?php selected($settings['menu_export_format'] ?? '', 'css'); ?>>
+                                                 <?php esc_html_e('Pure CSS', 'modern-admin-styler-v2'); ?>
+                                             </option>
+                                         </select>
+                                     </div>
+                                 </div>
+                                 
+                                 <div class="mas-v2-field">
+                                     <label class="mas-v2-checkbox">
+                                         <input type="checkbox" 
+                                                name="menu_cloud_sync" 
+                                                value="1" 
+                                                <?php checked($settings['menu_cloud_sync'] ?? false); ?>>
+                                         <span class="mas-v2-checkbox-mark"></span>
+                                         <?php esc_html_e('Synchronizacja z chmurą', 'modern-admin-styler-v2'); ?>
+                                     </label>
+                                     <small class="mas-v2-help-text">
+                                         <?php esc_html_e('Automatyczne zapisywanie konfiguracji w chmurze', 'modern-admin-styler-v2'); ?>
+                                     </small>
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         <h3 style="margin-top: 2rem; color: rgba(255,255,255,0.9);">🔧 <?php esc_html_e('Niestandardowy CSS/JS', 'modern-admin-styler-v2'); ?></h3>
+                         
+                         <div class="mas-v2-custom-code">
+                             <div class="mas-v2-field">
+                                 <label class="mas-v2-checkbox">
+                                     <input type="checkbox" 
+                                            name="menu_custom_css_enabled" 
+                                            id="menu_custom_css_enabled"
+                                            value="1" 
+                                            <?php checked($settings['menu_custom_css_enabled'] ?? false); ?>>
+                                     <span class="mas-v2-checkbox-mark"></span>
+                                     <?php esc_html_e('Włącz niestandardowy CSS', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                             </div>
+                             
+                             <div class="mas-v2-custom-css conditional-field" data-show-when="menu_custom_css_enabled" data-show-value="1">
+                                 <div class="mas-v2-field">
+                                     <label for="menu_custom_css_code" class="mas-v2-label">
+                                         <?php esc_html_e('Kod CSS', 'modern-admin-styler-v2'); ?>
+                                     </label>
+                                     <textarea id="menu_custom_css_code" 
+                                               name="menu_custom_css_code" 
+                                               class="mas-v2-code-editor"
+                                               rows="8"
+                                               placeholder="/* Twój niestandardowy CSS tutaj */&#10;#adminmenu {&#10;    /* Twoje style */&#10;}"><?php echo esc_textarea($settings['menu_custom_css_code'] ?? ''); ?></textarea>
+                                     <small class="mas-v2-help-text">
+                                         <?php esc_html_e('Zaawansowane stylowanie CSS bezpośrednio w menu', 'modern-admin-styler-v2'); ?>
+                                     </small>
+                                 </div>
+                                 
+                                 <div class="mas-v2-field">
+                                     <label class="mas-v2-checkbox">
+                                         <input type="checkbox" 
+                                                name="menu_css_minification" 
+                                                value="1" 
+                                                <?php checked($settings['menu_css_minification'] ?? true); ?>>
+                                         <span class="mas-v2-checkbox-mark"></span>
+                                         <?php esc_html_e('Minifikacja CSS', 'modern-admin-styler-v2'); ?>
+                                     </label>
+                                 </div>
+                             </div>
+                             
+                             <div class="mas-v2-field" style="margin-top: 1rem;">
+                                 <label class="mas-v2-checkbox">
+                                     <input type="checkbox" 
+                                            name="menu_custom_js_enabled" 
+                                            id="menu_custom_js_enabled"
+                                            value="1" 
+                                            <?php checked($settings['menu_custom_js_enabled'] ?? false); ?>>
+                                     <span class="mas-v2-checkbox-mark"></span>
+                                     <?php esc_html_e('Włącz niestandardowy JavaScript', 'modern-admin-styler-v2'); ?>
+                                 </label>
+                             </div>
+                             
+                             <div class="mas-v2-custom-js conditional-field" data-show-when="menu_custom_js_enabled" data-show-value="1">
+                                 <div class="mas-v2-field">
+                                     <label for="menu_custom_js_code" class="mas-v2-label">
+                                         <?php esc_html_e('Kod JavaScript', 'modern-admin-styler-v2'); ?>
+                                     </label>
+                                     <textarea id="menu_custom_js_code" 
+                                               name="menu_custom_js_code" 
+                                               class="mas-v2-code-editor"
+                                               rows="8"
+                                               placeholder="// Twój niestandardowy JavaScript tutaj&#10;jQuery(document).ready(function($) {&#10;    // Twój kod&#10;});"><?php echo esc_textarea($settings['menu_custom_js_code'] ?? ''); ?></textarea>
+                                     <small class="mas-v2-help-text">
+                                         <?php esc_html_e('Zaawansowane interakcje JavaScript dla menu', 'modern-admin-styler-v2'); ?>
+                                     </small>
+                                 </div>
+                                 
+                                 <div class="mas-v2-field">
+                                     <label class="mas-v2-checkbox">
+                                         <input type="checkbox" 
+                                                name="menu_js_minification" 
+                                                value="1" 
+                                                <?php checked($settings['menu_js_minification'] ?? true); ?>>
+                                         <span class="mas-v2-checkbox-mark"></span>
+                                         <?php esc_html_e('Minifikacja JavaScript', 'modern-admin-styler-v2'); ?>
+                                     </label>
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         <h3 style="margin-top: 2rem; color: rgba(255,255,255,0.9);">🛡️ <?php esc_html_e('Bezpieczeństwo i Monitoring', 'modern-admin-styler-v2'); ?></h3>
+                         
+                         <div class="mas-v2-security-monitoring">
+                             <div class="mas-v2-security-grid">
+                                 <div class="mas-v2-field">
+                                     <label class="mas-v2-checkbox">
+                                         <input type="checkbox" 
+                                                name="menu_security_scanning" 
+                                                value="1" 
+                                                <?php checked($settings['menu_security_scanning'] ?? false); ?>>
+                                         <span class="mas-v2-checkbox-mark"></span>
+                                         <?php esc_html_e('Skanowanie bezpieczeństwa', 'modern-admin-styler-v2'); ?>
+                                     </label>
+                                 </div>
+                                 
+                                 <div class="mas-v2-field">
+                                     <label class="mas-v2-checkbox">
+                                         <input type="checkbox" 
+                                                name="menu_access_logging" 
+                                                value="1" 
+                                                <?php checked($settings['menu_access_logging'] ?? false); ?>>
+                                         <span class="mas-v2-checkbox-mark"></span>
+                                         <?php esc_html_e('Logowanie dostępu', 'modern-admin-styler-v2'); ?>
+                                     </label>
+                                 </div>
+                                 
+                                 <div class="mas-v2-field">
+                                     <label class="mas-v2-checkbox">
+                                         <input type="checkbox" 
+                                                name="menu_performance_alerts" 
+                                                value="1" 
+                                                <?php checked($settings['menu_performance_alerts'] ?? false); ?>>
+                                         <span class="mas-v2-checkbox-mark"></span>
+                                         <?php esc_html_e('Alerty wydajności', 'modern-admin-styler-v2'); ?>
+                                     </label>
+                                 </div>
+                                 
+                                 <div class="mas-v2-field">
+                                     <label class="mas-v2-checkbox">
+                                         <input type="checkbox" 
+                                                name="menu_error_logging" 
+                                                value="1" 
+                                                <?php checked($settings['menu_error_logging'] ?? true); ?>>
+                                         <span class="mas-v2-checkbox-mark"></span>
+                                         <?php esc_html_e('Logowanie błędów', 'modern-admin-styler-v2'); ?>
+                                     </label>
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         <div class="mas-v2-premium-cta">
+                             <div class="mas-v2-cta-content">
+                                 <h4><?php esc_html_e('🚀 Gotowy na więcej?', 'modern-admin-styler-v2'); ?></h4>
+                                 <p><?php esc_html_e('Odblokuj pełny potencjał z funkcjami White Label, Multi-site, API Integration i więcej!', 'modern-admin-styler-v2'); ?></p>
+                                 <button type="button" class="mas-v2-btn mas-v2-btn-premium">
+                                     ⭐ <?php esc_html_e('Upgrade do Premium', 'modern-admin-styler-v2'); ?>
+                                 </button>
+                             </div>
+                         </div>
+                         
+                     </div>
+                     
+                 </div>
+             </div>
+             
+             <!-- Advanced Tab -->
                 <div id="advanced" class="mas-v2-tab-content <?php echo ($is_main_page || $active_tab === 'advanced') ? 'active' : ''; ?>" role="tabpanel" <?php echo (!$is_main_page && $active_tab !== 'advanced') ? 'style="display: none;"' : ''; ?>>
                     <div class="mas-v2-card">
                         <div class="mas-v2-card-header">
@@ -2438,12 +4417,10 @@ if (!$is_main_page) {
                                        id="mas-v2-live-preview"
                                        name="live_preview" 
                                        value="1" 
-                                       checked 
-                                       disabled 
-                                       style="opacity: 0.7;">
+                                       <?php checked($settings['live_preview'] ?? true); ?>>
                                 <span class="mas-v2-checkbox-mark"></span>
                                 <?php esc_html_e('Podgląd na żywo', 'modern-admin-styler-v2'); ?>
-                                <small class="mas-v2-help-text">Zawsze aktywny dla lepszego UX</small>
+                                <small class="mas-v2-help-text">Włącza natychmiastowy podgląd zmian</small>
                                 </label>
                             </div>
                             
@@ -2980,4 +4957,3 @@ if (!$is_main_page) {
         </div>
     </div>
 </div>
-

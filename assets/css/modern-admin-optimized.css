@@ -54,7 +54,7 @@
 body.wp-admin.mas-v2-modern-style #adminmenu {
     overflow: visible !important;
     padding: 8px !important;
-    background: var(--mas-bg-primary) !important;
+    background: var(--mas-menu-background, var(--mas-bg-primary)) !important;
 }
 
 /* Menu Items - Main Level */
@@ -134,6 +134,41 @@ body.wp-admin.mas-v2-modern-style:not(.mas-v2-menu-floating):not(.folded) #admin
     clear: both !important;
     padding: 4px !important;
     border: none !important;
+}
+
+/* Hover Submenu dla normalnego menu (nie floating, nie collapsed) */
+body.wp-admin.mas-v2-modern-style:not(.mas-v2-menu-floating):not(.folded) #adminmenu li:not(.wp-has-current-submenu):not(.current):hover .wp-submenu {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    margin: 8px 12px 4px 12px !important;
+    width: auto !important;
+    box-shadow: none !important;
+    border-radius: 8px !important;
+    background: rgba(0, 0, 0, 0.15) !important;
+    backdrop-filter: none !important;
+    display: block !important;
+    opacity: 1 !important;
+    transform: none !important;
+    animation: slideInDown 0.2s ease-out !important;
+    z-index: auto !important;
+    float: none !important;
+    clear: both !important;
+    padding: 4px !important;
+    border: none !important;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 300px;
+    }
 }
 
 /* Floating Submenu */
@@ -245,74 +280,20 @@ body.wp-admin.mas-v2-modern-style.mas-v2-admin-bar-floating #wpadminbar .ab-subm
 }
 
 /* ==========================================================================
-   FLOATING MENU STYLES - SIMPLIFIED & UNIFIED
+   FLOATING MENU STYLES - WYŁĄCZONE (HANDLED BY PHP MAIN SYSTEM)
    ========================================================================== */
 
-/* Base floating menu - works for both expanded and collapsed */
-body.wp-admin.mas-v2-modern-style.mas-v2-menu-floating #adminmenu {
-    position: fixed !important;
-    top: calc(var(--mas-admin-bar-height, 32px) + var(--mas-menu-margin-top, 20px)) !important;
-    left: var(--mas-menu-margin-left, 20px) !important;
-    bottom: var(--mas-menu-margin-bottom, 20px) !important;
-    right: auto !important;
-    width: var(--mas-menu-width, 160px) !important;
-    height: auto !important;
-    background: var(--mas-bg-primary) !important;
-    border: 1px solid var(--mas-border-color) !important;
-    border-radius: 16px !important;
-    box-shadow: var(--mas-shadow-xl) !important;
-    z-index: 9999 !important;
-    overflow-y: auto !important;
-    transition: width 0.3s ease !important;
-}
-
-/* Floating menu collapsed state */
-body.wp-admin.mas-v2-modern-style.mas-v2-menu-floating.folded #adminmenu {
-    width: var(--mas-menu-width-collapsed, 36px) !important;
-}
-
-/* Floating menu wrapper */
-body.wp-admin.mas-v2-modern-style.mas-v2-menu-floating #adminmenuwrap {
-    position: fixed !important;
-    top: calc(var(--mas-admin-bar-height, 32px) + var(--mas-menu-margin-top, 20px)) !important;
-    left: var(--mas-menu-margin-left, 20px) !important;
-    bottom: var(--mas-menu-margin-bottom, 20px) !important;
-    width: var(--mas-menu-width, 160px) !important;
-    z-index: 9999 !important;
-    transition: width 0.3s ease !important;
-}
-
-/* Floating menu wrapper collapsed */
-body.wp-admin.mas-v2-modern-style.mas-v2-menu-floating.folded #adminmenuwrap {
-    width: var(--mas-menu-width-collapsed, 36px) !important;
-}
-
-/* Content area adjustment for floating menu */
-body.wp-admin.mas-v2-modern-style.mas-v2-menu-floating #wpbody-content {
-    margin-left: 0 !important;
-}
-
-/* Glossy effect for floating menu */
-body.wp-admin.mas-v2-modern-style.mas-v2-menu-floating.mas-v2-menu-glossy #adminmenu {
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(51, 65, 85, 0.9) 100%) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    box-shadow: 
-        0 20px 40px -12px rgba(0, 0, 0, 0.25),
-        0 0 0 1px rgba(255, 255, 255, 0.05),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
-}
+/* WSZYSTKIE FLOATING STYLE HANDLED BY PHP - eliminuje konflikty i miganie */
 
 /* SIMPLIFIED SUBMENU - Only 3 states needed */
 
-/* Hide submenu by default in floating menu */
+/* Hide submenu by default ONLY in floating menu */
 body.wp-admin.mas-v2-modern-style.mas-v2-menu-floating #adminmenu .wp-submenu {
     display: none !important;
 }
 
-/* Hide submenu by default in collapsed menu */
-body.wp-admin.mas-v2-modern-style.folded #adminmenu .wp-submenu {
+/* Hide submenu in collapsed menu ONLY if not current/active */
+body.wp-admin.mas-v2-modern-style.folded #adminmenu li:not(.wp-has-current-submenu):not(.current) .wp-submenu {
     display: none !important;
 }
 
@@ -327,7 +308,7 @@ body.wp-admin.mas-v2-modern-style.folded:not(.mas-v2-menu-floating) #adminmenu l
     border: 1px solid var(--mas-border-color) !important;
     border-radius: 16px !important;
     box-shadow: var(--mas-shadow-xl) !important;
-    z-index: 99999 !important;
+    z-index: 100000 !important;
     display: block !important;
     opacity: 1 !important;
     padding: 8px !important;
@@ -556,6 +537,16 @@ body.wp-admin.mas-v2-modern-style .wp-submenu {
     -webkit-font-smoothing: antialiased !important;
 }
 
+/* Zapobiegaj animacjom w optimized styles podczas ładowania strony */
+body.mas-loading.wp-admin.mas-v2-modern-style #adminmenu,
+body.mas-loading.wp-admin.mas-v2-modern-style #wpadminbar,
+body.mas-loading.wp-admin.mas-v2-modern-style .wp-submenu {
+    will-change: auto !important;
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+}
+
 /* Optimize repaints */
 body.wp-admin.mas-v2-modern-style #adminmenu li.menu-top {
     contain: layout style paint !important;
@@ -577,27 +568,4 @@ body.wp-admin.mas-v2-modern-style #adminmenu li.menu-top {
    FLOATING ADMIN BAR STYLES - SIMPLIFIED
    ========================================================================== */
 
-body.wp-admin.mas-v2-modern-style.mas-v2-admin-bar-floating #wpadminbar {
-    position: fixed !important;
-    top: var(--mas-admin-bar-margin-top, 10px) !important;
-    left: var(--mas-admin-bar-margin-left, 10px) !important;
-    right: var(--mas-admin-bar-margin-right, 10px) !important;
-    width: auto !important;
-    background: var(--mas-bg-primary) !important;
-    border: 1px solid var(--mas-border-color) !important;
-    border-radius: var(--mas-border-radius) !important;
-    box-shadow: var(--mas-shadow-lg) !important;
-    z-index: 99999 !important;
-}
-
-/* Glossy effect for floating admin bar */
-body.wp-admin.mas-v2-modern-style.mas-v2-admin-bar-floating.mas-v2-admin-bar-glossy #wpadminbar {
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(51, 65, 85, 0.9) 100%) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.25),
-        0 0 0 1px rgba(255, 255, 255, 0.05),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
-} 
+/* FLOATING ADMIN BAR - WYŁĄCZONY (HANDLED BY PHP MAIN SYSTEM) */ 

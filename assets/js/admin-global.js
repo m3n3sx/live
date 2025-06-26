@@ -11,7 +11,6 @@
         // Ustawienia są przekazane przez wp_localize_script
         if (typeof masV2Global !== 'undefined' && masV2Global.settings) {
             updateBodyClasses(masV2Global.settings);
-            initSubmenuFix(masV2Global.settings);
             
             // Dodatkowe wywołanie po krótkim opóźnieniu dla pewności
             setTimeout(function() {
@@ -38,6 +37,13 @@
             body.classList.remove('mas-menu-floating', 'mas-v2-menu-floating');
         }
         
+        // Menu compact mode
+        if (settings.menu_compact_mode) {
+            body.classList.add('mas-menu-compact-mode');
+        } else {
+            body.classList.remove('mas-menu-compact-mode');
+        }
+        
         // Admin bar floating status
         if (settings.admin_bar_detached) {
             body.classList.add('mas-admin-bar-floating');
@@ -54,124 +60,6 @@
         }
     }
 
-    /**
-     * Injects CSS to fix submenu behavior in floating mode.
-     * This is a global fix for all admin pages.
-     */
-    function initSubmenuFix(settings) {
-        if (!settings.menu_detached) {
-            return;
-        }
-
-        const styleId = 'mas-v2-submenu-fix';
-        if (document.getElementById(styleId)) {
-            return;
-        }
-        const style = document.createElement('style');
-        style.id = styleId;
-        style.textContent = `
-            /* Modern Admin Styler V2 - Submenu Fix (Global) */
-
-            /* Ensure the menu containers can show overflowing content (the fly-out submenus) */
-            body.mas-v2-menu-floating #wpwrap,
-            body.mas-v2-menu-floating #adminmenuwrap,
-            body.mas-v2-menu-floating #adminmenu {
-                overflow: visible !important;
-            }
-
-            /* Base Submenu State (hidden and ready for fly-out) */
-            body.mas-v2-menu-floating #adminmenu .wp-submenu {
-                display: none;
-                position: absolute;
-                left: 100%;
-                top: -1px; /* Align with parent item */
-                width: 200px;
-                z-index: 99999; /* High z-index */
-                
-                /* Visual styles */
-                padding: 8px 0;
-                background: var(--mas-glass, rgba(35, 40, 45, 0.95));
-                backdrop-filter: blur(20px);
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-                border-radius: 0 12px 12px 0;
-                border: 1px solid var(--mas-glass-border, rgba(255, 255, 255, 0.1));
-
-                /* Animation properties */
-                opacity: 0;
-                transform: translateX(5px);
-                transition: opacity 0.15s ease-out, transform 0.15s ease-out;
-            }
-
-            /* HOVER: Show fly-out submenu for any top-level menu item */
-            body.mas-v2-menu-floating #adminmenu li.menu-top:hover > .wp-submenu {
-                display: block;
-                opacity: 1;
-                transform: translateX(0);
-            }
-
-            /* ACTIVE: Accordion Style (Expanded Menu Only) */
-            body.mas-v2-menu-floating:not(.folded) #adminmenu li.wp-has-current-submenu > .wp-submenu,
-            body.mas-v2-menu-floating:not(.folded) #adminmenu li.current > .wp-submenu {
-                display: block !important;
-                position: static !important;
-                width: auto !important;
-                box-shadow: none !important;
-                border: none !important;
-                transform: none !important;
-                opacity: 1 !important;
-                background: rgba(0, 0, 0, 0.1) !important;
-                backdrop-filter: none !important;
-                border-radius: 8px !important;
-                margin: 4px 8px 8px 8px !important;
-                padding: 4px 0 !important;
-                z-index: auto !important;
-            }
-
-            /* COLLAPSED MENU: Adjust fly-out position */
-            body.mas-v2-menu-floating.folded #adminmenu .wp-submenu {
-                left: 40px; /* Position next to collapsed menu icons */
-                top: -1px;
-                border-radius: 12px; /* Rounded on all corners */
-            }
-
-            /* Admin Bar Fixes */
-            /* Reset default WP admin bar styles */
-            body.mas-v2-admin-bar-floating #wpadminbar {
-                box-shadow: var(--mas-shadow-md) !important;
-                border: none !important;
-            }
-
-            body.mas-v2-admin-bar-floating #wpadminbar > #wp-toolbar > ul > li {
-                margin: 0 !important;
-            }
-
-            body.mas-v2-admin-bar-floating #wpadminbar > #wp-toolbar > ul > li > a {
-                height: 46px;
-                padding: 0 12px !important;
-                display: flex;
-                align-items: center;
-            }
-
-            body.mas-v2-admin-bar-floating #wpadminbar .ab-icon:before,
-            body.mas-v2-admin-bar-floating #wpadminbar .ab-item:before {
-                margin-top: 0 !important;
-            }
-
-            /* Ensure icons are vertically centered */
-            body.mas-v2-admin-bar-floating #wpadminbar a.ab-item,
-            body.mas-v2-admin-bar-floating #wpadminbar > #wp-toolbar > ul > li > #adminmenuback,
-            body.mas-v2-admin-bar-floating #wpadminbar > #wp-toolbar > ul > #wp-admin-bar-root-default > a {
-                height: auto !important;
-            }
-
-            body.mas-v2-admin-bar-floating #wpadminbar #wp-admin-bar-site-name > a {
-                padding: 0 10px !important;
-                font-weight: 600;
-            }
-        `;
-        document.head.appendChild(style);
-    }
-    
     /**
      * Globalny manager motywów - działa na wszystkich stronach wp-admin
      */
@@ -374,12 +262,13 @@
         }
         
         getLivePreviewState() {
-            // Sprawdź localStorage lub checkbox na stronie wtyczki
-            const stored = localStorage.getItem('mas-v2-live-preview');
-            if (stored !== null) return stored === 'true';
-            
+            // Sprawdź checkbox na stronie wtyczki najpierw
             const checkbox = document.getElementById('mas-v2-live-preview');
-            return checkbox ? checkbox.checked : false;
+            if (checkbox) return checkbox.checked;
+            
+            // Fallback do localStorage jeśli checkbox nie istnieje
+            const stored = localStorage.getItem('mas-v2-live-preview');
+            return stored !== null ? stored === 'true' : true; // Domyślnie true
         }
         
         toggleLivePreview() {

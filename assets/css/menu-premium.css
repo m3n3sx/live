@@ -1,0 +1,424 @@
+/* =============================================================================
+   Modern Admin Styler V2 - Premium Features CSS
+   Advanced styling for enterprise-level features
+   ============================================================================= */
+
+/* Premium Notice */
+.mas-v2-premium-notice {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.mas-v2-premium-notice::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="50" cy="50" r="0.5" fill="rgba(255,255,255,0.03)"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grain)"/></svg>');
+    pointer-events: none;
+}
+
+.mas-v2-premium-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.mas-v2-premium-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mas-v2-premium-notice h3 {
+    color: white;
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.mas-v2-premium-notice p {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Premium Content */
+.mas-v2-premium-content {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Template System */
+.mas-v2-template-system {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mas-v2-template-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.mas-v2-template-actions .mas-v2-btn {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.mas-v2-template-actions .mas-v2-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.mas-v2-template-actions .mas-v2-btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.mas-v2-template-features {
+    margin-top: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+/* Conditional Display */
+.mas-v2-conditional-display {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mas-v2-role-restrictions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.mas-v2-page-specific {
+    margin-top: 1rem;
+}
+
+.mas-v2-textarea {
+    width: 100%;
+    min-height: 120px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.9);
+    padding: 0.75rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.mas-v2-textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    background: rgba(0, 0, 0, 0.5);
+}
+
+/* Analytics */
+.mas-v2-analytics {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mas-v2-analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+/* Backup System */
+.mas-v2-backup-system {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Custom Code */
+.mas-v2-custom-code {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mas-v2-code-editor {
+    width: 100%;
+    min-height: 200px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: #f8f8f2;
+    padding: 1rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    resize: vertical;
+    transition: all 0.3s ease;
+    tab-size: 4;
+}
+
+.mas-v2-code-editor:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    background: rgba(0, 0, 0, 0.6);
+}
+
+/* Syntax highlighting hints */
+.mas-v2-code-editor::placeholder {
+    color: rgba(248, 248, 242, 0.4);
+    font-style: italic;
+}
+
+/* Security Monitoring */
+.mas-v2-security-monitoring {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mas-v2-security-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+/* Premium CTA */
+.mas-v2-premium-cta {
+    margin-top: 2rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+    border-radius: 12px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.mas-v2-premium-cta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.mas-v2-cta-content {
+    position: relative;
+    z-index: 1;
+}
+
+.mas-v2-premium-cta h4 {
+    color: #333;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.mas-v2-premium-cta p {
+    color: #555;
+    margin: 0 0 1.5rem 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.mas-v2-btn-premium {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white !important;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    text-decoration: none;
+    display: inline-block;
+}
+
+.mas-v2-btn-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(135deg, #5a67d8, #6b46c1);
+}
+
+/* Section Headers */
+.mas-v2-premium-content h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.5rem;
+}
+
+.mas-v2-premium-content h3:first-of-type {
+    margin-top: 0;
+}
+
+.mas-v2-premium-content h4 {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .mas-v2-template-actions {
+        flex-direction: column;
+    }
+    
+    .mas-v2-template-actions .mas-v2-btn {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .mas-v2-analytics-grid,
+    .mas-v2-security-grid,
+    .mas-v2-role-restrictions {
+        grid-template-columns: 1fr;
+    }
+    
+    .mas-v2-premium-notice {
+        padding: 1.5rem;
+    }
+    
+    .mas-v2-premium-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+
+/* Loading States */
+.mas-v2-loading {
+    position: relative;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.mas-v2-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    animation: mas-v2-spin 1s linear infinite;
+}
+
+@keyframes mas-v2-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Success/Error States */
+.mas-v2-success {
+    border-color: #10b981 !important;
+    background: rgba(16, 185, 129, 0.1) !important;
+}
+
+.mas-v2-error {
+    border-color: #ef4444 !important;
+    background: rgba(239, 68, 68, 0.1) !important;
+}
+
+/* Tooltip Enhancements for Premium */
+.mas-v2-premium-content .mas-v2-help-text {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    margin-top: 0.25rem;
+}
+
+/* Enhanced Field Groups */
+.mas-v2-field-group {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mas-v2-field-group:hover {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Premium Feature Icons */
+.mas-v2-feature-icon {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    margin-right: 0.5rem;
+    font-size: 12px;
+} 

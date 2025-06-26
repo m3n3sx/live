@@ -1,0 +1,2217 @@
+/**
+ * Modern Admin Styler V2 - Optimized CSS
+ * Replaces problematic JavaScript functions with proper CSS specificity
+ */
+
+/* ==========================================================================
+   CSS VARIABLES SYSTEM - For instant live preview
+   ========================================================================== */
+
+:root {
+    /* Primary Colors */
+    --mas-accent-color: #3b82f6;
+    --mas-primary: var(--mas-accent-color);
+    --mas-bg-primary: #ffffff;
+    --mas-bg-secondary: #f8fafc;
+    --mas-text-primary: #1e293b;
+    --mas-text-secondary: #64748b;
+    --mas-border-color: #e2e8f0;
+    
+    /* Dark Theme Colors */
+    --mas-dark-bg-primary: #0f172a;
+    --mas-dark-bg-secondary: #1e293b;
+    --mas-dark-text-primary: #f1f5f9;
+    --mas-dark-text-secondary: #cbd5e1;
+    --mas-dark-border-color: #334155;
+    
+    /* Layout Variables */
+    --mas-border-radius: 12px;
+    --mas-font-size-base: 14px;
+    --mas-spacing-base: 16px;
+    
+    /* Extended Live Preview Variables */
+    --mas-admin-bar-text-color: #ffffff;
+    --mas-admin-bar-hover-color: #46a6d8;
+    --mas-admin-bar-font-size: 13px;
+    --mas-admin-bar-padding: 8px;
+    --mas-admin-bar-border-radius-all: 0px;
+    
+    --mas-menu-text-color: #1e293b;
+    --mas-menu-hover-color: #3b82f6;
+    --mas-menu-active-background: #0073aa;
+    --mas-menu-active-text-color: #ffffff;
+    --mas-menu-item-height: 34px;
+    --mas-menu-border-radius-all: 0px;
+    --mas-menu-background: #ffffff;
+    
+    /* Shadows */
+    --mas-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --mas-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --mas-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --mas-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Theme Variables */
+[data-theme="dark"] {
+    --mas-bg-primary: var(--mas-dark-bg-primary);
+    --mas-bg-secondary: var(--mas-dark-bg-secondary);
+    --mas-text-primary: var(--mas-dark-text-primary);
+    --mas-text-secondary: var(--mas-dark-text-secondary);
+    --mas-border-color: var(--mas-dark-border-color);
+}
+
+/* ==========================================================================
+   ADMIN MENU STYLING - High Specificity CSS
+   Replaces forceFixSideMenu() JavaScript function
+   ========================================================================== */
+
+/* Admin Menu Container */
+body.wp-admin.mas-v2-modern-style #adminmenu {
+    overflow: visible !important;
+    padding: 8px !important;
+    background: var(--mas-menu-background, var(--mas-bg-primary)) !important;
+}
+
+/* Menu Items - Main Level */
+body.wp-admin.mas-v2-modern-style #adminmenu li.menu-top {
+    border-radius: var(--mas-menu-border-radius-all, var(--mas-border-radius)) !important;
+    margin: 2px 4px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    background: transparent !important;
+    height: var(--mas-menu-item-height) !important;
+}
+
+body.wp-admin.mas-v2-modern-style #adminmenu li.menu-top:hover {
+    background: var(--mas-bg-secondary) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: var(--mas-shadow-md) !important;
+}
+
+/* Menu Links */
+body.wp-admin.mas-v2-modern-style #adminmenu li.menu-top > a {
+    border-radius: var(--mas-menu-border-radius-all, var(--mas-border-radius)) !important;
+    margin: 0 !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    color: var(--mas-menu-text-color) !important;
+    padding: 8px 12px !important;
+    height: var(--mas-menu-item-height) !important;
+    line-height: calc(var(--mas-menu-item-height) - 16px) !important;
+}
+
+body.wp-admin.mas-v2-modern-style #adminmenu li.menu-top:hover > a {
+    color: var(--mas-menu-hover-color) !important;
+}
+
+body.wp-admin.mas-v2-modern-style #adminmenu li.current > a,
+body.wp-admin.mas-v2-modern-style #adminmenu li.wp-has-current-submenu > a {
+    background: var(--mas-menu-active-background) !important;
+    color: var(--mas-menu-active-text-color) !important;
+}
+
+/* Menu Names */
+body.wp-admin.mas-v2-modern-style #adminmenu div.wp-menu-name {
+    border-radius: var(--mas-border-radius) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+}
+
+/* Menu Icons */
+body.wp-admin.mas-v2-modern-style #adminmenu .wp-menu-image {
+    border-radius: 8px !important;
+    padding: 4px !important;
+    width: 20px !important;
+    height: 20px !important;
+}
+
+/* Menu Separators */
+body.wp-admin.mas-v2-modern-style #adminmenu .wp-menu-separator {
+    margin: 8px 12px !important;
+    height: 1px !important;
+    background: var(--mas-border-color) !important;
+    border-radius: 1px !important;
+}
+
+/* Compact Mode Styling */
+body.mas-menu-compact-mode #adminmenu li.menu-top > a {
+    padding: 4px 8px !important;
+    height: 28px !important;
+    line-height: 20px !important;
+}
+
+body.mas-menu-compact-mode #adminmenu li.menu-top {
+    margin: 1px 4px !important;
+    height: 28px !important;
+}
+
+/* ==========================================================================
+   SUBMENU STYLING - Replaces WordPressSubmenuHandler
+   ========================================================================== */
+
+/* Active Submenu Positioning - Normal expanded menu (not floating, not collapsed) */
+body.wp-admin.mas-v2-modern-style:not(.mas-v2-menu-floating):not(.folded) #adminmenu li.wp-has-current-submenu .wp-submenu,
+body.wp-admin.mas-v2-modern-style:not(.mas-v2-menu-floating):not(.folded) #adminmenu li.current .wp-submenu {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    margin: 8px 12px 4px 12px !important;
+    width: auto !important;
+    box-shadow: none !important;
+    border-radius: 8px !important;
+    background: rgba(0, 0, 0, 0.15) !important;
+    backdrop-filter: none !important;
+    display: block !important;
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    z-index: auto !important;
+    float: none !important;
+    clear: both !important;
+    padding: 4px !important;
+    border: none !important;
+}
+
+/* Hover Submenu dla normalnego menu (nie floating, nie collapsed) */
+body.wp-admin.mas-v2-modern-style:not(.mas-v2-menu-floating):not(.folded) #adminmenu li:not(.wp-has-current-submenu):not(.current):hover .wp-submenu {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    margin: 8px 12px 4px 12px !important;
+    width: auto !important;
+    box-shadow: none !important;
+    border-radius: 8px !important;
+    background: rgba(0, 0, 0, 0.15) !important;
+    backdrop-filter: none !important;
+    display: block !important;
+    opacity: 1 !important;
+    transform: none !important;
+    animation: slideInDown 0.2s ease-out !important;
+    z-index: auto !important;
+    float: none !important;
+    clear: both !important;
+    padding: 4px !important;
+    border: none !important;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 300px;
+    }
+}
+
+/* Floating Submenu */
+body.wp-admin.mas-v2-modern-style #adminmenu .wp-submenu {
+    background: var(--mas-bg-secondary) !important;
+    border: 1px solid var(--mas-border-color) !important;
+    border-radius: 16px !important;
+    box-shadow: var(--mas-shadow-xl) !important;
+    margin-top: 8px !important;
+    overflow: hidden !important;
+    padding: 8px !important;
+    transition: opacity 0.2s ease, transform 0.2s ease !important;
+}
+
+/* Submenu Items - Normal Menu (expanded, not floating) */
+body.wp-admin.mas-v2-modern-style:not(.mas-v2-menu-floating):not(.folded) #adminmenu .wp-submenu li a {
+    border-radius: 6px !important;
+    margin: 2px 8px !important;
+    padding: 8px 16px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    color: var(--mas-text-secondary) !important;
+    display: block !important;
+    width: auto !important;
+    font-size: 14px !important;
+}
+
+body.wp-admin.mas-v2-modern-style:not(.mas-v2-menu-floating):not(.folded) #adminmenu .wp-submenu li a:hover,
+body.wp-admin.mas-v2-modern-style:not(.mas-v2-menu-floating):not(.folded) #adminmenu .wp-submenu li a:focus {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: var(--mas-text-primary) !important;
+    transform: translateX(2px) !important;
+}
+
+body.wp-admin.mas-v2-modern-style:not(.mas-v2-menu-floating):not(.folded) #adminmenu .wp-submenu li.current a {
+    background: var(--mas-primary) !important;
+    color: white !important;
+    box-shadow: 0 1px 4px rgba(139, 92, 246, 0.2) !important;
+}
+
+/* Submenu Items - Floating/Hover Behavior */
+body.wp-admin.mas-v2-modern-style #adminmenu li:hover .wp-submenu li a {
+    border-radius: var(--mas-border-radius) !important;
+    margin: 2px 0 !important;
+    padding: 12px 16px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    color: var(--mas-text-secondary) !important;
+}
+
+body.wp-admin.mas-v2-modern-style #adminmenu li:hover .wp-submenu li a:hover,
+body.wp-admin.mas-v2-modern-style #adminmenu li:hover .wp-submenu li a:focus {
+    background: var(--mas-primary) !important;
+    color: white !important;
+    transform: translateX(4px) !important;
+}
+
+/* ==========================================================================
+   ADMIN BAR STYLING - Optimized
+   ========================================================================== */
+
+body.wp-admin.mas-v2-modern-style #wpadminbar {
+    background: var(--mas-bg-primary) !important;
+    border-bottom: 1px solid var(--mas-border-color) !important;
+    border-radius: var(--mas-admin-bar-border-radius-all) !important;
+    height: 32px !important;
+    line-height: 32px !important;
+    overflow: visible !important;
+}
+
+body.wp-admin.mas-v2-modern-style #wpadminbar .ab-top-menu > li > .ab-item {
+    color: var(--mas-admin-bar-text-color) !important;
+    font-size: var(--mas-admin-bar-font-size) !important;
+    padding: 0 var(--mas-admin-bar-padding) !important;
+    height: 32px !important;
+    line-height: 32px !important;
+    white-space: nowrap !important;
+    border-radius: 6px !important;
+    transition: all 0.2s ease !important;
+}
+
+body.wp-admin.mas-v2-modern-style #wpadminbar .ab-top-menu > li:hover > .ab-item {
+    color: var(--mas-admin-bar-hover-color) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.wp-admin.mas-v2-modern-style #wpadminbar .ab-icon {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 20px !important;
+}
+
+/* Admin Bar Submenu - Replaces JavaScript manipulation */
+body.wp-admin.mas-v2-modern-style #wpadminbar .ab-submenu {
+    display: block !important;
+    overflow: visible !important;
+    background: var(--mas-bg-secondary) !important;
+    border: 1px solid var(--mas-border-color) !important;
+    border-radius: var(--mas-border-radius) !important;
+    box-shadow: var(--mas-shadow-lg) !important;
+    margin-top: 2px !important;
+    z-index: 99999 !important;
+    position: absolute !important;
+}
+
+/* Fix submenu positioning and visibility for floating admin bar */
+body.wp-admin.mas-v2-modern-style.mas-v2-admin-bar-floating #wpadminbar .ab-submenu {
+    z-index: 99999 !important;
+    position: absolute !important;
+}
+
+/* Ensure proper overflow for submenu functionality */
+#wpadminbar {
+    overflow: visible !important;
+}
+
+#adminmenu {
+    overflow: visible !important;
+}
+
+/* ==========================================================================
+   FLOATING MENU STYLES - WYŁĄCZONE (HANDLED BY PHP MAIN SYSTEM)
+   ========================================================================== */
+
+/* WSZYSTKIE FLOATING STYLE HANDLED BY PHP - eliminuje konflikty i miganie */
+
+/* SIMPLIFIED SUBMENU - Only 3 states needed */
+
+/* Hide submenu by default ONLY in floating menu */
+body.wp-admin.mas-v2-modern-style.mas-v2-menu-floating #adminmenu .wp-submenu {
+    display: none !important;
+}
+
+/* Hide submenu in collapsed menu ONLY if not current/active */
+body.wp-admin.mas-v2-modern-style.folded #adminmenu li:not(.wp-has-current-submenu):not(.current) .wp-submenu {
+    display: none !important;
+}
+
+/* Floating/collapsed menu submenu (appears on hover) */
+body.wp-admin.mas-v2-modern-style.mas-v2-menu-floating #adminmenu li:hover .wp-submenu,
+body.wp-admin.mas-v2-modern-style.folded:not(.mas-v2-menu-floating) #adminmenu li:hover .wp-submenu {
+    position: absolute !important;
+    left: calc(100% + 8px) !important;
+    top: 0 !important;
+    min-width: 200px !important;
+    background: var(--mas-bg-secondary) !important;
+    border: 1px solid var(--mas-border-color) !important;
+    border-radius: 16px !important;
+    box-shadow: var(--mas-shadow-xl) !important;
+    z-index: 100000 !important;
+    display: block !important;
+    opacity: 1 !important;
+    padding: 8px !important;
+    margin: 0 !important;
+    animation: slideInFromLeft 0.2s ease-out !important;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+
+@media screen and (max-width: 960px) {
+    body.wp-admin.mas-v2-modern-style.mas-v2-menu-floating #adminmenu {
+        width: 180px !important;
+        left: 10px !important;
+    }
+    
+    body.wp-admin.mas-v2-modern-style.mas-v2-admin-bar-floating #wpadminbar {
+        left: 10px !important;
+        right: 10px !important;
+        top: 10px !important;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    body.wp-admin.mas-v2-modern-style.mas-v2-menu-floating #adminmenu {
+        position: static !important;
+        width: 100% !important;
+        height: auto !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        border-bottom: 1px solid var(--mas-border-color) !important;
+    }
+    
+    body.wp-admin.mas-v2-modern-style.mas-v2-admin-bar-floating #wpadminbar {
+        position: static !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        border-bottom: 1px solid var(--mas-border-color) !important;
+    }
+}
+
+/* ==========================================================================
+   ANIMATIONS AND TRANSITIONS
+   ========================================================================== */
+
+@media (prefers-reduced-motion: no-preference) {
+    body.wp-admin.mas-v2-modern-style #adminmenu li.menu-top {
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    
+    body.wp-admin.mas-v2-modern-style #adminmenu .wp-submenu {
+        transition: opacity 0.2s ease, transform 0.2s ease !important;
+    }
+    
+    body.wp-admin.mas-v2-modern-style #wpadminbar .ab-submenu {
+        transition: opacity 0.15s ease !important;
+    }
+}
+
+/* Disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    body.wp-admin.mas-v2-modern-style * {
+        transition: none !important;
+        animation: none !important;
+        transform: none !important;
+    }
+}
+
+/* ==========================================================================
+   UTILITY CLASSES
+   ========================================================================== */
+
+.mas-v2-hidden {
+    display: none !important;
+}
+
+.mas-v2-visible {
+    display: block !important;
+}
+
+.mas-v2-fade-in {
+    animation: masV2FadeIn 0.3s ease !important;
+}
+
+@keyframes masV2FadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ==========================================================================
+   THEME TOGGLE BUTTON - Optimized
+   ========================================================================== */
+
+.mas-theme-toggle {
+    position: fixed !important;
+    top: 50% !important;
+    right: 20px !important;
+    width: 50px !important;
+    height: 50px !important;
+    background: var(--mas-primary) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 50% !important;
+    box-shadow: var(--mas-shadow-lg) !important;
+    cursor: pointer !important;
+    z-index: 999999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 20px !important;
+    transition: all 0.2s ease !important;
+    transform: translateY(-50%) !important;
+}
+
+.mas-theme-toggle:hover {
+    transform: translateY(-50%) scale(1.1) !important;
+    box-shadow: var(--mas-shadow-xl) !important;
+}
+
+.mas-theme-toggle:active {
+    transform: translateY(-50%) scale(0.95) !important;
+}
+
+/* ==========================================================================
+   LIVE PREVIEW TOGGLE BUTTON
+   ========================================================================== */
+
+.mas-live-preview-toggle {
+    position: fixed !important;
+    top: 50% !important;
+    right: 80px !important; /* Obok theme toggle */
+    width: 50px !important;
+    height: 50px !important;
+    background: #10b981 !important; /* Zielony kolor dla Live Preview */
+    color: white !important;
+    border: none !important;
+    border-radius: 50% !important;
+    box-shadow: var(--mas-shadow-lg) !important;
+    cursor: pointer !important;
+    z-index: 999998 !important; /* Niższy niż theme toggle */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 20px !important;
+    transition: all 0.2s ease !important;
+    transform: translateY(-50%) !important;
+}
+
+.mas-live-preview-toggle:hover {
+    transform: translateY(-50%) scale(1.1) !important;
+    box-shadow: var(--mas-shadow-xl) !important;
+    background: #059669 !important; /* Ciemniejszy zielony przy hover */
+}
+
+.mas-live-preview-toggle:active {
+    transform: translateY(-50%) scale(0.95) !important;
+}
+
+.mas-live-preview-toggle.active {
+    background: #10b981 !important;
+}
+
+/* Pulsująca kropka */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(1.2);
+    }
+}
+
+.mas-live-preview-dot {
+    animation: pulse 2s infinite !important;
+}
+
+/* Mobile adjustments for floating buttons */
+@media (max-width: 782px) {
+    .mas-theme-toggle {
+        right: 10px !important;
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 18px !important;
+    }
+    
+    .mas-live-preview-toggle {
+        right: 65px !important; /* Dostosowane dla mobile */
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 18px !important;
+    }
+}
+
+/* ==========================================================================
+   PERFORMANCE OPTIMIZATIONS
+   ========================================================================== */
+
+/* Use hardware acceleration for smooth animations */
+body.wp-admin.mas-v2-modern-style #adminmenu,
+body.wp-admin.mas-v2-modern-style #wpadminbar,
+body.wp-admin.mas-v2-modern-style .wp-submenu {
+    will-change: transform !important;
+    backface-visibility: hidden !important;
+    -webkit-font-smoothing: antialiased !important;
+}
+
+/* Zapobiegaj animacjom w optimized styles podczas ładowania strony */
+body.mas-loading.wp-admin.mas-v2-modern-style #adminmenu,
+body.mas-loading.wp-admin.mas-v2-modern-style #wpadminbar,
+body.mas-loading.wp-admin.mas-v2-modern-style .wp-submenu {
+    will-change: auto !important;
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+}
+
+/* Optimize repaints */
+body.wp-admin.mas-v2-modern-style #adminmenu li.menu-top {
+    contain: layout style paint !important;
+}
+
+/* ==========================================================================
+   PRINT STYLES
+   ========================================================================== */
+
+@media print {
+    .mas-theme-toggle,
+    body.wp-admin.mas-v2-modern-style #adminmenu,
+    body.wp-admin.mas-v2-modern-style #wpadminbar {
+        display: none !important;
+    }
+}
+
+/* ==========================================================================
+   FLOATING ADMIN BAR STYLES - SIMPLIFIED
+   ========================================================================== */
+
+/* FLOATING ADMIN BAR - WYŁĄCZONY (HANDLED BY PHP MAIN SYSTEM) */ 
+
+/* ==========================================================================
+   MAS V2 PLUGIN INTERFACE SYSTEM
+   ========================================================================== */
+
+/* === THEME SYSTEM AND TOKENS === */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+/* Extend existing design tokens with interface-specific ones */
+:root {
+    /* Interface-specific tokens */
+    --mas-interface-bg: rgba(255, 255, 255, 0.95);
+    --mas-interface-surface: rgba(255, 255, 255, 0.9);
+    --mas-interface-border: rgba(0, 0, 0, 0.08);
+    --mas-interface-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    --mas-interface-shadow-hover: 0 12px 40px rgba(31, 38, 135, 0.5);
+    --mas-interface-gradient: linear-gradient(135deg, rgba(139, 92, 246, 0.9) 0%, rgba(236, 72, 153, 0.9) 50%, rgba(251, 146, 60, 0.9) 100%);
+}
+
+[data-theme="dark"] {
+    --mas-interface-bg: rgba(15, 23, 42, 0.95);
+    --mas-interface-surface: rgba(30, 41, 59, 0.9);
+    --mas-interface-border: rgba(255, 255, 255, 0.1);
+}
+
+/* === MAS V2 ADMIN WRAPPER === */
+.mas-v2-admin-wrapper {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 0;
+    position: relative;
+    font-family: var(--mas-font-sans);
+}
+
+.mas-v2-admin-wrapper::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23000" opacity="0.02"/><circle cx="75" cy="75" r="1" fill="%23000" opacity="0.02"/><circle cx="50" cy="10" r="1" fill="%23000" opacity="0.01"/><circle cx="20" cy="80" r="1" fill="%23000" opacity="0.02"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    pointer-events: none;
+    z-index: 0;
+}
+
+.mas-v2-admin-wrapper > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* === HEADER === */
+.mas-v2-header {
+    background: var(--mas-interface-gradient);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    margin: 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--mas-interface-shadow);
+}
+
+.mas-v2-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--mas-primary), var(--mas-secondary), var(--mas-warning));
+    border-radius: var(--mas-radius-xl) var(--mas-radius-xl) 0 0;
+}
+
+.mas-v2-header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.mas-v2-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.95);
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+}
+
+.mas-v2-subtitle {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0.5rem 0 0 0;
+}
+
+.mas-v2-header-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+/* === HEADER USER SECTION === */
+.mas-v2-header-left {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.mas-v2-user-welcome {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.mas-v2-user-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+.mas-v2-user-avatar:hover {
+    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2);
+}
+
+.mas-v2-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mas-v2-user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.mas-v2-greeting {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    animation: fadeInUp 0.8s ease 0.2s both;
+}
+
+/* === ACTIONS VERTICAL === */
+.mas-v2-actions-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-end;
+}
+
+.mas-v2-actions-vertical .mas-v2-btn {
+    min-width: 140px;
+    justify-content: center;
+    animation: slideInFromRight 0.6s ease forwards;
+}
+
+.mas-v2-actions-vertical .mas-v2-btn:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.mas-v2-actions-vertical .mas-v2-btn:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.mas-v2-actions-vertical .mas-v2-btn:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes slideInFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* === BUTTONS === */
+.mas-v2-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.75rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    letter-spacing: 0.025em;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    font-family: var(--mas-font-sans);
+}
+
+.mas-v2-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.mas-v2-btn:hover::before {
+    left: 100%;
+}
+
+.mas-v2-btn-primary {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: white;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.mas-v2-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+}
+
+.mas-v2-btn-secondary {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.mas-v2-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 32px rgba(255, 255, 255, 0.1) !important;
+}
+
+.mas-v2-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* === MINI BUTTONS === */
+.mas-v2-btn-mini {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid var(--mas-interface-border);
+    border-radius: 6px;
+    background: var(--mas-interface-surface);
+    color: var(--mas-text-primary);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.mas-v2-btn-mini::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--mas-primary) 0%, var(--mas-primary-dark) 100%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.mas-v2-btn-mini:hover {
+    border-color: var(--mas-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.mas-v2-btn-mini:hover::before {
+    opacity: 0.1;
+}
+
+.mas-v2-btn-mini:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+}
+
+.mas-v2-btn-mini span {
+    position: relative;
+    z-index: 1;
+}
+
+/* === NAVIGATION === */
+.mas-v2-nav {
+    margin: 2rem;
+    margin-bottom: 0;
+    position: sticky;
+    top: 32px;
+    z-index: 100;
+}
+
+.mas-v2-nav-container {
+    background: var(--mas-interface-surface);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--mas-interface-border);
+    border-radius: 16px;
+    padding: 0.5rem;
+    box-shadow: var(--mas-interface-shadow);
+}
+
+.mas-v2-nav-tabs {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 0.25rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.mas-v2-nav-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.mas-v2-nav-item {
+    flex-shrink: 0;
+}
+
+.mas-v2-nav-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1.25rem;
+    text-decoration: none;
+    color: var(--mas-text-secondary);
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+    font-size: 0.875rem;
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    min-width: fit-content;
+}
+
+.mas-v2-nav-tab:hover {
+    color: var(--mas-text-primary);
+    background: rgba(99, 102, 241, 0.1);
+    transform: translateY(-1px);
+}
+
+.mas-v2-nav-tab.active {
+    color: #ffffff;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.9) 0%, rgba(236, 72, 153, 0.9) 100%);
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+}
+
+.mas-v2-nav-tab.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+.mas-v2-nav-icon {
+    font-size: 1.125rem;
+    flex-shrink: 0;
+}
+
+.mas-v2-nav-text {
+    font-weight: 600;
+}
+
+/* === MAIN CONTENT === */
+.mas-v2-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.mas-v2-tab-panel {
+    display: none;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.mas-v2-tab-panel.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* === SECTIONS === */
+.mas-v2-section {
+    margin-bottom: 3rem;
+}
+
+.mas-v2-section-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--mas-text-primary);
+    margin: 0 0 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.mas-v2-section-description {
+    color: var(--mas-text-secondary);
+    font-size: 1rem;
+    margin: 0 0 2rem 0;
+    line-height: 1.6;
+}
+
+/* === GRID AND CARDS === */
+.mas-v2-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.mas-v2-settings-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.mas-v2-card {
+    background: var(--mas-interface-surface);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--mas-interface-border);
+    border-radius: var(--mas-radius-lg);
+    padding: var(--mas-space-xl);
+    box-shadow: var(--mas-interface-shadow);
+    transition: var(--mas-transition-slow);
+    position: relative;
+    overflow: hidden;
+}
+
+.mas-v2-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mas-v2-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--mas-interface-shadow-hover);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.mas-v2-card:hover::before {
+    opacity: 1;
+}
+
+.mas-v2-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--mas-text-primary);
+    margin: 0 0 1.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* === FORM FIELDS === */
+.mas-v2-field {
+    margin-bottom: 1.5rem;
+}
+
+.mas-v2-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--mas-text-primary);
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mas-v2-input,
+.mas-v2-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--mas-interface-border);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    background: var(--mas-interface-bg);
+    color: var(--mas-text-primary);
+    transition: all 0.3s ease;
+    appearance: none;
+    font-family: var(--mas-font-sans);
+}
+
+.mas-v2-input:focus,
+.mas-v2-select:focus {
+    outline: none;
+    border-color: var(--mas-primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* === COLOR PICKER === */
+.mas-v2-color {
+    width: 100%;
+    height: 48px;
+    padding: 4px;
+    border: 2px solid var(--mas-interface-border);
+    border-radius: 8px;
+    background: var(--mas-interface-bg);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mas-v2-color:focus {
+    outline: none;
+    border-color: var(--mas-primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* === SLIDER === */
+.mas-v2-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--mas-interface-border);
+    outline: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.mas-v2-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+}
+
+.mas-v2-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.mas-v2-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.mas-v2-slider-value {
+    font-weight: 600;
+    color: var(--mas-primary);
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: 4px;
+    margin-left: 0.5rem;
+}
+
+/* === TOGGLE SWITCH === */
+.mas-v2-toggle {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.mas-v2-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.mas-v2-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #cbd5e1;
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.mas-v2-toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.mas-v2-toggle input:checked + .mas-v2-toggle-slider {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.mas-v2-toggle input:checked + .mas-v2-toggle-slider:before {
+    transform: translateX(20px);
+}
+
+/* === CHECKBOX === */
+.mas-v2-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    position: relative;
+    padding: 0.5rem 0;
+}
+
+.mas-v2-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.mas-v2-checkbox-mark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--mas-interface-border);
+    border-radius: 4px;
+    background: var(--mas-interface-bg);
+    transition: all 0.3s ease;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.mas-v2-checkbox input[type="checkbox"]:checked + .mas-v2-checkbox-mark {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-color: #10b981;
+}
+
+.mas-v2-checkbox-mark::after {
+    content: '';
+    position: absolute;
+    display: none;
+    left: 6px;
+    top: 2px;
+    width: 6px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.mas-v2-checkbox input[type="checkbox"]:checked + .mas-v2-checkbox-mark::after {
+    display: block;
+}
+
+.mas-v2-checkbox:hover .mas-v2-checkbox-mark {
+    border-color: var(--mas-primary);
+    transform: scale(1.05);
+}
+
+/* === STATUS BAR === */
+.mas-v2-status-bar {
+    background: var(--mas-interface-surface);
+    border: 1px solid var(--mas-interface-border);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--mas-interface-shadow);
+}
+
+.mas-v2-status-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.mas-v2-status-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.mas-v2-status-label {
+    font-size: 0.875rem;
+    color: var(--mas-text-secondary);
+}
+
+.mas-v2-status-value {
+    font-weight: 600;
+    color: var(--mas-text-primary);
+    font-size: 0.875rem;
+}
+
+.mas-v2-status-value.changed {
+    color: var(--mas-warning);
+    animation: fadeOrange 0.3s ease;
+}
+
+.mas-v2-status-value.saved {
+    color: var(--mas-success);
+    animation: fadeGreen 0.3s ease;
+}
+
+@keyframes fadeOrange {
+    0%, 100% { color: var(--mas-warning); }
+    50% { color: #fb923c; }
+}
+
+@keyframes fadeGreen {
+    0%, 100% { color: var(--mas-success); }
+    50% { color: #4ade80; }
+}
+
+/* === MESSAGES === */
+.mas-v2-messages {
+    position: fixed;
+    top: 100px;
+    right: 2rem;
+    z-index: 9999;
+    max-width: 400px;
+    width: 100%;
+}
+
+.mas-v2-message {
+    background: var(--mas-interface-surface);
+    border: 1px solid var(--mas-interface-border);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 0.5rem;
+    box-shadow: var(--mas-interface-shadow);
+    animation: slideInRight 0.3s ease-out;
+    position: relative;
+    overflow: hidden;
+    color: var(--mas-text-primary);
+}
+
+.mas-v2-message::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--mas-primary);
+}
+
+.mas-v2-message.success::before {
+    background: var(--mas-success);
+}
+
+.mas-v2-message.error::before {
+    background: var(--mas-danger);
+}
+
+.mas-v2-message.warning::before {
+    background: var(--mas-warning);
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* === LOADING SPINNER === */
+.mas-v2-loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--mas-interface-border);
+    border-radius: 50%;
+    border-top-color: var(--mas-primary);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* === FOOTER === */
+.mas-v2-footer {
+    background: var(--mas-interface-surface);
+    border-top: 1px solid var(--mas-interface-border);
+    padding: 2rem 0;
+    margin-top: 3rem;
+    color: var(--mas-text-secondary);
+}
+
+.mas-v2-footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+}
+
+/* === COMING SOON PLACEHOLDER === */
+.mas-v2-coming-soon {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    background: linear-gradient(135deg, var(--mas-bg-secondary) 0%, var(--mas-bg-tertiary) 100%);
+    border-radius: 12px;
+    border: 2px dashed var(--mas-interface-border);
+}
+
+.mas-v2-coming-soon p {
+    color: var(--mas-text-secondary);
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 1200px) {
+    .mas-v2-settings-columns {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .mas-v2-header {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+    
+    .mas-v2-header-content {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .mas-v2-header-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .mas-v2-actions-vertical {
+        flex-direction: row;
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .mas-v2-actions-vertical .mas-v2-btn {
+        min-width: auto;
+        flex: 1;
+    }
+    
+    .mas-v2-user-welcome {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .mas-v2-user-avatar {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .mas-v2-greeting {
+        font-size: 1.25rem;
+    }
+    
+    .mas-v2-title {
+        font-size: 1.5rem;
+    }
+    
+    .mas-v2-content {
+        padding: 1rem;
+    }
+    
+    .mas-v2-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .mas-v2-nav {
+        margin: 1rem;
+    }
+    
+    .mas-v2-nav-tabs {
+        padding: 0.25rem;
+    }
+    
+    .mas-v2-nav-tab {
+        padding: 0.75rem 1rem;
+        font-size: 0.8rem;
+    }
+    
+    .mas-v2-footer-content {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .mas-v2-messages {
+        right: 1rem;
+        left: 1rem;
+        max-width: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .mas-v2-nav-tab .mas-v2-nav-text {
+        display: none;
+    }
+    
+    .mas-v2-header {
+        border-radius: 12px;
+    }
+    
+    .mas-v2-title {
+        font-size: 1.25rem;
+    }
+    
+    .mas-v2-greeting {
+        font-size: 1.125rem;
+    }
+    
+    .mas-v2-user-avatar {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .mas-v2-btn {
+        padding: 0.75rem 1.25rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* === SCROLLBAR STYLING === */
+.mas-v2-admin-wrapper::-webkit-scrollbar {
+    width: 8px;
+}
+
+.mas-v2-admin-wrapper::-webkit-scrollbar-track {
+    background: var(--mas-interface-border);
+}
+
+.mas-v2-admin-wrapper::-webkit-scrollbar-thumb {
+    background: var(--mas-primary);
+    border-radius: 4px;
+}
+
+.mas-v2-admin-wrapper::-webkit-scrollbar-thumb:hover {
+    background: var(--mas-primary-dark);
+}
+
+/* === ACCESSIBILITY IMPROVEMENTS === */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .mas-v2-card,
+    .mas-v2-btn,
+    .mas-v2-nav-tab {
+        transform: none !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    :root {
+        --mas-interface-border: #000000;
+        --mas-interface-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    
+    [data-theme="dark"] {
+        --mas-interface-border: #ffffff;
+    }
+    
+    .mas-v2-card,
+    .mas-v2-input,
+    .mas-v2-nav-tab {
+        border-width: 2px;
+    }
+}
+
+/* Focus improvements */
+*:focus {
+    outline: 2px solid var(--mas-primary) !important;
+    outline-offset: 2px !important;
+}
+
+/* Print styles */
+@media print {
+    .mas-v2-header,
+    .mas-v2-nav,
+    .mas-v2-messages,
+    .mas-v2-btn {
+        display: none !important;
+    }
+    
+    .mas-v2-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+}
+
+/* === LAYOUT SPECIFIC COMPONENTS === */
+.mas-v2-content-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin: 2rem;
+    margin-top: 0;
+}
+
+.mas-v2-main-content {
+    width: 100%;
+    max-width: none;
+}
+
+.mas-v2-tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.mas-v2-tab-content.active {
+    display: block;
+}
+
+/* === CARD HEADER COMPONENTS === */
+.mas-v2-card-header {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--mas-interface-border);
+    padding-bottom: 1rem;
+}
+
+.mas-v2-card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--mas-text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.mas-v2-card-description {
+    color: var(--mas-text-secondary);
+    font-size: 0.875rem;
+    margin: 0.5rem 0 0 0;
+    line-height: 1.5;
+}
+
+/* === METRICS GRID === */
+.mas-v2-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem;
+    margin-bottom: 0;
+}
+
+.mas-v2-metric-card {
+    background: var(--mas-interface-surface);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--mas-interface-border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--mas-interface-shadow);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.mas-v2-metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mas-v2-metric-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--mas-interface-shadow-hover);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.mas-v2-metric-card:hover::before {
+    opacity: 1;
+}
+
+.mas-v2-metric-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.mas-v2-metric-icon {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: 10px;
+    color: var(--mas-primary);
+}
+
+.mas-v2-metric-trend {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--mas-success);
+}
+
+.mas-v2-metric-trend.positive {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--mas-success);
+}
+
+.mas-v2-metric-trend.negative {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--mas-danger);
+}
+
+.mas-v2-metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--mas-text-primary);
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+}
+
+.mas-v2-metric-label {
+    font-size: 0.875rem;
+    color: var(--mas-text-secondary);
+    font-weight: 500;
+}
+
+/* Color variants for metric cards */
+.mas-v2-metric-card.purple .mas-v2-metric-icon {
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+}
+
+.mas-v2-metric-card.pink .mas-v2-metric-icon {
+    background: rgba(236, 72, 153, 0.1);
+    color: #ec4899;
+}
+
+.mas-v2-metric-card.orange .mas-v2-metric-icon {
+    background: rgba(251, 146, 60, 0.1);
+    color: #fb923c;
+}
+
+.mas-v2-metric-card.green .mas-v2-metric-icon {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+}
+
+/* === QUICK ACTIONS IN METRICS === */
+.mas-v2-quick-actions-mini {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.mas-v2-rotating-tip {
+    font-size: 0.75rem;
+    color: var(--mas-text-secondary);
+    margin-top: 1rem;
+    padding: 0.5rem;
+    background: rgba(99, 102, 241, 0.05);
+    border-radius: 6px;
+    border-left: 3px solid var(--mas-primary);
+    animation: fadeInOut 3s infinite;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+/* === SYSTEM MINI INFO === */
+.mas-v2-system-mini {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.mas-v2-system-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+}
+
+.mas-v2-system-item span:first-child {
+    color: var(--mas-text-secondary);
+}
+
+.mas-v2-system-item span:last-child {
+    font-weight: 600;
+    color: var(--mas-text-primary);
+}
+
+.mas-v2-system-item span:last-child.updating {
+    color: var(--mas-warning);
+    animation: pulse 1s infinite;
+}
+
+/* === FORM LAYOUT IMPROVEMENTS === */
+.mas-v2-admin-wrapper .mas-v2-settings-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 0;
+}
+
+.mas-v2-settings-columns .mas-v2-card {
+    height: fit-content;
+}
+
+/* === SPECIAL CARDS FOR SPECIFIC CONTENT === */
+.mas-v2-templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.mas-v2-template-card {
+    background: var(--mas-interface-surface);
+    border: 1px solid var(--mas-interface-border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.mas-v2-template-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mas-v2-template-card:hover::before {
+    opacity: 1;
+}
+
+.mas-v2-template-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--mas-interface-shadow-hover);
+}
+
+.mas-v2-template-preview {
+    height: 120px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.mas-v2-template-preview::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="%23cbd5e1"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+    opacity: 0.5;
+}
+
+.mas-v2-template-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--mas-text-primary);
+    margin: 1rem 1rem 0.5rem;
+}
+
+.mas-v2-template-description {
+    font-size: 0.875rem;
+    color: var(--mas-text-secondary);
+    margin: 0 1rem;
+    line-height: 1.4;
+}
+
+.mas-v2-template-tags {
+    margin: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.mas-v2-template-tag {
+    font-size: 0.75rem;
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--mas-primary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.mas-v2-template-actions {
+    padding: 1rem;
+    border-top: 1px solid var(--mas-interface-border);
+    display: flex;
+    gap: 0.5rem;
+}
+
+.mas-v2-template-btn {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    text-align: center;
+}
+
+.mas-v2-template-btn-primary {
+    background: var(--mas-primary);
+    color: white;
+}
+
+.mas-v2-template-btn-primary:hover {
+    background: var(--mas-primary-dark);
+    transform: translateY(-1px);
+}
+
+.mas-v2-template-btn-secondary {
+    background: var(--mas-interface-surface);
+    color: var(--mas-text-primary);
+    border: 1px solid var(--mas-interface-border);
+}
+
+.mas-v2-template-btn-secondary:hover {
+    background: rgba(99, 102, 241, 0.05);
+    border-color: var(--mas-primary);
+}
+
+/* Special template themes */
+.template-terminal .mas-v2-template-preview {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    color: #00ff41;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.875rem;
+}
+
+.template-terminal .mas-v2-template-preview::after {
+    background: none;
+}
+
+.template-gaming .mas-v2-template-preview {
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a3a 100%);
+    animation: gamingGradient 3s ease-in-out infinite;
+}
+
+@keyframes gamingGradient {
+    0%, 100% { background: linear-gradient(135deg, #0f0f23 0%, #1a1a3a 100%); }
+    50% { background: linear-gradient(135deg, #1a1a3a 0%, #2d2d5a 100%); }
+}
+
+.template-retro .mas-v2-template-preview {
+    background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
+    position: relative;
+}
+
+.template-retro .mas-v2-template-preview::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 2px,
+        rgba(255, 255, 255, 0.1) 2px,
+        rgba(255, 255, 255, 0.1) 4px
+    );
+}
+
+/* ==========================================================================
+   END MAS V2 PLUGIN INTERFACE SYSTEM
+   ========================================================================== */ 
+
+/* === RESPONSIVE STYLES FROM menu-responsive.css === */
+
+/* Mobile Breakpoint */
+@media (max-width: 768px) {
+    body.mas-responsive-enabled {
+        --mas-menu-width: 200px; /* Default mobile menu width */
+    }
+
+    /* Mobile Toggle Button */
+    .mas-mobile-menu-toggle {
+        display: block;
+        position: fixed;
+        z-index: 10001;
+        background: var(--mas-primary, #0073aa);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .mas-toggle-top-left { top: 40px; left: 15px; }
+    .mas-toggle-top-right { top: 40px; right: 15px; }
+    .mas-toggle-bottom-left { bottom: 20px; left: 15px; }
+    .mas-toggle-bottom-right { bottom: 20px; right: 15px; }
+
+    .mas-mobile-menu-toggle:before,
+    .mas-mobile-menu-toggle:after {
+        content: '';
+        position: absolute;
+        left: 15px;
+        width: 20px;
+        height: 2px;
+        background: white;
+        transition: all 0.3s ease;
+    }
+
+    .mas-toggle-hamburger:before { top: 18px; }
+    .mas-toggle-hamburger:after { bottom: 18px; }
+
+    body.mas-mobile-active .mas-toggle-hamburger:before {
+        transform: translateY(6px) rotate(45deg);
+    }
+    body.mas-mobile-active .mas-toggle-hamburger:after {
+        transform: translateY(-6px) rotate(-45deg);
+    }
+
+    /* Mobile Overlay */
+    .mas-mobile-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--mas-overlay-background, rgba(0,0,0,0.8));
+        z-index: 9998;
+    }
+
+    .mas-mobile-overlay.active {
+        display: block;
+    }
+
+    /* Mobile Menu Behavior */
+    #adminmenu {
+        transition: transform 0.3s ease;
+    }
+
+    body.mas-mobile-behavior-collapse #adminmenu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        transform: translateX(-100%);
+        z-index: 9999;
+    }
+
+    body.mas-mobile-active.mas-mobile-behavior-collapse #adminmenu {
+        transform: translateX(0);
+    }
+
+    body.mas-mobile-behavior-overlay #adminmenu {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0;
+        z-index: 9999;
+        height: auto;
+        max-height: 80vh;
+        width: 90vw;
+        max-width: 400px;
+        border-radius: 12px;
+        overflow-y: auto;
+    }
+
+    body.mas-mobile-active.mas-mobile-behavior-overlay #adminmenu {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+
+    /* Tablet Breakpoint */
+    @media (min-width: 769px) and (max-width: 1024px) {
+        body.mas-responsive-enabled.mas-tablet-compact #adminmenu {
+            width: var(--mas-menu-width-collapsed, 56px);
+        }
+
+        body.mas-responsive-enabled.mas-tablet-compact #wpcontent {
+            margin-left: var(--mas-menu-width-collapsed, 56px);
+        }
+
+        body.mas-responsive-enabled.mas-tablet-behavior-mobile {
+            /* Apply mobile styles on tablet */
+        }
+    }
+
+    /* Touch Friendly Adjustments */
+    body.mas-touch-friendly #adminmenu .menu-top a {
+        min-height: 48px;
+        padding: 12px 16px !important;
+    }
+
+    body.mas-touch-friendly #adminmenu .wp-submenu a {
+        min-height: 40px;
+        padding: 10px 20px !important;
+    }
+
+    /* Performance Optimizations */
+    body.mas-optimize-performance #adminmenu {
+        will-change: transform, opacity;
+    }
+} 

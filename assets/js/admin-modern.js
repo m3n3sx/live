@@ -1,4 +1,4 @@
-/**
+z/**
  * Modern Admin Styler V2 - Admin JavaScript
  * Nowoczesny interfejs z animacjami i live preview
  */
@@ -8,7 +8,7 @@
 
     // Główny obiekt aplikacji
     const MAS = {
-        livePreviewEnabled: false,
+        livePreviewEnabled: true, // Always enabled for instant CSS Variables preview
         hasChanges: false,
         autoSaveInterval: null,
         livePreviewTimeout: null,
@@ -30,6 +30,7 @@
             this.initSystemMonitor(); // Inicjalizuj monitor systemu
             this.loadCustomTemplates(); // Załaduj własne szablony
             this.initNewFeatures(); // Inicjalizuj nowe funkcje
+            // Skróty klawiszowe są obsługiwane globalnie w admin-global.js
         },
 
         bindEvents: function() {
@@ -53,6 +54,8 @@
             $(document).on("click", "button[type='submit'][form='mas-v2-settings-form']", this.saveSettings.bind(this));
             $(document).on("click", "#mas-v2-save-btn", this.saveSettings.bind(this));
         },
+
+        // Skróty klawiszowe są teraz obsługiwane globalnie w admin-global.js
 
         initTabs: function() {
             $(".mas-v2-nav-tab").on("click", function(e) {
@@ -412,6 +415,28 @@
         initLivePreview: function() {
             this.livePreviewEnabled = $("#mas-v2-live-preview").is(":checked");
             
+            // Obsługa zmiany checkboxa Live Preview
+            $("#mas-v2-live-preview").on("change", function() {
+                MAS.livePreviewEnabled = $(this).is(":checked");
+                MAS.showMessage(
+                    MAS.livePreviewEnabled ? 
+                    "Podgląd na żywo włączony" : 
+                    "Podgląd na żywo wyłączony",
+                    "info"
+                );
+                
+                // Synchronizuj z floating toggle button
+                const toggle = document.querySelector('.mas-live-preview-toggle');
+                if (toggle) {
+                    toggle.classList.toggle('active', MAS.livePreviewEnabled);
+                }
+                
+                // Natychmiastowy podgląd jeśli włączony
+                if (MAS.livePreviewEnabled) {
+                    MAS.triggerLivePreview();
+                }
+            });
+            
             // Live preview navigation buttons
             $("#mas-v2-preview-home").on("click", function() {
                 MAS.navigatePreview("http://localhost:10018/wp-admin/index.php");
@@ -521,29 +546,150 @@
         },
 
         triggerLivePreview: function() {
+            // Optimized live preview using CSS Variables instead of AJAX
             if (!this.livePreviewEnabled) return;
             
             const formData = this.getFormData();
             
-            $.ajax({
-                url: masV2.ajaxUrl,
-                type: "POST",
-                data: {
-                    action: "mas_v2_live_preview",
-                    nonce: masV2.nonce,
-                    ...formData
-                },
-                success: function(response) {
-                    if (response.success && response.data.css) {
-                        $("#mas-v2-live-styles").remove();
-                        $('<style id="mas-v2-live-styles">' + response.data.css + '</style>')
-                            .appendTo("head");
-                        
-                        // Aktualizuj klasy CSS body dla live preview
-                        MAS.updateBodyClasses();
-                    }
-                }
-            });
+            console.log('MAS V2: Updating live preview with CSS variables');
+            
+            // Update CSS variables on document root for instant preview
+            const root = document.documentElement;
+            
+            // Color variables
+            if (formData.accent_color) {
+                root.style.setProperty('--mas-accent-color', formData.accent_color);
+                root.style.setProperty('--mas-primary', formData.accent_color);
+            }
+            
+            if (formData.background_color) {
+                root.style.setProperty('--mas-bg-primary', formData.background_color);
+            }
+            
+            if (formData.text_color) {
+                root.style.setProperty('--mas-text-primary', formData.text_color);
+            }
+            
+            if (formData.border_color) {
+                root.style.setProperty('--mas-border-color', formData.border_color);
+            }
+            
+            // Border radius variables
+            if (formData.corner_radius_global) {
+                root.style.setProperty('--mas-border-radius', formData.corner_radius_global + 'px');
+            }
+            
+            // Typography variables
+            if (formData.font_size_global) {
+                root.style.setProperty('--mas-font-size-base', formData.font_size_global + 'px');
+            }
+            
+            // Spacing variables
+            if (formData.spacing_global) {
+                root.style.setProperty('--mas-spacing-base', formData.spacing_global + 'px');
+            }
+            
+            // Menu variables
+            if (formData.menu_width) {
+                root.style.setProperty('--mas-menu-width', formData.menu_width + 'px');
+            }
+
+            // Przykład rozszerzenia Live Preview dla tła menu
+            if (formData.menu_background) {
+                root.style.setProperty('--mas-menu-background', formData.menu_background);
+            }
+            
+            // Admin Bar variables
+            if (formData.admin_bar_text_color) {
+                root.style.setProperty('--mas-admin-bar-text-color', formData.admin_bar_text_color);
+            }
+            if (formData.admin_bar_hover_color) {
+                root.style.setProperty('--mas-admin-bar-hover-color', formData.admin_bar_hover_color);
+            }
+            if (formData.admin_bar_font_size) {
+                root.style.setProperty('--mas-admin-bar-font-size', formData.admin_bar_font_size + 'px');
+            }
+            if (formData.admin_bar_padding) {
+                root.style.setProperty('--mas-admin-bar-padding', formData.admin_bar_padding + 'px');
+            }
+            if (formData.admin_bar_border_radius) {
+                root.style.setProperty('--mas-admin-bar-border-radius-all', formData.admin_bar_border_radius + 'px');
+            }
+
+            // Menu variables
+            if (formData.menu_text_color) {
+                root.style.setProperty('--mas-menu-text-color', formData.menu_text_color);
+            }
+            if (formData.menu_hover_color) {
+                root.style.setProperty('--mas-menu-hover-color', formData.menu_hover_color);
+            }
+            if (formData.menu_active_background) {
+                root.style.setProperty('--mas-menu-active-background', formData.menu_active_background);
+            }
+            if (formData.menu_active_text_color) {
+                root.style.setProperty('--mas-menu-active-text-color', formData.menu_active_text_color);
+            }
+            if (formData.menu_item_height) {
+                root.style.setProperty('--mas-menu-item-height', formData.menu_item_height + 'px');
+            }
+            if (formData.menu_border_radius_all) {
+                root.style.setProperty('--mas-menu-border-radius-all', formData.menu_border_radius_all + 'px');
+            }
+            if (formData.menu_margin_top) {
+                root.style.setProperty('--mas-menu-margin-top', formData.menu_margin_top + 'px');
+            }
+            
+            // Admin Bar variables
+            if (formData.admin_bar_text_color) {
+                root.style.setProperty('--mas-admin-bar-text-color', formData.admin_bar_text_color);
+            }
+            if (formData.admin_bar_hover_color) {
+                root.style.setProperty('--mas-admin-bar-hover-color', formData.admin_bar_hover_color);
+            }
+            if (formData.admin_bar_font_size) {
+                root.style.setProperty('--mas-admin-bar-font-size', formData.admin_bar_font_size + 'px');
+            }
+            if (formData.admin_bar_padding) {
+                root.style.setProperty('--mas-admin-bar-padding', formData.admin_bar_padding + 'px');
+            }
+            if (formData.admin_bar_border_radius) {
+                root.style.setProperty('--mas-admin-bar-border-radius-all', formData.admin_bar_border_radius + 'px');
+            }
+
+            // Menu variables
+            if (formData.menu_text_color) {
+                root.style.setProperty('--mas-menu-text-color', formData.menu_text_color);
+            }
+            if (formData.menu_hover_color) {
+                root.style.setProperty('--mas-menu-hover-color', formData.menu_hover_color);
+            }
+            if (formData.menu_active_background) {
+                root.style.setProperty('--mas-menu-active-background', formData.menu_active_background);
+            }
+            if (formData.menu_active_text_color) {
+                root.style.setProperty('--mas-menu-active-text-color', formData.menu_active_text_color);
+            }
+            if (formData.menu_item_height) {
+                root.style.setProperty('--mas-menu-item-height', formData.menu_item_height + 'px');
+            }
+            if (formData.menu_border_radius_all) {
+                root.style.setProperty('--mas-menu-border-radius-all', formData.menu_border_radius_all + 'px');
+            }
+            if (formData.menu_margin_left) {
+                root.style.setProperty('--mas-menu-margin-left', formData.menu_margin_left + 'px');
+            }
+            
+            // Admin bar variables
+            if (formData.admin_bar_height) {
+                root.style.setProperty('--mas-admin-bar-height', formData.admin_bar_height + 'px');
+            }
+            
+            // Update body classes for structural changes
+            if (window.updateBodyClasses && typeof window.updateBodyClasses === 'function') {
+                window.updateBodyClasses(formData);
+            }
+            
+            console.log('MAS V2: Live preview updated instantly with CSS variables');
         },
 
         getFormData: function() {
@@ -571,6 +717,8 @@
         saveSettings: function(e) {
             e.preventDefault();
             
+            console.log('MAS V2: Save button clicked');
+            
             const $btn = $(e.target).closest('button, input[type="submit"]');
             const originalText = $btn.html() || $btn.val();
             
@@ -582,6 +730,9 @@
             }
             
             const formData = MAS.getFormData();
+            console.log('MAS V2: Form data collected:', formData);
+            console.log('MAS V2: AJAX URL:', masV2.ajaxUrl);
+            console.log('MAS V2: Nonce:', masV2.nonce);
             
             $.ajax({
                 url: masV2.ajaxUrl,
@@ -591,7 +742,11 @@
                     nonce: masV2.nonce,
                     ...formData
                 },
+                beforeSend: function() {
+                    console.log('MAS V2: AJAX request starting');
+                },
                 success: function(response) {
+                    console.log('MAS V2: AJAX response:', response);
                     if (response.success) {
                         MAS.showMessage(response.data.message || "Ustawienia zostały zapisane", "success");
                         MAS.markAsSaved();
@@ -599,24 +754,20 @@
                         // Aktualizuj status
                         $("#mas-v2-last-save").text(new Date().toLocaleTimeString());
                         
-                        // Odśwież CSS dla nowych ustawień
-                        if (MAS.livePreviewEnabled) {
+                        // Odśwież CSS dla nowych ustawień (zawsze aktywny live preview)
                         MAS.triggerLivePreview();
-                        } else {
-                            // Jeśli live preview wyłączony, odśwież stronę po krótkim czasie
-                            setTimeout(function() {
-                                window.location.reload();
-                            }, 1000);
-                        }
                     } else {
+                        console.error('MAS V2: Save failed:', response.data);
                         MAS.showMessage(response.data.message || "Wystąpił błąd podczas zapisywania", "error");
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.error('Save error:', xhr, status, error);
+                    console.error('MAS V2: AJAX error:', xhr, status, error);
+                    console.error('MAS V2: Response text:', xhr.responseText);
                     MAS.showMessage("Wystąpił błąd podczas zapisywania: " + error, "error");
                 },
                 complete: function() {
+                    console.log('MAS V2: AJAX request completed');
                     $btn.prop("disabled", false);
                     if ($btn.is('button')) {
                         $btn.html(originalText);
@@ -795,115 +946,19 @@
         },
 
         updateBodyClasses: function() {
-            const body = document.body;
+            // Simplified body classes update - removed DOM manipulation
+            // Classes are now managed by PHP and admin-global.js
+            console.log('MAS V2: Body classes update delegated to admin-global.js');
             
-            // Debug - sprawdź czy checkbox istnieje
-            const $menuCheckbox = $("input[name='menu_detached']");
-            const $adminBarCheckbox = $("input[name='admin_bar_detached']");
-            
-            console.log('MAS V2 DEBUG: Checkboxes found:', {
-                menuCheckbox: $menuCheckbox.length,
-                adminBarCheckbox: $adminBarCheckbox.length,
-                menuChecked: $menuCheckbox.is(":checked"),
-                adminBarChecked: $adminBarCheckbox.is(":checked")
-            });
-            
-            // Menu floating status
-            const menuDetached = $menuCheckbox.is(":checked");
-            if (menuDetached) {
-                body.classList.add('mas-menu-floating');
-                body.classList.add('mas-v2-menu-floating'); // Dodaj też nową klasę
-                body.classList.remove('mas-menu-normal');
-                // Inicjalizuj floating collapse po ustawieniu klasy
-                this.initFloatingMenuCollapse();
-            } else {
-                body.classList.add('mas-menu-normal');
-                body.classList.remove('mas-menu-floating');
-                body.classList.remove('mas-v2-menu-floating');
-                // Przywróć normalną funkcjonalność collapse
-                this.restoreNormalCollapse();
+            // Only update CSS variables for live preview
+            if (window.updateBodyClasses && typeof window.updateBodyClasses === 'function') {
+                const formData = this.getFormData();
+                window.updateBodyClasses(formData);
             }
-            
-            // Admin bar floating status
-            const adminBarDetached = $adminBarCheckbox.is(":checked");
-            if (adminBarDetached) {
-                body.classList.add('mas-admin-bar-floating');
-                body.classList.add('mas-v2-admin-bar-floating'); // Dodaj też nową klasę
-            } else {
-                body.classList.remove('mas-admin-bar-floating');
-                body.classList.remove('mas-v2-admin-bar-floating');
-            }
-            
-            // Debug info
-            console.log('MAS V2: Body classes updated:', {
-                menuFloating: menuDetached,
-                adminBarFloating: adminBarDetached,
-                bodyClasses: body.className.split(' ').filter(c => c.startsWith('mas-'))
-            });
         },
 
-        initFloatingMenuCollapse: function() {
-            // Sprawdź czy już zainicjalizowane
-            if (this.floatingCollapseInitialized) {
-                return;
-            }
-            
-            const self = this;
-            const $body = $('body');
-            
-            console.log('MAS V2: Initializing floating menu collapse');
-            
-            // Usuń poprzednie event listenery
-            $(document).off('click.mas-floating-collapse');
-            
-            // Obsługa przycisku collapse/expand w floating mode
-            $(document).on('click.mas-floating-collapse', '#collapse-menu', function(e) {
-                console.log('MAS V2: Collapse button clicked, floating mode active');
-                
-                if ($body.hasClass('mas-v2-menu-floating')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    // W floating mode ręcznie przełączamy stan
-                    const isFolded = $body.hasClass('folded');
-                    
-                    if (isFolded) {
-                        // Rozwiń menu
-                        $body.removeClass('folded');
-                        $('#adminmenu').css('width', '160px');
-                        localStorage.setItem('adminmenufold', 'open');
-                        console.log('MAS V2: Floating menu expanded');
-                    } else {
-                        // Zwiń menu
-                        $body.addClass('folded');
-                        $('#adminmenu').css('width', '36px');
-                        localStorage.setItem('adminmenufold', 'folded');
-                        console.log('MAS V2: Floating menu collapsed');
-                    }
-                    
-                    // Wymuś ponowne renderowanie CSS dla poprawnego submenu positioning
-                    const $adminmenu = $('#adminmenu');
-                    $adminmenu.addClass('mas-refresh');
-                    setTimeout(() => $adminmenu.removeClass('mas-refresh'), 50);
-                    
-                    // Wymuś odświeżenie stylów
-                    self.triggerLivePreview();
-                }
-            });
-            
-            this.floatingCollapseInitialized = true;
-        },
-
-        restoreNormalCollapse: function() {
-            // Przywróć normalną funkcjonalność collapse
-            $(document).off('click.mas-floating-collapse');
-            this.floatingCollapseInitialized = false;
-            
-            // Przywróć domyślne marginy
-            $('#wpbody-content').css('margin-left', '');
-            
-            console.log('MAS V2: Normal collapse functionality restored');
-        },
+        // initFloatingMenuCollapse and restoreNormalCollapse removed
+        // Floating menu is now handled by CSS-only approach
 
         initSystemMonitor: function() {
             // Sprawdź czy monitor systemu istnieje na stronie
@@ -921,7 +976,7 @@
 
         initTipsRotation: function() {
             const tips = [
-                '◐ Użyj Ctrl+Shift+T aby przełączyć motyw',
+                '◐ Skróty klawiszowe dostępne w menu pomocy',
                 '◆ Wszystkie zmiany są automatycznie zapisywane',
                 '⚡ Wyłącz animacje dla lepszej wydajności',
                 '● Sprawdź ustawienia zaawansowane',
@@ -1201,736 +1256,28 @@
 
     $(document).ready(function() {
         MAS.init();
+        
+        // Initialize template cards functionality
+        initTemplateCards();
     });
 
     // Dodaj MAS do globalnego scope
     window.MAS = MAS;
 
-    /* === MODERN ADMIN STYLER V2 - THEME SYSTEM === */
-    /* System motywów z obsługą ciemnego i jasnego trybu */
-
-    class ThemeManager {
-        constructor() {
-            this.currentTheme = this.getStoredTheme() || this.getSystemTheme();
-            this.init();
-        }
-
-        init() {
-            this.applyTheme(this.currentTheme);
-            this.createThemeToggle();
-            this.createLivePreviewToggle();
-            this.setupSystemThemeListener();
-        }
-
-        getSystemTheme() {
-            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-
-        getStoredTheme() {
-            return localStorage.getItem('mas-theme');
-        }
-
-        setStoredTheme(theme) {
-            localStorage.setItem('mas-theme', theme);
-        }
-
-        applyTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            this.currentTheme = theme;
-            this.setStoredTheme(theme);
-            
-            // Animacja przejścia między motywami
-            document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
-            setTimeout(() => {
-                document.body.style.transition = '';
-            }, 300);
-        }
-
-        toggleTheme() {
-            const newTheme = this.currentTheme === 'light' ? 'dark' : 'light';
-            this.applyTheme(newTheme);
-            
-            // Animacja przełącznika
-            const toggle = document.querySelector('.mas-theme-toggle');
-            if (toggle) {
-                toggle.style.transform = 'scale(0.9) rotate(180deg)';
-                setTimeout(() => {
-                    toggle.style.transform = 'scale(1) rotate(0deg)';
-                }, 150);
-            }
-            
-            // Pokazanie notyfikacji o zmianie motywu
-            this.showThemeNotification(newTheme);
-        }
-
-        showThemeNotification(theme) {
-            const message = theme === 'dark' ? 
-                '◐ Przełączono na tryb ciemny' : 
-                '◑ Przełączono na tryb jasny';
-            
-            if (window.masNotifications) {
-                window.masNotifications.show(message, 'info', 2000);
-            }
-        }
-
-        createThemeToggle() {
-            // Sprawdź czy przełącznik już istnieje
-            if (document.querySelector('.mas-theme-toggle')) return;
-
-            const toggle = document.createElement('button');
-            toggle.className = 'mas-theme-toggle';
-            toggle.setAttribute('aria-label', 'Przełącz motyw');
-            toggle.setAttribute('title', 'Przełącz między trybem jasnym a ciemnym');
-            
-            const icon = document.createElement('span');
-            icon.className = 'mas-theme-toggle-icon';
-            toggle.appendChild(icon);
-            
-            toggle.addEventListener('click', () => this.toggleTheme());
-            
-            // Dodaj przełącznik do body
-            document.body.appendChild(toggle);
-            
-            // Animacja wejścia
-            setTimeout(() => {
-                toggle.style.opacity = '1';
-                toggle.style.transform = 'scale(1)';
-            }, 100);
-            
-            // Inicjalne style
-            toggle.style.opacity = '0';
-            toggle.style.transform = 'scale(0.8)';
-            toggle.style.transition = 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
-        }
-
-        createLivePreviewToggle() {
-            // Sprawdź czy przełącznik już istnieje
-            if (document.querySelector('.mas-live-preview-toggle')) return;
-
-            const toggle = document.createElement('button');
-            toggle.className = 'mas-live-preview-toggle';
-            toggle.setAttribute('aria-label', 'Włącz/wyłącz Live Preview');
-            toggle.setAttribute('title', 'Podgląd zmian na żywo');
-            
-            const icon = document.createElement('span');
-            icon.className = 'mas-live-preview-icon';
-            toggle.appendChild(icon);
-            
-            // Dodaj pulsującą kropkę
-            const dot = document.createElement('span');
-            dot.className = 'mas-live-preview-dot';
-            toggle.appendChild(dot);
-            
-            // Sprawdź stan Live Preview z checkboxu jeśli istnieje
-            const checkbox = document.getElementById('mas-v2-live-preview');
-            const isActive = checkbox ? checkbox.checked : (MAS?.livePreviewEnabled || false);
-            toggle.classList.toggle('active', isActive);
-            
-            toggle.addEventListener('click', () => this.toggleLivePreview());
-            
-            // Dodaj przełącznik do body
-            document.body.appendChild(toggle);
-            
-            // Animacja wejścia (z opóźnieniem po theme toggle)
-            setTimeout(() => {
-                toggle.style.opacity = '1';
-                toggle.style.transform = 'scale(1)';
-            }, 200);
-            
-            // Inicjalne style
-            toggle.style.opacity = '0';
-            toggle.style.transform = 'scale(0.8)';
-            toggle.style.transition = 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
-            
-            // Synchronizacja z checkboxem - gdy checkbox się zmieni, zaktualizuj przełącznik
-            if (checkbox) {
-                $(checkbox).on('change', function() {
-                    const livePreviewToggle = document.querySelector('.mas-live-preview-toggle');
-                    if (livePreviewToggle) {
-                        livePreviewToggle.classList.toggle('active', this.checked);
-                    }
-                });
-            }
-        }
-
-        toggleLivePreview() {
-            const toggle = document.querySelector('.mas-live-preview-toggle');
-            if (!toggle) return;
-            
-            // Toggle aktywności
-            const isActive = toggle.classList.contains('active');
-            const newState = !isActive;
-            
-            toggle.classList.toggle('active', newState);
-            
-            // Aktualizuj MAS object jeśli istnieje
-            if (window.MAS) {
-                MAS.livePreviewEnabled = newState;
-                
-                // Aktualizuj checkbox w formularzu jeśli istnieje
-                const checkbox = document.getElementById('mas-v2-live-preview');
-                if (checkbox) {
-                    checkbox.checked = newState;
-                    // Wywołaj event change aby uruchomić istniejącą logikę MAS
-                    $(checkbox).trigger('change');
-                }
-            }
-            
-            // Animacja przełącznika
-                toggle.style.transform = 'scale(0.9) rotate(180deg)';
-                setTimeout(() => {
-                    toggle.style.transform = 'scale(1) rotate(0deg)';
-                }, 150);
-            
-            // Pokazanie notyfikacji (używamy istniejącej funkcji MAS jeśli dostępna)
-            if (window.MAS && MAS.showMessage) {
-                MAS.showMessage(
-                    newState ? "◉ Live Preview włączony" : "◯ Live Preview wyłączony",
-                    "info"
-                );
-            } else {
-                this.showLivePreviewNotification(newState);
-            }
-        }
-
-        showLivePreviewNotification(isActive) {
-            const message = isActive ? 
-                '◉ Live Preview włączony' : 
-                '◯ Live Preview wyłączony';
-            
-            if (window.showNotification) {
-                window.showNotification(message, 'info', 2000);
-            }
-        }
-
-        setupSystemThemeListener() {
-            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-            mediaQuery.addEventListener('change', (e) => {
-                // Tylko jeśli użytkownik nie ustawił własnych preferencji
-                if (!this.getStoredTheme()) {
-                    this.applyTheme(e.matches ? 'dark' : 'light');
-                }
-            });
-        }
-    }
-
-    // Inicjalizacja managera motywów
-    const themeManager = new ThemeManager();
-
-    // === ENHANCED TYPOGRAPHY ANIMATIONS === */
-    class TypographyAnimations {
-        constructor() {
-            this.init();
-        }
-
-        init() {
-            this.animateHeaders();
-            this.setupTextReveal();
-            this.enhanceFontLoading();
-        }
-
-        animateHeaders() {
-            const headers = document.querySelectorAll('h1, h2, h3, h4, h5, h6, .mas-v2-title');
-            
-            headers.forEach((header, index) => {
-                header.style.opacity = '0';
-                header.style.transform = 'translateY(20px)';
-                header.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
-                
-                setTimeout(() => {
-                    header.style.opacity = '1';
-                    header.style.transform = 'translateY(0)';
-                }, index * 100 + 200);
-            });
-        }
-
-        setupTextReveal() {
-            const textElements = document.querySelectorAll('.mas-v2-section-description, .mas-v2-subtitle');
-            
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }
-                });
-            }, { threshold: 0.1 });
-
-            textElements.forEach(element => {
-                element.style.opacity = '0';
-                element.style.transform = 'translateY(15px)';
-                element.style.transition = 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
-                observer.observe(element);
-            });
-        }
-
-        enhanceFontLoading() {
-            // Sprawdź czy fonty Inter i JetBrains Mono są załadowane
-            if ('fonts' in document) {
-                Promise.all([
-                    document.fonts.load('400 16px Inter'),
-                    document.fonts.load('600 16px Inter'),
-                    document.fonts.load('700 16px Inter'),
-                    document.fonts.load('400 14px "JetBrains Mono"')
-                ]).then(() => {
-                    document.body.classList.add('fonts-loaded');
-                    
-                    // Animacja po załadowaniu fontów
-                    const elements = document.querySelectorAll('.mas-v2-admin-wrapper *');
-                    elements.forEach(el => {
-                        if (el.style.fontFamily) {
-                            el.style.fontDisplay = 'swap';
-                        }
-                    });
-                }).catch(() => {
-                    // Fallback jeśli fonty się nie załadują
-                    console.warn('Nie udało się załadować niestandardowych fontów');
-                });
-            }
-        }
-    }
-
-    // Inicjalizacja animacji typografii
-    const typographyAnimations = new TypographyAnimations();
-
-    // === ENHANCED THEME TOGGLE FUNCTIONALITY === */
-    // Dodatkowe ulepszenia dla przełącznika motywów
-
-    // Dodaj obsługę skrótów klawiszowych
-    document.addEventListener('keydown', function(e) {
-        // Ctrl/Cmd + Shift + T - przełącz motyw
-        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'T') {
-            e.preventDefault();
-            if (window.themeManager) {
-                themeManager.toggleTheme();
-            }
-        }
-        
-        // Ctrl/Cmd + Shift + L - przełącz Live Preview
-        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'L') {
-            e.preventDefault();
-            if (window.themeManager) {
-                themeManager.toggleLivePreview();
-            }
-        }
-    });
-
-    // Dodaj obsługę gestów na urządzeniach dotykowych
-    let touchStartX = 0;
-    let touchStartY = 0;
-
-    document.addEventListener('touchstart', function(e) {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-    });
-
-    document.addEventListener('touchend', function(e) {
-        if (!touchStartX || !touchStartY) return;
-        
-        const touchEndX = e.changedTouches[0].clientX;
-        const touchEndY = e.changedTouches[0].clientY;
-        
-        const diffX = touchStartX - touchEndX;
-        const diffY = touchStartY - touchEndY;
-        
-        // Gest w dół z prawej strony ekranu (dla przełącznika motywów)
-        if (Math.abs(diffY) > Math.abs(diffX) && 
-            diffY < -100 && 
-            touchStartX > window.innerWidth * 0.8 &&
-            touchStartY < 150) {
-            
-            if (window.themeManager) {
-                themeManager.toggleTheme();
-            }
-        }
-        
-        touchStartX = 0;
-        touchStartY = 0;
-    });
-
-    // Automatyczne wykrywanie zmiany motywu systemowego
-    if (window.matchMedia) {
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        
-        // Nasłuchuj zmian preferencji systemowych
-        mediaQuery.addEventListener('change', function(e) {
-            // Tylko jeśli użytkownik nie ma własnych preferencji
-            if (!localStorage.getItem('mas-theme')) {
-                const newTheme = e.matches ? 'dark' : 'light';
-                if (window.themeManager && themeManager.currentTheme !== newTheme) {
-                    themeManager.applyTheme(newTheme);
-                }
-            }
-        });
-    }
-
-    // Dodaj tooltips dla przełącznika motywów
-    function addThemeToggleTooltip() {
-        const toggle = document.querySelector('.mas-theme-toggle');
-        if (!toggle) return;
-        
-        let tooltip = null;
-        
-        toggle.addEventListener('mouseenter', function() {
-            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-            const tooltipText = currentTheme === 'light' ? 
-                'Przełącz na tryb ciemny (Ctrl+Shift+T)' : 
-                'Przełącz na tryb jasny (Ctrl+Shift+T)';
-            
-            tooltip = document.createElement('div');
-            tooltip.className = 'mas-theme-tooltip';
-            tooltip.textContent = tooltipText;
-            tooltip.style.cssText = `
-                position: fixed;
-                background: var(--mas-glass);
-                backdrop-filter: blur(16px);
-                color: var(--mas-text-primary);
-                padding: 8px 12px;
-                border-radius: 8px;
-                font-size: 12px;
-                font-weight: 500;
-                white-space: nowrap;
-                z-index: 1000000;
-                pointer-events: none;
-                box-shadow: var(--mas-shadow-lg);
-                border: 1px solid var(--mas-glass-border);
-                transform: translateY(-10px);
-                opacity: 0;
-                transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            `;
-            
-            document.body.appendChild(tooltip);
-            
-            // Pozycjonowanie tooltipa
-            const rect = toggle.getBoundingClientRect();
-            tooltip.style.top = (rect.top - tooltip.offsetHeight - 10) + 'px';
-            tooltip.style.left = (rect.left + rect.width/2 - tooltip.offsetWidth/2) + 'px';
-            
-            // Animacja wejścia
-            requestAnimationFrame(() => {
-                tooltip.style.opacity = '1';
-                tooltip.style.transform = 'translateY(0)';
-            });
-        });
-        
-        toggle.addEventListener('mouseleave', function() {
-            if (tooltip) {
-                tooltip.style.opacity = '0';
-                tooltip.style.transform = 'translateY(-10px)';
-                setTimeout(() => {
-                    if (tooltip && tooltip.parentNode) {
-                        tooltip.parentNode.removeChild(tooltip);
-                    }
-                    tooltip = null;
-                }, 200);
-            }
-        });
-    }
-
-    // Dodaj tooltips dla przełącznika Live Preview
-    function addLivePreviewTooltip() {
-        const toggle = document.querySelector('.mas-live-preview-toggle');
-        if (!toggle) return;
-        
-        let tooltip = null;
-        
-        toggle.addEventListener('mouseenter', function() {
-            const isActive = toggle.classList.contains('active');
-            const tooltipText = isActive ? 
-                'Live Preview aktywny - kliknij aby wyłączyć (Ctrl+Shift+L)' : 
-                'Kliknij aby włączyć Live Preview (Ctrl+Shift+L)';
-            
-            tooltip = document.createElement('div');
-            tooltip.className = 'mas-live-preview-tooltip';
-            tooltip.textContent = tooltipText;
-            tooltip.style.cssText = `
-                position: fixed;
-                background: var(--mas-glass);
-                backdrop-filter: blur(16px);
-                color: var(--mas-text-primary);
-                padding: 8px 12px;
-                border-radius: 8px;
-                font-size: 12px;
-                font-weight: 500;
-                white-space: nowrap;
-                z-index: 1000000;
-                pointer-events: none;
-                box-shadow: var(--mas-shadow-lg);
-                border: 1px solid rgba(16, 185, 129, 0.3);
-                transform: translateY(-10px);
-                opacity: 0;
-                transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            `;
-            
-            document.body.appendChild(tooltip);
-            
-            // Pozycjonowanie tooltipa
-            const rect = toggle.getBoundingClientRect();
-            tooltip.style.top = (rect.top - tooltip.offsetHeight - 10) + 'px';
-            tooltip.style.left = (rect.left + rect.width/2 - tooltip.offsetWidth/2) + 'px';
-            
-            // Animacja wejścia
-            requestAnimationFrame(() => {
-                tooltip.style.opacity = '1';
-                tooltip.style.transform = 'translateY(0)';
-            });
-        });
-        
-        toggle.addEventListener('mouseleave', function() {
-            if (tooltip) {
-                tooltip.style.opacity = '0';
-                tooltip.style.transform = 'translateY(-10px)';
-                setTimeout(() => {
-                    if (tooltip && tooltip.parentNode) {
-                        tooltip.parentNode.removeChild(tooltip);
-                    }
-                    tooltip = null;
-                }, 200);
-            }
-        });
-    }
-
-    // Inicjalizuj tooltips po załadowaniu DOM
-    document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(() => {
-            addThemeToggleTooltip();
-            addLivePreviewTooltip();
-        }, 500);
-    });
-
-    // Dodaj obsługę preferencji użytkownika dla animacji
-    function respectMotionPreferences() {
-        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        
-        if (prefersReducedMotion) {
-            document.documentElement.style.setProperty('--mas-transition', 'none');
-            document.documentElement.style.setProperty('--mas-transition-fast', 'none');
-            document.documentElement.style.setProperty('--mas-transition-slow', 'none');
-        }
-    }
-
-    // Sprawdź preferencje animacji przy ładowaniu
-    respectMotionPreferences();
-
-    // Nasłuchuj zmian preferencji animacji
-    if (window.matchMedia) {
-        window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', respectMotionPreferences);
-    }
-
-    // Eksportuj themeManager dla globalnego dostępu
-    window.themeManager = themeManager;
-
+    // Theme Manager jest zarządzany przez admin-global.js
     // Debug info w konsoli (tylko w trybie development)
     if (window.location.hostname === 'localhost' || window.location.hostname.includes('local')) {
-        console.log('🎨 Modern Admin Styler V2 - Theme System loaded');
-        console.log('Current theme:', themeManager.currentTheme);
-        console.log('Available shortcuts: Ctrl+Shift+T (toggle theme), Ctrl+Shift+L (toggle live preview)');
+        console.log('🎨 Modern Admin Styler V2 - Admin JavaScript loaded');
+        console.log('Live Preview: Always enabled with CSS Variables');
+        console.log('Keyboard shortcuts are handled by admin-global.js');
     }
 
     // === MODERN DASHBOARD INTERACTIONS === */
     // Inspirowane nowoczesnymi dashboard UI
 
-    class ModernDashboard {
-        constructor() {
-            this.init();
-        }
-
-        init() {
-            this.createMetricCards();
-            this.initProgressBars();
-            this.initToggleSwitches();
-            this.initFloatingActionButton();
-            this.initCardAnimations();
-            this.initCounterAnimations();
-            this.initInteractiveElements();
-            this.initSliders();
-        }
-
-        createMetricCards() {
-            // Sprawdź czy już istnieją karty metryki
-            if (document.querySelector('.mas-v2-metrics-grid')) return;
-
-            const wrapper = document.querySelector('.mas-v2-admin-wrapper');
-            if (!wrapper) return;
-
-            // Znajdź header
-            const header = wrapper.querySelector('.mas-v2-header');
-            if (!header) return;
-
-            // Stwórz grid z metrykami
-            const metricsGrid = document.createElement('div');
-            metricsGrid.className = 'mas-v2-metrics-grid';
-
-            const metrics = [
-                {
-                    icon: '📊',
-                    value: '2,847',
-                    label: 'Aktywne style',
-                    trend: '+12%',
-                    trendType: 'positive',
-                    gradient: 'purple'
-                },
-                {
-                    icon: '🎨',
-                    value: '156',
-                    label: 'Komponenty UI',
-                    trend: '+8%',
-                    trendType: 'positive',
-                    gradient: 'pink'
-                },
-                {
-                    icon: '⚡',
-                    value: '98.5%',
-                    label: 'Wydajność',
-                    trend: '+2%',
-                    trendType: 'positive',
-                    gradient: 'orange'
-                },
-                {
-                    icon: '👥',
-                    value: '1,234',
-                    label: 'Użytkownicy',
-                    trend: '+24%',
-                    trendType: 'positive',
-                    gradient: 'green'
-                }
-            ];
-
-            metrics.forEach((metric, index) => {
-                const card = this.createMetricCard(metric, index);
-                metricsGrid.appendChild(card);
-            });
-
-            // Wstaw po headerze
-            header.insertAdjacentElement('afterend', metricsGrid);
-        }
-
-        createMetricCard(metric, index) {
-            const card = document.createElement('div');
-            card.className = `mas-v2-metric-card ${metric.gradient}`;
-            card.style.animationDelay = `${index * 0.1}s`;
-            
-            card.innerHTML = `
-                <div class="mas-v2-metric-header">
-                    <div class="mas-v2-metric-icon">${metric.icon}</div>
-                    <div class="mas-v2-metric-trend ${metric.trendType}">
-                        ${metric.trendType === 'positive' ? '↗' : '↘'} ${metric.trend}
-                    </div>
-                </div>
-                <div class="mas-v2-metric-value" data-target="${metric.value.replace(/[^\d.]/g, '')}">${metric.value}</div>
-                <div class="mas-v2-metric-label">${metric.label}</div>
-                <div class="mas-v2-mini-chart">
-                    <div class="mas-v2-chart-line"></div>
-                </div>
-            `;
-
-            // Dodaj hover effect
-            card.addEventListener('mouseenter', () => {
-                card.style.transform = 'translateY(-8px) scale(1.02)';
-            });
-
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'translateY(0) scale(1)';
-            });
-
-            return card;
-        }
-
-        initProgressBars() {
-            // Stwórz przykładowe progress bary
-            const cards = document.querySelectorAll('.mas-v2-card');
-            
-            cards.forEach((card, index) => {
-                if (card.querySelector('.mas-v2-progress')) return;
-
-                const progress = document.createElement('div');
-                progress.className = 'mas-v2-progress';
-                progress.innerHTML = `<div class="mas-v2-progress-bar" data-progress="${60 + (index * 10)}"></div>`;
-                
-                card.appendChild(progress);
-            });
-
-            // Animuj progress bary
-            setTimeout(() => {
-                document.querySelectorAll('.mas-v2-progress-bar').forEach(bar => {
-                    const progress = bar.dataset.progress;
-                    bar.style.width = progress + '%';
-                });
-            }, 500);
-        }
-
-        initToggleSwitches() {
-            // Dodaj toggle switches do kart
-            const cards = document.querySelectorAll('.mas-v2-card');
-            
-            cards.forEach((card, index) => {
-                if (card.querySelector('.mas-v2-toggle-switch')) return;
-
-                const cardHeader = card.querySelector('.mas-v2-card-header');
-                if (!cardHeader) return;
-
-                const toggle = document.createElement('div');
-                toggle.className = 'mas-v2-toggle-switch';
-                if (index % 2 === 0) toggle.classList.add('active');
-                
-                toggle.addEventListener('click', () => {
-                    toggle.classList.toggle('active');
-                    
-                    // Ripple effect
-                    const ripple = document.createElement('div');
-                    ripple.style.cssText = `
-                        position: absolute;
-                        border-radius: 50%;
-                        background: rgba(255,255,255,0.6);
-                        transform: scale(0);
-                        animation: ripple 0.6s linear;
-                        pointer-events: none;
-                    `;
-                    
-                    const rect = toggle.getBoundingClientRect();
-                    const size = Math.max(rect.width, rect.height);
-                    ripple.style.width = ripple.style.height = size + 'px';
-                    ripple.style.left = '50%';
-                    ripple.style.top = '50%';
-                    ripple.style.marginLeft = -size/2 + 'px';
-                    ripple.style.marginTop = -size/2 + 'px';
-                    
-                    toggle.appendChild(ripple);
-                    
-                    setTimeout(() => ripple.remove(), 600);
-                });
-
-                cardHeader.appendChild(toggle);
-            });
-        }
-
-        initFloatingActionButton() {
-            // Sprawdź czy już istnieje
-            if (document.querySelector('.mas-v2-fab')) return;
-
-            const fab = document.createElement('button');
-            fab.className = 'mas-v2-fab';
-            fab.innerHTML = '●';
-            fab.title = 'Szybkie ustawienia';
-            
-            fab.addEventListener('click', () => {
-                // Animacja kliknięcia
-                fab.style.transform = 'scale(0.9)';
-                setTimeout(() => {
-                    fab.style.transform = 'scale(1.1)';
-                    setTimeout(() => {
-                        fab.style.transform = 'scale(1)';
-                    }, 100);
-                }, 100);
-
-                // Pokaż menu szybkich akcji
-                this.showQuickMenu(fab);
-            });
-
-            document.body.appendChild(fab);
-        }
-
-        showQuickMenu(fab) {
+    // ModernDashboard class removed - contained only demo content - CLEANED UP
+    
+    function showQuickMenu(fab) {
             // Usuń poprzednie menu jeśli istnieje
             const existingMenu = document.querySelector('.mas-v2-quick-menu');
             if (existingMenu) {
@@ -2014,9 +1361,9 @@
             setTimeout(() => {
                 document.addEventListener('click', closeMenu);
             }, 100);
-        }
+    }
 
-        initCardAnimations() {
+    function initCardAnimations() {
             // Intersection Observer dla animacji wejścia kart
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach((entry, index) => {
@@ -2036,9 +1383,9 @@
                 card.style.transition = 'all 0.6s var(--mas-ease-smooth)';
                 observer.observe(card);
             });
-        }
+    }
 
-        initCounterAnimations() {
+    function initCounterAnimations() {
             // Animowane liczniki w metrykach
             const animateCounter = (element, target) => {
                 const start = 0;
@@ -2079,9 +1426,9 @@
                     animateCounter(element, target);
                 });
             }, 1000);
-        }
+    }
 
-        initInteractiveElements() {
+    function initInteractiveElements() {
             // Dodaj ripple effect do wszystkich interaktywnych elementów
             document.addEventListener('click', (e) => {
                 const clickable = e.target.closest('.mas-v2-card, .mas-v2-metric-card, .mas-v2-btn');
@@ -2126,9 +1473,9 @@
                 `;
                 document.head.appendChild(style);
             }
-        }
+    }
 
-        initSliders() {
+    function initSliders() {
             const sliders = document.querySelectorAll('.mas-v2-slider');
             
             sliders.forEach(slider => {
@@ -2150,9 +1497,10 @@
                         }
                     }
                     
-                    // Live preview if enabled
-                    if (this.livePreviewEnabled) {
-                        this.applyLivePreview(slider);
+                    // Live preview if enabled (global check)
+                    if (typeof masV2Global !== 'undefined' && masV2Global.settings.live_preview) {
+                        // Trigger live preview update
+                        slider.dispatchEvent(new Event('change'));
                     }
                 };
 
@@ -2163,13 +1511,9 @@
                 updateValue();
             });
         }
-    }
 
-    // Inicjalizuj Modern Dashboard
-    const modernDashboard = new ModernDashboard();
-    
-    // Template functionality dla nowej zakładki szablonów
-    initTemplateCards();
+    // Template functionality dla nowej zakładki szablonów - wykonywane w $(document).ready
+    // initTemplateCards();
     
     function initTemplateCards() {
         // Obsługa przycisków w kartach szablonów

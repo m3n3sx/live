@@ -364,8 +364,8 @@ $plugin_url = MAS_V2_PLUGIN_URL;
                         <p>Nowoczesne efekty wizualne dla menu bocznego</p>
                         
                         <div class="mas-v2-checkbox">
-                            <input type="checkbox" name="menu_detached" id="menu_detached" <?php checked($settings['menu_detached']); ?>>
-                            <label for="menu_detached">🎯 Odklejone menu (floating)</label>
+                                            <input type="checkbox" name="menu_floating" id="menu_floating" <?php checked($settings['menu_floating']); ?>>
+                <label for="menu_floating">🎯 Floating menu (odklejone)</label>
                         </div>
                         
                         <div class="mas-v2-checkbox">
@@ -465,8 +465,8 @@ $plugin_url = MAS_V2_PLUGIN_URL;
                         </div>
                         
                         <div class="mas-v2-control">
-                            <label>Margines oddzielonego menu: <span class="value"><?php echo $settings['menu_detached_margin']; ?>px</span></label>
-                            <input type="range" name="menu_detached_margin" min="10" max="50" value="<?php echo esc_attr($settings['menu_detached_margin']); ?>">
+                                            <label>Margines floating menu: <span class="value"><?php echo $settings['menu_floating_margin']; ?>px</span></label>
+                <input type="range" name="menu_floating_margin" min="10" max="50" value="<?php echo esc_attr($settings['menu_floating_margin']); ?>">
                         </div>
                         
                         <div class="mas-v2-checkbox">

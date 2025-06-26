@@ -1,0 +1,183 @@
+# Page snapshot
+
+```yaml
+- navigation "Główne menu":
+  - link "Przejdź do głownej zawartości":
+    - /url: "#wpbody-content"
+  - link "Przejdź do paska narzędzi":
+    - /url: "#wp-toolbar"
+- navigation "Pasek narzędzi":
+  - menu:
+    - group:
+      - menuitem "Menu"
+    - group:
+      - menuitem "O WordPressie"
+    - group:
+      - menuitem " x"
+    - group:
+      - menuitem "0 komentarzy oczekuje na moderację"
+    - group:
+      - menuitem "Utwórz"
+  - menu:
+    - group:
+      - menuitem "Witaj, xxx"
+- main:
+  - button "Opcje ekranu "
+  - button "Pomoc "
+  - heading "Kokpit" [level=1]
+  - heading "Stan witryny" [level=2]
+  - button "Przesuń wyżej" [disabled]
+  - button "Przenieś w dół"
+  - 'button "Przełącz panel: Stan witryny" [expanded]'
+  - text: Dobre
+  - paragraph: Stan witryny wygląda dobrze, ale nadal możesz zrobić kilka rzeczy, aby poprawić jej wydajność i bezpieczeństwo.
+  - paragraph:
+    - text: Spójrz na
+    - strong: 2 elementy
+    - text: na
+    - link "ekranie Stan witryny":
+      - /url: http://localhost:10013/wp-admin/site-health.php
+    - text: .
+  - heading "W skrócie" [level=2]
+  - button "Przesuń wyżej"
+  - button "Przenieś w dół"
+  - 'button "Przełącz panel: W skrócie" [expanded]'
+  - list:
+    - listitem:
+      - link " 1 wpis":
+        - /url: edit.php?post_type=post
+    - listitem:
+      - link " 1 strona":
+        - /url: edit.php?post_type=page
+    - listitem:
+      - link " 1 komentarz":
+        - /url: edit-comments.php
+  - paragraph:
+    - text: Używasz WordPressa 6.8.1 z motywem
+    - link "Dwadzieścia Dwadzieścia-Pięć":
+      - /url: themes.php
+    - text: .
+  - heading "Aktywność" [level=2]
+  - button "Przesuń wyżej"
+  - button "Przenieś w dół"
+  - 'button "Przełącz panel: Aktywność" [expanded]'
+  - heading "Ostatnio opublikowane" [level=3]
+  - list:
+    - listitem:
+      - text: 19 cze, 19:47
+      - link "Edytuj „Witaj, świecie!”":
+        - /url: http://localhost:10013/wp-admin/post.php?post=1&action=edit
+        - text: Witaj, świecie!
+  - heading "Najnowsze komentarze" [level=3]
+  - list:
+    - listitem:
+      - paragraph:
+        - text: Od
+        - link "Komentator WordPressa":
+          - /url: https://pl.wordpress.org/
+        - text: do
+        - link "Witaj, świecie!":
+          - /url: http://localhost:10013/witaj-swiecie/
+      - blockquote:
+        - paragraph: Cześć, to jest komentarz. Aby zapoznać się z moderowaniem, edycją i usuwaniem komentarzy, należy odwiedzić ekran komentarzy w kokpicie. Awatary…
+      - paragraph:
+        - text: "|"
+        - button "Odrzuć ten komentarz": Odrzuć
+        - text: "|"
+        - button "Odpowiedz na ten komentarz": Odpowiedz
+        - text: "|"
+        - link "Edytuj komentarz":
+          - /url: comment.php?action=editcomment&c=1
+          - text: Edytuj
+        - text: "|"
+        - button "Oznacz ten komentarz jako spam": Oznacz jako spam
+        - text: "|"
+        - button "Przenieś komentarz do kosza": Przenieś do kosza
+        - text: "|"
+        - link "Zobacz ten komentarz":
+          - /url: http://localhost:10013/witaj-swiecie/#comment-1
+          - text: Podgląd
+  - heading "Wyświetl więcej komentarzy" [level=3]
+  - list:
+    - listitem:
+      - link "Wszystkie (1)":
+        - /url: http://localhost:10013/wp-admin/edit-comments.php?comment_status=all
+      - text: "|"
+    - listitem:
+      - link "Moich (0)":
+        - /url: http://localhost:10013/wp-admin/edit-comments.php?comment_status=mine&user_id=1
+      - text: "|"
+    - listitem:
+      - link "Oczekujące na przegląd (0)":
+        - /url: http://localhost:10013/wp-admin/edit-comments.php?comment_status=moderated
+      - text: "|"
+    - listitem:
+      - link "Zatwierdzono (1)":
+        - /url: http://localhost:10013/wp-admin/edit-comments.php?comment_status=approved
+      - text: "|"
+    - listitem:
+      - link "Spam (0)":
+        - /url: http://localhost:10013/wp-admin/edit-comments.php?comment_status=spam
+      - text: "|"
+    - listitem:
+      - link "Kosz (0)":
+        - /url: http://localhost:10013/wp-admin/edit-comments.php?comment_status=trash
+  - heading "Szybki szkic" [level=2]
+  - button "Przesuń wyżej"
+  - button "Przenieś w dół"
+  - 'button "Przełącz panel: Szybki szkic" [expanded]'
+  - text: Tytuł
+  - textbox "Tytuł"
+  - text: Treść
+  - textbox "Treść"
+  - paragraph:
+    - button "Zapisz szkic"
+  - heading "Wydarzenia i nowości" [level=2]
+  - button "Przesuń wyżej"
+  - button "Przenieś w dół"
+  - 'button "Przełącz panel: Wydarzenia i nowości" [expanded]'
+  - paragraph:
+    - text: Weź udział w nadchodzącym wydarzeniu w pobliżu ciebie.
+    - button "Wybierz położenie"
+  - list:
+    - listitem:
+      - link "WordCamp US":
+        - /url: https://us.wordcamp.org/2025/
+      - text: WordCamp • Portland, Oregon 25–28 sierpień, 2025
+    - listitem:
+      - link "WordCamp Kraków, Poland":
+        - /url: https://krakow.wordcamp.org/2025/
+      - text: WordCamp • Kraków, Poland 27–29 czerwiec, 2025
+    - listitem:
+      - link "WordCamp Gdynia 2025 EN/PL":
+        - /url: https://gdynia.wordcamp.org/2025/
+      - text: WordCamp • Gdynia, Poland 26–28 wrzesień, 2025
+  - list:
+    - listitem:
+      - link "Nowe twarze na scenie WordCampa":
+        - /url: https://pl.wordpress.org/2025/06/12/nowe-twarze-na-scenie-wordcampa/
+    - listitem:
+      - link "WordCamp Europe 2026 odbędzie się w … Krakowie!":
+        - /url: https://pl.wordpress.org/2025/06/09/wordcamp-europe-2026-odbedzie-sie-w-krakowie/
+  - list:
+    - listitem:
+      - link "Nowe twarze na scenie WordCampa":
+        - /url: https://pl.wordpress.org/2025/06/12/nowe-twarze-na-scenie-wordcampa/
+    - listitem:
+      - link "WordCamp Europe 2026 odbędzie się w … Krakowie!":
+        - /url: https://pl.wordpress.org/2025/06/09/wordcamp-europe-2026-odbedzie-sie-w-krakowie/
+    - listitem:
+      - link "Już 27 czerwca zaczynamyWordCamp Kraków 2025!":
+        - /url: https://pl.wordpress.org/2025/06/02/juz-27-czerwca-zaczynamywordcamp-krakow-2025/
+  - paragraph:
+    - link "Spotkania (otworzy się w nowej karcie)":
+      - /url: https://make.wordpress.org/community/meetups-landing-page
+    - text: "|"
+    - link "WordCampy (otworzy się w nowej karcie)":
+      - /url: https://central.wordcamp.org/schedule/
+    - text: "|"
+    - link "Aktualności (otworzy się w nowej karcie)":
+      - /url: https://pl.wordpress.org/news/
+- button "Przełącz motyw": ◐
+- button "Włącz/wyłącz Live Preview": ◉
+```

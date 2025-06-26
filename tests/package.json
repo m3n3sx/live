@@ -1,0 +1,57 @@
+{
+  "name": "mas-v2-tests",
+  "version": "1.0.0",
+  "description": "Comprehensive Playwright tests for Modern Admin Styler V2 WordPress plugin",
+  "main": "playwright.config.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:ui": "playwright test --ui",
+    "test:chromium": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
+    "test:webkit": "playwright test --project=webkit",
+    "test:mobile": "playwright test --project='Mobile Chrome' --project='Mobile Safari'",
+    "test:desktop": "playwright test --project=chromium --project=firefox --project=webkit",
+    "test:critical": "playwright test --grep='@critical'",
+    "test:smoke": "playwright test --grep='Testy podstawowe'",
+    "test:ui-tests": "playwright test --grep='Testy interfejsu'",
+    "test:functionality": "playwright test --grep='Testy funkcjonalności'",
+    "test:responsive": "playwright test --grep='Testy responsywności'",
+    "test:performance": "playwright test --grep='wydajności'",
+    "test:edge-cases": "playwright test --grep='edge cases'",
+    "test:comprehensive": "playwright test --grep='kompleksowy'",
+    "test:menu-positioning": "playwright test --grep='menu.*positioning|ucieka'",
+    "report": "playwright show-report",
+    "report:open": "npx playwright show-report test-results/playwright-report",
+    "install:browsers": "playwright install",
+    "install:deps": "playwright install-deps",
+    "clean": "rm -rf test-results/",
+    "setup": "npm run install:browsers && npm run install:deps"
+  },
+  "keywords": [
+    "playwright",
+    "wordpress",
+    "testing",
+    "e2e",
+    "admin-styler",
+    "ui-testing"
+  ],
+  "author": "MAS V2 Development Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-repo/modern-admin-styler-v2"
+  },
+  "bugs": {
+    "url": "https://github.com/your-repo/modern-admin-styler-v2/issues"
+  },
+  "homepage": "https://github.com/your-repo/modern-admin-styler-v2#readme"
+} 

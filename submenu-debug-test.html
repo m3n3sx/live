@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MAS V2 Submenu Debug Test</title>
+    <style>
+        /* Zkopiuj DOKŁADNIE nasze CSS rules */
+        
+        /* Hover Submenu dla normalnego menu (nie floating, nie collapsed) */
+        body:not(.mas-v2-menu-floating):not(.folded) #adminmenu li:not(.wp-has-current-submenu):not(.current):hover .wp-submenu {
+            position: static !important;
+            left: auto !important;
+            top: auto !important;
+            margin: 8px 12px 4px 12px !important;
+            width: auto !important;
+            box-shadow: none !important;
+            border-radius: 8px !important;
+            background: rgba(0, 0, 0, 0.15) !important;
+            backdrop-filter: none !important;
+            display: block !important;
+            opacity: 1 !important;
+            transform: none !important;
+            animation: slideInDown 0.2s ease-out !important;
+            z-index: auto !important;
+            float: none !important;
+            clear: both !important;
+            padding: 4px !important;
+            border: none !important;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+                max-height: 300px;
+            }
+        }
+        
+        /* Base styling */
+        #adminmenu {
+            background: #23282d;
+            width: 160px;
+        }
+        
+        #adminmenu .wp-submenu {
+            display: none;
+            background: #32373c;
+            color: white;
+        }
+        
+        #adminmenu li {
+            margin: 5px;
+            background: #2c3338;
+            padding: 10px;
+        }
+        
+        #adminmenu li a {
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 MAS V2 Submenu Hover Test</h1>
+    
+    <div id="adminmenu">
+        <ul>
+            <li class="menu-top">
+                <a href="#">📝 Posts</a>
+                <ul class="wp-submenu">
+                    <li><a href="#">All Posts</a></li>
+                    <li><a href="#">Add New</a></li>
+                    <li><a href="#">Categories</a></li>
+                    <li><a href="#">Tags</a></li>
+                </ul>
+            </li>
+            
+            <li class="menu-top wp-has-current-submenu">
+                <a href="#">⚙️ MAS V2 (Current)</a>
+                <ul class="wp-submenu">
+                    <li><a href="#">Settings</a></li>
+                    <li class="current"><a href="#">Menu</a></li>
+                    <li><a href="#">Advanced</a></li>
+                </ul>
+            </li>
+            
+            <li class="menu-top">
+                <a href="#">📄 Pages</a>
+                <ul class="wp-submenu">
+                    <li><a href="#">All Pages</a></li>
+                    <li><a href="#">Add New</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    
+    <h2>Test Instructions:</h2>
+    <ul>
+        <li>✅ <strong>MAS V2 (Current)</strong> - submenu should be visible (current)</li>
+        <li>🎯 <strong>Posts</strong> - hover should show submenu</li>
+        <li>🎯 <strong>Pages</strong> - hover should show submenu</li>
+    </ul>
+    
+    <div style="margin-top: 20px; padding: 10px; background: #f0f0f0;">
+        <strong>Body classes for testing:</strong><br>
+        <button onclick="toggleFloating()">Toggle .mas-v2-menu-floating</button>
+        <button onclick="toggleFolded()">Toggle .folded</button>
+        <div id="status">Current: Normal menu</div>
+    </div>
+    
+    <script>
+        function toggleFloating() {
+            document.body.classList.toggle('mas-v2-menu-floating');
+            updateStatus();
+        }
+        
+        function toggleFolded() {
+            document.body.classList.toggle('folded');
+            updateStatus();
+        }
+        
+        function updateStatus() {
+            const floating = document.body.classList.contains('mas-v2-menu-floating');
+            const folded = document.body.classList.contains('folded');
+            
+            let status = 'Normal menu';
+            if (floating && folded) status = 'Floating + Collapsed';
+            else if (floating) status = 'Floating menu';
+            else if (folded) status = 'Collapsed menu';
+            
+            document.getElementById('status').textContent = 'Current: ' + status;
+        }
+    </script>
+</body>
+</html> 
