@@ -508,15 +508,27 @@ class ModernAdminStylerV2 {
             
             // Sanityzacja i zapisanie danych
             $old_settings = $this->getSettings();
+            error_log('MAS V2: Old settings before save: ' . print_r($old_settings, true));
+            
             $settings = $this->sanitizeSettings($form_data);
+            error_log('MAS V2: New settings after sanitization: ' . print_r($settings, true));
+            
+            // Test specific field
+            error_log('MAS V2: admin_bar_height - old: ' . ($old_settings['admin_bar_height'] ?? 'not set') . ', new: ' . ($settings['admin_bar_height'] ?? 'not set'));
+            
             $result = update_option('mas_v2_settings', $settings);
+            error_log('MAS V2: update_option() returned: ' . var_export($result, true));
+            
+            // Verify the save by reading back from database
+            $saved_settings = get_option('mas_v2_settings');
+            error_log('MAS V2: Settings read back from DB: ' . print_r($saved_settings, true));
+            error_log('MAS V2: admin_bar_height in DB: ' . ($saved_settings['admin_bar_height'] ?? 'not set'));
             
             // update_option() zwraca false, jeśli wartości są takie same, co nie jest błędem.
             // Uznajemy zapis za udany, jeśli funkcja zwróciła true LUB jeśli nowe ustawienia są identyczne jak stare.
             $is_success = ($result === true || serialize($settings) === serialize($old_settings));
             
-            error_log('MAS V2: update_option result: ' . ($result ? 'true (changed)' : 'false (no change or error)'));
-            error_log('MAS V2: Sanitized settings: ' . print_r($settings, true));
+            error_log('MAS V2: Save success determined as: ' . ($is_success ? 'true' : 'false'));
             
             // Wyczyść cache
             $this->clearCache();
@@ -1301,23 +1313,21 @@ class ModernAdminStylerV2 {
      * Sanityzacja ustawień
      */
     private function sanitizeSettings($input) {
-        // Bezpieczna sanityzacja
+        // Bezpieczna sanityzacja z debugowaniem
         $defaults = $this->getDefaultSettings();
         $sanitized = [];
         
+        error_log('MAS V2: sanitizeSettings called with input: ' . print_r($input, true));
+        
         foreach ($defaults as $key => $default_value) {
-            // Specjalna obsługa boolean - checkboxy nie wysyłają danych gdy nie zaznaczone
-            if (is_bool($default_value)) {
-                $sanitized[$key] = isset($input[$key]) ? (bool) $input[$key] : false;
-                continue;
-            }
-            
             if (!isset($input[$key])) {
                 $sanitized[$key] = $default_value;
+                error_log("MAS V2: Field {$key} not in input, using default: " . print_r($default_value, true));
                 continue;
             }
             
             $value = $input[$key];
+            error_log("MAS V2: Processing field {$key}, input value: " . print_r($value, true) . ", default type: " . gettype($default_value));
             
             // Handle arrays (like menu_individual_colors, menu_individual_icons)
             if (is_array($default_value)) {
@@ -1326,12 +1336,14 @@ class ModernAdminStylerV2 {
                 } else {
                     $sanitized[$key] = $default_value;
                 }
+                error_log("MAS V2: Array field {$key} sanitized");
             } elseif (is_bool($default_value)) {
                 // Specjalna obsługa boolean - checkboxy nie wysyłają danych gdy nie zaznaczone
                 $sanitized[$key] = isset($input[$key]) ? (bool) $input[$key] : false;
                 error_log("MAS V2: Boolean field {$key} = " . ($sanitized[$key] ? 'true' : 'false'));
             } elseif (is_int($default_value)) {
                 $sanitized[$key] = (int) $value;
+                error_log("MAS V2: Int field {$key} = {$sanitized[$key]} (from: {$value})");
             } elseif ($key === 'custom_css') {
                 // Ulepszona sanityzacja CSS - bezpieczna ale pozwala na CSS
                 $sanitized[$key] = $this->sanitizeCustomCSS($value);
