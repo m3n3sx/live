@@ -39,7 +39,15 @@
         },
 
         bindEvents: function() {
-            $(document).on("click", "#mas-v2-save-btn", this.saveSettings);
+            // Usuń wszystkie poprzednie event handlers aby uniknąć duplikatów
+            $(document).off("click", "#mas-v2-save-btn");
+            $(document).off("submit", "#mas-v2-settings-form");
+            $(document).off("click", "button[type='submit'][form='mas-v2-settings-form']");
+            
+            // Ustaw tylko JEDEN handler dla zapisu - najważniejszy
+            $(document).on("click", "#mas-v2-save-btn", this.saveSettings.bind(this));
+            
+            // Pozostałe handlers
             $(document).on("click", "#mas-v2-reset-btn", this.resetSettings);
             $(document).on("click", "#mas-v2-export-btn", this.exportSettings);
             $(document).on("click", "#mas-v2-import-btn", this.importSettings);
@@ -53,11 +61,6 @@
             
             // Obsługa color pickerów
             $(document).on("wpColorPickerChange", "#mas-v2-settings-form input.mas-v2-color", this.handleFormChange);
-            
-            // Obsługa submit formularza
-            $(document).on("submit", "#mas-v2-settings-form", this.saveSettings.bind(this));
-            $(document).on("click", "button[type='submit'][form='mas-v2-settings-form']", this.saveSettings.bind(this));
-            $(document).on("click", "#mas-v2-save-btn", this.saveSettings.bind(this));
         },
 
         // Skróty klawiszowe są teraz obsługiwane globalnie w admin-global.js
@@ -724,6 +727,14 @@
             
             console.log('MAS V2: Save button clicked');
             
+            // Zabezpieczenie przed wielokrotnym wywołaniem
+            if (this.isSaving) {
+                console.log('MAS V2: Save already in progress, skipping');
+                return false;
+            }
+            
+            this.isSaving = true;
+            
             const $btn = $(e.target).closest('button, input[type="submit"]');
             const originalText = $btn.html() || $btn.val();
             
@@ -774,6 +785,7 @@
                 },
                 complete: function() {
                     console.log('MAS V2: AJAX request completed');
+                    MAS.isSaving = false; // Reset flag
                     $btn.prop("disabled", false);
                     if ($btn.is('button')) {
                         $btn.html(originalText);
