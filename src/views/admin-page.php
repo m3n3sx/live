@@ -490,7 +490,11 @@ if (!$is_main_page) {
                                    min="25" 
                                        max="60" 
                                        value="<?php echo esc_attr($settings['admin_bar_height'] ?? 32); ?>" 
-                                       class="mas-v2-slider">
+                                       class="mas-v2-slider"
+                                       data-field="admin_bar_height">
+                                <small class="mas-v2-help-text">
+                                    <?php esc_html_e('Ustaw wysokość paska administracyjnego (25-60px)', 'modern-admin-styler-v2'); ?>
+                                </small>
                             </div>
                             
                             <div class="mas-v2-field">
@@ -726,19 +730,7 @@ if (!$is_main_page) {
                         </select>
                     </div>
                     
-                    <div class="mas-v2-field">
-                        <label for="admin_bar_height" class="mas-v2-label">
-                            <?php esc_html_e('Wysokość Admin Bar', 'modern-admin-styler-v2'); ?>
-                            <span class="mas-v2-slider-value" data-target="admin_bar_height"><?php echo esc_html($settings['admin_bar_height'] ?? 32); ?>px</span>
-                        </label>
-                        <input type="range" 
-                               id="admin_bar_height" 
-                               name="admin_bar_height" 
-                               min="28" 
-                               max="60" 
-                               value="<?php echo esc_attr($settings['admin_bar_height'] ?? 32); ?>" 
-                               class="mas-v2-slider">
-                    </div>
+                    <!-- admin_bar_height moved to main admin bar section to avoid conflicts -->
                     
                     <div class="mas-v2-field">
                         <label for="admin_bar_icon_size" class="mas-v2-label">
