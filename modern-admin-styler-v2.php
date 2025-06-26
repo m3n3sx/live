@@ -70,6 +70,11 @@ class ModernAdminStylerV2 {
         add_action('wp_ajax_mas_v2_import_settings', [$this, 'ajaxImportSettings']);
         add_action('wp_ajax_mas_v2_live_preview', [$this, 'ajaxLivePreview']);
         
+        // Diagnostic AJAX handlers
+        add_action('wp_ajax_mas_v2_db_check', [$this, 'ajaxDatabaseCheck']);
+        add_action('wp_ajax_mas_v2_options_test', [$this, 'ajaxOptionsTest']);
+        add_action('wp_ajax_mas_v2_cache_check', [$this, 'ajaxCacheCheck']);
+        
         // Output custom styles
         add_action('admin_head', [$this, 'outputCustomStyles']);
         add_action('wp_head', [$this, 'outputFrontendStyles']);
@@ -2520,6 +2525,157 @@ class ModernAdminStylerV2 {
         $js .= '});';
         
         return $js;
+    }
+    
+    /**
+     * DIAGNOSTIC: Database check AJAX handler
+     */
+    public function ajaxDatabaseCheck() {
+        if (!wp_verify_nonce($_POST['_wpnonce'] ?? '', 'mas_v2_nonce')) {
+            wp_send_json_error(['message' => 'Security check failed']);
+            return;
+        }
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Insufficient permissions']);
+            return;
+        }
+        
+        try {
+            global $wpdb;
+            
+            // Get the option directly from database
+            $option_name = 'mas_v2_settings';
+            $result = $wpdb->get_row(
+                $wpdb->prepare(
+                    "SELECT option_value, option_id FROM {$wpdb->options} WHERE option_name = %s",
+                    $option_name
+                ),
+                ARRAY_A
+            );
+            
+            if ($result) {
+                $settings = maybe_unserialize($result['option_value']);
+                
+                wp_send_json_success([
+                    'settings' => $settings,
+                    'option_id' => $result['option_id'],
+                    'last_modified' => 'Database query successful',
+                    'admin_bar_height' => $settings['admin_bar_height'] ?? 'NOT SET',
+                    'enable_plugin' => $settings['enable_plugin'] ?? 'NOT SET',
+                    'database_size' => strlen($result['option_value']) . ' bytes',
+                    'settings_count' => is_array($settings) ? count($settings) : 'NOT ARRAY'
+                ]);
+            } else {
+                wp_send_json_error(['message' => 'No mas_v2_settings found in database']);
+            }
+            
+        } catch (Exception $e) {
+            wp_send_json_error(['message' => 'Database error: ' . $e->getMessage()]);
+        }
+    }
+    
+    /**
+     * DIAGNOSTIC: WordPress options system test
+     */
+    public function ajaxOptionsTest() {
+        if (!wp_verify_nonce($_POST['_wpnonce'] ?? '', 'mas_v2_nonce')) {
+            wp_send_json_error(['message' => 'Security check failed']);
+            return;
+        }
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Insufficient permissions']);
+            return;
+        }
+        
+        try {
+            // Test WordPress options system with a temporary option
+            $test_option_name = 'mas_v2_test_' . time();
+            $test_data = [
+                'test_field' => 'test_value_' . time(),
+                'admin_bar_height' => 99
+            ];
+            
+            // Test save
+            $save_result = update_option($test_option_name, $test_data);
+            
+            // Test retrieve
+            $retrieved_data = get_option($test_option_name);
+            
+            // Test delete
+            $delete_result = delete_option($test_option_name);
+            
+            wp_send_json_success([
+                'test_result' => 'SUCCESS',
+                'save_result' => $save_result,
+                'data_match' => ($test_data === $retrieved_data),
+                'delete_result' => $delete_result,
+                'test_data' => $test_data,
+                'retrieved_data' => $retrieved_data
+            ]);
+            
+        } catch (Exception $e) {
+            wp_send_json_error(['message' => 'Options test error: ' . $e->getMessage()]);
+        }
+    }
+    
+    /**
+     * DIAGNOSTIC: Cache check AJAX handler
+     */
+    public function ajaxCacheCheck() {
+        if (!wp_verify_nonce($_POST['_wpnonce'] ?? '', 'mas_v2_nonce')) {
+            wp_send_json_error(['message' => 'Security check failed']);
+            return;
+        }
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Insufficient permissions']);
+            return;
+        }
+        
+        try {
+            $cache_status = [];
+            
+            // Check WordPress object cache
+            if (wp_using_ext_object_cache()) {
+                $cache_status['object_cache'] = 'External object cache detected';
+            } else {
+                $cache_status['object_cache'] = 'Using WordPress default cache';
+            }
+            
+            // Check for common caching plugins
+            $caching_plugins = [
+                'W3 Total Cache' => 'w3-total-cache/w3-total-cache.php',
+                'WP Super Cache' => 'wp-super-cache/wp-cache.php',
+                'WP Rocket' => 'wp-rocket/wp-rocket.php',
+                'LiteSpeed Cache' => 'litespeed-cache/litespeed-cache.php'
+            ];
+            
+            $active_cache_plugins = [];
+            foreach ($caching_plugins as $name => $plugin_file) {
+                if (is_plugin_active($plugin_file)) {
+                    $active_cache_plugins[] = $name;
+                }
+            }
+            
+            // Check transients
+            $test_transient = 'mas_v2_cache_test_' . time();
+            $test_value = 'cache_test_value';
+            set_transient($test_transient, $test_value, 60);
+            $retrieved_transient = get_transient($test_transient);
+            delete_transient($test_transient);
+            
+            wp_send_json_success([
+                'cache_status' => $cache_status,
+                'active_cache_plugins' => $active_cache_plugins,
+                'transient_test' => ($test_value === $retrieved_transient) ? 'PASS' : 'FAIL',
+                'plugin_cache' => 'Plugin uses clearCache() method'
+            ]);
+            
+        } catch (Exception $e) {
+            wp_send_json_error(['message' => 'Cache check error: ' . $e->getMessage()]);
+        }
     }
 }
 
