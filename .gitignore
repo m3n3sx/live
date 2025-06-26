@@ -58,4 +58,33 @@ out/
 .env.local
 .env.development.local
 .env.test.local
-.env.production.local 
+.env.production.local
+
+# WordPress Plugin - Modern Admin Styler V2
+# Ignore test files and temporary artifacts
+
+# Test directories and files
+/tests/
+/test-results/
+/playwright/
+/a/
+*.spec.js
+playwright*.config.js
+package*.json
+*.png
+*.webm
+*.zip
+*.html
+diagnostic-screenshot.png
+
+# Development artifacts
+*.md
+!README.md
+
+# Temporary files
+*.tmp
+*.bak
+
+# Build artifacts
+/build/
+/dist/ 

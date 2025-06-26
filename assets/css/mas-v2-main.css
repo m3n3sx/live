@@ -328,24 +328,10 @@ body.wp-admin.mas-v2-modern-style.mas-v2-admin-bar-floating #wpadminbar .ab-subm
 }
 
 /* ==========================================================================
-   FLOATING MENU STYLES - WYŁĄCZONE (HANDLED BY PHP MAIN SYSTEM)
+   SUBMENU OPTIMIZED STYLES
    ========================================================================== */
 
-/* WSZYSTKIE FLOATING STYLE HANDLED BY PHP - eliminuje konflikty i miganie */
-
-/* SIMPLIFIED SUBMENU - Only 3 states needed */
-
-/* Hide submenu by default ONLY in floating menu */
-body.wp-admin.mas-v2-modern-style.mas-v2-menu-floating #adminmenu .wp-submenu {
-    display: none !important;
-}
-
-/* Hide submenu in collapsed menu ONLY if not current/active */
-body.wp-admin.mas-v2-modern-style.folded #adminmenu li:not(.wp-has-current-submenu):not(.current) .wp-submenu {
-    display: none !important;
-}
-
-/* Floating/collapsed menu submenu (appears on hover) */
+/* Floating menu submenu (appears on hover) */
 body.wp-admin.mas-v2-modern-style.mas-v2-menu-floating #adminmenu li:hover .wp-submenu,
 body.wp-admin.mas-v2-modern-style.folded:not(.mas-v2-menu-floating) #adminmenu li:hover .wp-submenu {
     position: absolute !important;
@@ -555,8 +541,8 @@ body.wp-admin.mas-v2-modern-style.folded:not(.mas-v2-menu-floating) #adminmenu l
     animation: pulse 2s infinite !important;
 }
 
-/* Mobile adjustments for floating buttons */
-@media (max-width: 782px) {
+/* Mobile adjustments for floating buttons - unified breakpoint */
+@media (max-width: 768px) {
     .mas-theme-toggle {
         right: 10px !important;
         width: 44px !important;
@@ -2082,7 +2068,7 @@ body.wp-admin.mas-v2-modern-style #adminmenu li.menu-top {
 
 /* === RESPONSIVE STYLES FROM menu-responsive.css === */
 
-/* Mobile Breakpoint */
+/* Mobile Breakpoint - Additional responsive styles */
 @media (max-width: 768px) {
     body.mas-responsive-enabled {
         --mas-menu-width: 200px; /* Default mobile menu width */

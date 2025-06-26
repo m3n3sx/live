@@ -1,4 +1,4 @@
-z/**
+/**
  * Modern Admin Styler V2 - Admin JavaScript
  * Nowoczesny interfejs z animacjami i live preview
  */
@@ -92,16 +92,16 @@ z/**
                     $input.wpColorPicker({
                         change: function(event, ui) {
                             if (MAS.livePreviewEnabled) {
-                            clearTimeout(MAS.colorTimeout);
-                            MAS.colorTimeout = setTimeout(function() {
-                                MAS.triggerLivePreview();
+                                clearTimeout(MAS.colorTimeout);
+                                MAS.colorTimeout = setTimeout(function() {
+                                    MAS.triggerLivePreview();
                                 }, 200);
                             }
                             MAS.markAsChanged();
                         },
                         clear: function() {
                             if (MAS.livePreviewEnabled) {
-                            MAS.triggerLivePreview();
+                                MAS.triggerLivePreview();
                             }
                             MAS.markAsChanged();
                         }
@@ -121,9 +121,9 @@ z/**
                     
                     // Live preview z throttling dla płynności
                     if (MAS.livePreviewEnabled) {
-                            clearTimeout(MAS.sliderTimeout);
-                            MAS.sliderTimeout = setTimeout(function() {
-                                MAS.triggerLivePreview();
+                        clearTimeout(MAS.sliderTimeout);
+                        MAS.sliderTimeout = setTimeout(function() {
+                            MAS.triggerLivePreview();
                         }, 100);
                     }
                     
@@ -133,8 +133,8 @@ z/**
                 // Natychmiastowa aktualizacja przy zmianie końcowej
                 $slider.on("change", function() {
                     if (MAS.livePreviewEnabled) {
-                    clearTimeout(MAS.sliderTimeout);
-                    MAS.triggerLivePreview();
+                        clearTimeout(MAS.sliderTimeout);
+                        MAS.triggerLivePreview();
                     }
                 });
             });

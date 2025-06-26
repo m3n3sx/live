@@ -17,8 +17,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Definicje stałych
-define('MAS_V2_VERSION', '2.5.0');
+// Definicje stałych - ujednolicenie wersji
+define('MAS_V2_VERSION', '2.2.0');
 define('MAS_V2_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('MAS_V2_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('MAS_V2_PLUGIN_FILE', __FILE__);
@@ -123,14 +123,9 @@ class ModernAdminStylerV2 {
      * Inicjalizacja serwisów
      */
     public function initServices() {
-        // WYŁĄCZONY - używamy tylko legacy mode żeby uniknąć duplikatów
-        // Nowa architektura jest wyłączona - powodowała konflikty
-        
-        // Nie inicjalizuj AdminController - dubluje hooki
-        // $this->adminController = new \ModernAdminStylerV2\Controllers\AdminController();
-        
-        // Nie inicjalizuj AssetService - ma własne metody enqueue które się dublują
-        // $this->assetService = new \ModernAdminStylerV2\Services\AssetService();
+        // Serwisy są wyłączone aby uniknąć duplikatów hooks'ów
+        // Używamy tylko legacy mode w głównej klasie
+        // AdminController i AssetService powodowały konflikty rejestracji
     }
     
     /**
@@ -297,15 +292,15 @@ class ModernAdminStylerV2 {
             return;
         }
         
-        // STYLE interface'u wtyczki na stronach ustawień
+        // SKONSOLIDOWANY CSS - tylko mas-v2-main.css (zawiera wszystko)
         wp_enqueue_style(
             'mas-v2-interface',
             MAS_V2_PLUGIN_URL . 'assets/css/mas-v2-main.css',
             [],
-            MAS_V2_VERSION . '.' . time()
+            MAS_V2_VERSION
         );
         
-        // TYLKO KLUCZOWY JavaScript na stronach ustawień
+        // SKONSOLIDOWANY JavaScript - tylko admin-modern.js (zawiera wszystko)
         wp_enqueue_script(
             'mas-v2-admin',
             MAS_V2_PLUGIN_URL . 'assets/js/admin-modern.js',
@@ -313,17 +308,6 @@ class ModernAdminStylerV2 {
             MAS_V2_VERSION,
             true
         );
-        
-        // Debug script tylko w trybie debug (opcjonalny)
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            wp_enqueue_script(
-                'mas-v2-debug',
-                MAS_V2_PLUGIN_URL . 'assets/js/debug-frontend.js',
-                ['jquery', 'mas-v2-admin'],
-                MAS_V2_VERSION,
-                true
-            );
-        }
         
         wp_enqueue_style('wp-color-picker');
         
@@ -355,17 +339,15 @@ class ModernAdminStylerV2 {
         // Dodaj wczesny JavaScript PRZED wszystkimi innymi skryptami
         add_action('admin_head', [$this, 'addEarlyLoadingProtection'], 1);
         
-        // SKONSOLIDOWANE PLIKI CSS - optymalizacja wydajności
-        
-        // Główny plik CSS (wszystkie style + Live Preview)
+        // SKONSOLIDOWANY CSS - mas-v2-main.css zawiera wszystkie potrzebne style
         wp_enqueue_style(
             'mas-v2-main',
             MAS_V2_PLUGIN_URL . 'assets/css/mas-v2-main.css',
             [],
-            MAS_V2_VERSION . '.' . time()
+            MAS_V2_VERSION
         );
         
-        // TYLKO GLOBALNY JavaScript (lekki, bez duplikatów)
+        // SKONSOLIDOWANY JavaScript - admin-global.js (lekka wersja)
         wp_enqueue_script(
             'mas-v2-global',
             MAS_V2_PLUGIN_URL . 'assets/js/admin-global.js',
@@ -606,7 +588,7 @@ class ModernAdminStylerV2 {
     }
     
     /**
-     * AJAX Import ustawień
+     * AJAX Import ustawień - ulepszona walidacja bezpieczeństwa
      */
     public function ajaxImportSettings() {
         if (!wp_verify_nonce($_POST['nonce'] ?? '', 'mas_v2_nonce')) {
@@ -618,21 +600,75 @@ class ModernAdminStylerV2 {
         }
         
         try {
-            $import_data = json_decode(stripslashes($_POST['data']), true);
+            $raw_data = $_POST['data'] ?? '';
             
-            if (!$import_data || !isset($import_data['settings'])) {
-                wp_send_json_error(['message' => __('Nieprawidłowy format pliku', 'modern-admin-styler-v2')]);
+            // Walidacja rozmiaru danych (max 500KB)
+            if (strlen($raw_data) > 500000) {
+                wp_send_json_error(['message' => __('Plik jest zbyt duży (max 500KB)', 'modern-admin-styler-v2')]);
+                return;
             }
             
+            // Walidacja JSON
+            $import_data = json_decode(stripslashes($raw_data), true);
+            
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                wp_send_json_error(['message' => __('Nieprawidłowy format JSON', 'modern-admin-styler-v2')]);
+                return;
+            }
+            
+            if (!$import_data || !is_array($import_data)) {
+                wp_send_json_error(['message' => __('Nieprawidłowa struktura pliku', 'modern-admin-styler-v2')]);
+                return;
+            }
+            
+            // Walidacja wymaganych pól
+            if (!isset($import_data['settings']) || !is_array($import_data['settings'])) {
+                wp_send_json_error(['message' => __('Brak sekcji ustawień w pliku', 'modern-admin-styler-v2')]);
+                return;
+            }
+            
+            // Opcjonalna walidacja wersji dla kompatybilności
+            if (isset($import_data['version'])) {
+                $import_version = $import_data['version'];
+                $current_version = MAS_V2_VERSION;
+                
+                // Sprawdź czy wersja nie jest z przyszłości
+                if (version_compare($import_version, $current_version, '>')) {
+                    wp_send_json_error(['message' => sprintf(
+                        __('Plik został utworzony w nowszej wersji (%s). Obecna wersja: %s', 'modern-admin-styler-v2'),
+                        $import_version,
+                        $current_version
+                    )]);
+                    return;
+                }
+            }
+            
+            // Walidacja i sanityzacja ustawień
             $settings = $this->sanitizeSettings($import_data['settings']);
-            update_option('mas_v2_settings', $settings);
+            
+            if (empty($settings)) {
+                wp_send_json_error(['message' => __('Brak prawidłowych ustawień do importu', 'modern-admin-styler-v2')]);
+                return;
+            }
+            
+            // Zapisz ustawienia
+            $result = update_option('mas_v2_settings', $settings);
+            
+            if (!$result && get_option('mas_v2_settings') !== $settings) {
+                wp_send_json_error(['message' => __('Błąd podczas zapisywania ustawień', 'modern-admin-styler-v2')]);
+                return;
+            }
+            
             $this->clearCache();
             
             wp_send_json_success([
-                'message' => __('Ustawienia zostały zaimportowane pomyślnie!', 'modern-admin-styler-v2')
+                'message' => __('Ustawienia zostały zaimportowane pomyślnie!', 'modern-admin-styler-v2'),
+                'settings_count' => count($settings)
             ]);
+            
         } catch (Exception $e) {
-            wp_send_json_error(['message' => $e->getMessage()]);
+            error_log('MAS V2 Import Error: ' . $e->getMessage());
+            wp_send_json_error(['message' => __('Wystąpił błąd podczas importu', 'modern-admin-styler-v2')]);
         }
     }
     
@@ -1290,7 +1326,8 @@ class ModernAdminStylerV2 {
             } elseif (is_int($default_value)) {
                 $sanitized[$key] = (int) $value;
             } elseif ($key === 'custom_css') {
-                $sanitized[$key] = wp_strip_all_tags($value);
+                // Ulepszona sanityzacja CSS - bezpieczna ale pozwala na CSS
+                $sanitized[$key] = $this->sanitizeCustomCSS($value);
             } elseif (strpos($key, 'color') !== false) {
                 // Obsługa kolorów w różnych formatach
                 if (is_array($value)) {
@@ -1362,6 +1399,37 @@ class ModernAdminStylerV2 {
         }
         
         return $sanitized;
+    }
+    
+    /**
+     * Bezpieczna sanityzacja CSS
+     */
+    private function sanitizeCustomCSS($css) {
+        // Usuń potencjalnie niebezpieczne elementy
+        $dangerous_patterns = [
+            '/<script\b[^>]*>.*?<\/script>/is',  // JavaScript
+            '/javascript:/i',                    // javascript: URLs
+            '/expression\s*\(/i',               // CSS expressions (IE)
+            '/behavior\s*:/i',                  // CSS behaviors (IE)
+            '/binding\s*:/i',                   // CSS bindings (IE)
+            '/@import\s+/i',                    // @import rules
+            '/url\s*\(\s*[\'"]?data:/i',       // Data URLs
+            '/url\s*\(\s*[\'"]?javascript:/i',  // JavaScript URLs w CSS
+        ];
+        
+        foreach ($dangerous_patterns as $pattern) {
+            $css = preg_replace($pattern, '', $css);
+        }
+        
+        // Dodatkowa walidacja - usuń komentarze HTML
+        $css = preg_replace('/<!--.*?-->/s', '', $css);
+        
+        // Limit długości (max 50KB)
+        if (strlen($css) > 50000) {
+            $css = substr($css, 0, 50000) . '/* ... CSS truncated for security */';
+        }
+        
+        return $css;
     }
     
     /**
@@ -1946,17 +2014,26 @@ class ModernAdminStylerV2 {
     }
     
     /**
-     * Wyczyść cache
+     * Wyczyść cache - zoptymalizowane zapytania
      */
     private function clearCache() {
-        global $wpdb;
+        // Używaj WordPress API zamiast bezpośrednich zapytań SQL
+        $transient_keys = [
+            'mas_v2_css_cache',
+            'mas_v2_js_cache', 
+            'mas_v2_settings_cache',
+            'mas_v2_admin_styles'
+        ];
         
-        // Wyczyść transients związane z pluginem
-        $wpdb->query("DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_timeout_mas_v2_%' OR option_name LIKE '_transient_mas_v2_%'");
-        $wpdb->query("DELETE FROM $wpdb->options WHERE option_name LIKE '_site_transient_timeout_mas_v2_%' OR option_name LIKE '_site_transient_mas_v2_%'");
+        foreach ($transient_keys as $key) {
+            delete_transient($key);
+            delete_site_transient($key);
+        }
         
-        // Wyczyść cache obiektów WordPress
-        wp_cache_flush();
+        // Wyczyść cache obiektów WordPress (tylko jeśli to konieczne)
+        if (function_exists('wp_cache_flush')) {
+            wp_cache_flush();
+        }
     }
     
     /**
