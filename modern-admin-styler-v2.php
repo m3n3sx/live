@@ -356,8 +356,10 @@ class ModernAdminStylerV2 {
             true
         );
         
-        // Przekaż ustawienia do globalnego JS
+        // Przekaż ustawienia do globalnego JS (z nonce dla kompatybilności)
         wp_localize_script('mas-v2-global', 'masV2Global', [
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('mas_v2_nonce'),
             'settings' => $this->getSettings()
         ]);
     }
@@ -717,6 +719,7 @@ class ModernAdminStylerV2 {
         
         // Sprawdź czy wtyczka jest włączona
         if (!isset($settings['enable_plugin']) || !$settings['enable_plugin']) {
+            error_log('MAS V2: Plugin disabled - enable_plugin=' . ($settings['enable_plugin'] ?? 'not_set'));
             return;
         }
         
@@ -1323,6 +1326,10 @@ class ModernAdminStylerV2 {
                 } else {
                     $sanitized[$key] = $default_value;
                 }
+            } elseif (is_bool($default_value)) {
+                // Specjalna obsługa boolean - checkboxy nie wysyłają danych gdy nie zaznaczone
+                $sanitized[$key] = isset($input[$key]) ? (bool) $input[$key] : false;
+                error_log("MAS V2: Boolean field {$key} = " . ($sanitized[$key] ? 'true' : 'false'));
             } elseif (is_int($default_value)) {
                 $sanitized[$key] = (int) $value;
             } elseif ($key === 'custom_css') {

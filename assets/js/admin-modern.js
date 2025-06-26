@@ -15,6 +15,11 @@
         sliderTimeout: null,
         colorTimeout: null,
         
+        // Funkcja pomocnicza dla kompatybilności masV2/masV2Global
+        getMasData: function() {
+            return window.masV2 || window.masV2Global || {};
+        },
+
         init: function() {
             this.bindEvents();
             this.initTabs();
@@ -730,16 +735,17 @@
             }
             
             const formData = MAS.getFormData();
+            const masData = MAS.getMasData();
             console.log('MAS V2: Form data collected:', formData);
-            console.log('MAS V2: AJAX URL:', masV2.ajaxUrl);
-            console.log('MAS V2: Nonce:', masV2.nonce);
+            console.log('MAS V2: AJAX URL:', masData.ajaxUrl);
+            console.log('MAS V2: Nonce:', masData.nonce);
             
             $.ajax({
-                url: masV2.ajaxUrl,
+                url: masData.ajaxUrl,
                 type: "POST",
                 data: {
                     action: "mas_v2_save_settings",
-                    nonce: masV2.nonce,
+                    nonce: masData.nonce,
                     ...formData
                 },
                 beforeSend: function() {
@@ -790,12 +796,14 @@
             
             $btn.prop("disabled", true).html('<span class="mas-v2-loading"></span> Resetowanie...');
             
+            const masData = MAS.getMasData();
+            
             $.ajax({
-                url: masV2.ajaxUrl,
+                url: masData.ajaxUrl,
                 type: "POST",
                 data: {
                     action: "mas_v2_reset_settings",
-                    nonce: masV2.nonce
+                    nonce: masData.nonce
                 },
                 success: function(response) {
                     if (response.success) {
@@ -820,12 +828,14 @@
         exportSettings: function(e) {
             e.preventDefault();
             
+            const masData = MAS.getMasData();
+            
             $.ajax({
-                url: masV2.ajaxUrl,
+                url: masData.ajaxUrl,
                 type: "POST",
                 data: {
                     action: "mas_v2_export_settings",
-                    nonce: masV2.nonce
+                    nonce: masData.nonce
                 },
                 success: function(response) {
                     if (response.success) {
@@ -865,12 +875,14 @@
                 try {
                     const data = JSON.parse(e.target.result);
                     
+                    const masData = MAS.getMasData();
+                    
                     $.ajax({
-                        url: masV2.ajaxUrl,
+                        url: masData.ajaxUrl,
                         type: "POST",
                         data: {
                             action: "mas_v2_import_settings",
-                            nonce: masV2.nonce,
+                            nonce: masData.nonce,
                             data: JSON.stringify(data)
                         },
                         success: function(response) {
