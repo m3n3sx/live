@@ -30,19 +30,147 @@
     --mas-spacing-base: 16px;
     
     /* Extended Live Preview Variables */
+    
+    /* Global Variables */
+    --mas-accent-color: #3b82f6;
+    --mas-global-border-radius: 8px;
+    --mas-global-box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    --mas-shadow-color: rgba(0,0,0,0.1);
+    --mas-shadow-blur: 8px;
+    
+    /* Admin Bar Variables */
+    --mas-admin-bar-background: #23282d;
     --mas-admin-bar-text-color: #ffffff;
     --mas-admin-bar-hover-color: #46a6d8;
     --mas-admin-bar-font-size: 13px;
     --mas-admin-bar-padding: 8px;
     --mas-admin-bar-border-radius-all: 0px;
+    --mas-admin-bar-border-radius-top-left: 0px;
+    --mas-admin-bar-border-radius-top-right: 0px;
+    --mas-admin-bar-border-radius-bottom-left: 0px;
+    --mas-admin-bar-border-radius-bottom-right: 0px;
+    --mas-admin-bar-height: 32px;
+    --mas-admin-bar-width: 100;
+    --mas-admin-bar-margin: 10px;
+    --mas-admin-bar-margin-top: 10px;
+    --mas-admin-bar-margin-right: 10px;
+    --mas-admin-bar-margin-bottom: 10px;
+    --mas-admin-bar-margin-left: 10px;
+    --mas-admin-bar-typography-size: 13px;
+    --mas-admin-bar-icon-size: 20px;
+    --mas-admin-bar-spacing: 8px;
     
+    /* Menu Variables */
     --mas-menu-text-color: #1e293b;
     --mas-menu-hover-color: #3b82f6;
     --mas-menu-active-background: #0073aa;
     --mas-menu-active-text-color: #ffffff;
     --mas-menu-item-height: 34px;
     --mas-menu-border-radius-all: 0px;
+    --mas-menu-border-radius-top-left: 0px;
+    --mas-menu-border-radius-top-right: 0px;
+    --mas-menu-border-radius-bottom-left: 0px;
+    --mas-menu-border-radius-bottom-right: 0px;
     --mas-menu-background: #ffffff;
+    --mas-menu-width: 160px;
+    --mas-menu-icon-size: 20px;
+    --mas-menu-item-padding: 8px;
+    --mas-menu-floating-margin: 10px;
+    --mas-menu-gradient-start: #ffffff;
+    --mas-menu-gradient-end: #f8fafc;
+    --mas-menu-gradient-direction: to bottom;
+    --mas-menu-font-size: 14px;
+    --mas-menu-line-height: 1.4;
+    --mas-menu-letter-spacing: 0px;
+    --mas-menu-margin: 10px;
+    --mas-menu-margin-top: 10px;
+    --mas-menu-margin-right: 10px;
+    --mas-menu-margin-bottom: 10px;
+    --mas-menu-margin-left: 10px;
+    --mas-menu-google-font: '';
+    --mas-menu-logo-height: 40px;
+    --mas-menu-hover-duration: 0.2s;
+    --mas-menu-active-indicator-color: #3b82f6;
+    --mas-menu-active-indicator-width: 3px;
+    --mas-menu-item-spacing: 4px;
+    --mas-menu-item-padding-vertical: 8px;
+    --mas-menu-item-padding-horizontal: 12px;
+    
+    /* Submenu Variables - FULL IMPLEMENTATION ✅ */
+    --mas-submenu-background: rgba(0, 0, 0, 0.15);
+    --mas-submenu-text-color: #1e293b;
+    --mas-submenu-hover-background: #f3f4f6;
+    --mas-submenu-hover-text-color: #3b82f6;
+    --mas-submenu-active-background: #3b82f6;
+    --mas-submenu-active-text-color: #ffffff;
+    --mas-submenu-item-spacing: 4px;
+    --mas-submenu-indent: 12px;
+    --mas-submenu-separator-color: #e5e7eb;
+    --mas-submenu-separator-width: 1px;
+    --mas-submenu-separator-display: none;
+    --mas-submenu-indicator-style: arrow;
+    --mas-submenu-indicator-color: #6b7280;
+    --mas-submenu-border-radius: 8px;
+    --mas-submenu-padding: 4px;
+    --mas-submenu-margin: 8px 12px 4px 12px;
+    --mas-submenu-font-size: 13px;
+    --mas-submenu-line-height: 1.3;
+    --mas-submenu-box-shadow: none;
+    --mas-submenu-width: 180px;
+    
+    /* Content Variables */
+    --mas-content-background-color: #ffffff;
+    --mas-content-text-color: #1e293b;
+    --mas-content-border-radius: 8px;
+    --mas-content-padding: 20px;
+    --mas-content-margin: 0px;
+    --mas-content-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    
+    /* Button Variables */
+    --mas-button-bg-color: #3b82f6;
+    --mas-button-text-color: #ffffff;
+    --mas-button-hover-bg-color: #2563eb;
+    --mas-button-hover-text-color: #ffffff;
+    --mas-button-border-radius: 6px;
+    --mas-button-padding: 8px 16px;
+    
+    /* Form Variables */
+    --mas-form-field-bg-color: #ffffff;
+    --mas-form-field-border-color: #d1d5db;
+    --mas-form-field-focus-color: #3b82f6;
+    
+    /* Typography Variables - FULL IMPLEMENTATION ✅ */
+    --mas-global-font-size: 14px;
+    --mas-global-line-height: 1.5;
+    --mas-body-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mas-heading-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mas-body-font-size: 14px;
+    --mas-body-line-height: 1.5;
+    --mas-heading-font-size: 18px;
+    --mas-heading-line-height: 1.3;
+    --mas-body-font-weight: 400;
+    --mas-heading-font-weight: 600;
+    
+    /* Headings Scale - NEW FEATURE ✅ */
+    --mas-headings-scale: 1.25;
+    --mas-h1-font-size: 32px;
+    --mas-h2-font-size: 24px;
+    --mas-h3-font-size: 20px;
+    --mas-h4-font-size: 18px;
+    --mas-h5-font-size: 16px;
+    --mas-h6-font-size: 14px;
+    
+    /* Theme & Palette Variables ✅ */
+    --mas-color-scheme: light;
+    --mas-color-palette: modern-blue;
+    
+    /* Advanced/Hiding Variables */
+    --mas-hide-wp-version: visible;
+    --mas-hide-help-tabs: visible;
+    --mas-hide-screen-options: visible;
+    --mas-hide-admin-notices: visible;
+    --mas-hide-footer-text: visible;
+    --mas-hide-update-nag: visible;
     
     /* Shadows */
     --mas-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -61,19 +189,29 @@
 }
 
 /* ==========================================================================
-   ADMIN MENU STYLING - High Specificity CSS
+   ADMIN MENU STYLING - Optimized CSS Selectors
    Replaces forceFixSideMenu() JavaScript function
    ========================================================================== */
 
-/* Admin Menu Container */
-body.wp-admin.mas-v2-modern-style #adminmenu {
+/* Admin Menu Container - NAPRAWKA WYDAJNOŚCI: Skrócone selektory */
+.mas-v2-modern-style #adminmenu {
     overflow: visible !important;
-    padding: 8px !important;
+    padding: var(--mas-menu-item-padding) !important;
     background: var(--mas-menu-background, var(--mas-bg-primary)) !important;
+    width: var(--mas-menu-width) !important;
+    border-radius: var(--mas-menu-border-radius-all) !important;
+    margin: var(--mas-menu-margin) !important;
+    margin-top: var(--mas-menu-margin-top) !important;
+    margin-right: var(--mas-menu-margin-right) !important;
+    margin-bottom: var(--mas-menu-margin-bottom) !important;
+    margin-left: var(--mas-menu-margin-left) !important;
+    font-size: var(--mas-menu-font-size) !important;
+    line-height: var(--mas-menu-line-height) !important;
+    letter-spacing: var(--mas-menu-letter-spacing) !important;
 }
 
 /* Menu Items - Main Level */
-body.wp-admin.mas-v2-modern-style #adminmenu li.menu-top {
+.mas-v2-modern-style #adminmenu li.menu-top {
     border-radius: var(--mas-menu-border-radius-all, var(--mas-border-radius)) !important;
     margin: 2px 4px !important;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -82,29 +220,30 @@ body.wp-admin.mas-v2-modern-style #adminmenu li.menu-top {
     height: var(--mas-menu-item-height) !important;
 }
 
-body.wp-admin.mas-v2-modern-style #adminmenu li.menu-top:hover {
+.mas-v2-modern-style #adminmenu li.menu-top:hover {
     background: var(--mas-bg-secondary) !important;
     transform: translateY(-1px) !important;
     box-shadow: var(--mas-shadow-md) !important;
 }
 
 /* Menu Links */
-body.wp-admin.mas-v2-modern-style #adminmenu li.menu-top > a {
+.mas-v2-modern-style #adminmenu li.menu-top > a {
     border-radius: var(--mas-menu-border-radius-all, var(--mas-border-radius)) !important;
-    margin: 0 !important;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    margin: var(--mas-menu-item-spacing) 0 !important;
+    transition: all var(--mas-menu-hover-duration) ease !important;
     color: var(--mas-menu-text-color) !important;
-    padding: 8px 12px !important;
+    padding: var(--mas-menu-item-padding-vertical) var(--mas-menu-item-padding-horizontal) !important;
     height: var(--mas-menu-item-height) !important;
     line-height: calc(var(--mas-menu-item-height) - 16px) !important;
+    font-size: var(--mas-menu-font-size) !important;
 }
 
-body.wp-admin.mas-v2-modern-style #adminmenu li.menu-top:hover > a {
+.mas-v2-modern-style #adminmenu li.menu-top:hover > a {
     color: var(--mas-menu-hover-color) !important;
 }
 
-body.wp-admin.mas-v2-modern-style #adminmenu li.current > a,
-body.wp-admin.mas-v2-modern-style #adminmenu li.wp-has-current-submenu > a {
+.mas-v2-modern-style #adminmenu li.current > a,
+.mas-v2-modern-style #adminmenu li.wp-has-current-submenu > a {
     background: var(--mas-menu-active-background) !important;
     color: var(--mas-menu-active-text-color) !important;
 }
@@ -119,14 +258,17 @@ body.wp-admin.mas-v2-modern-style #adminmenu div.wp-menu-name {
     text-overflow: ellipsis !important;
     word-break: normal !important;
     overflow-wrap: normal !important;
+    font-size: var(--mas-menu-font-size) !important;
+    line-height: var(--mas-menu-line-height) !important;
+    letter-spacing: var(--mas-menu-letter-spacing) !important;
 }
 
 /* Menu Icons */
 body.wp-admin.mas-v2-modern-style #adminmenu .wp-menu-image {
     border-radius: 8px !important;
     padding: 4px !important;
-    width: 20px !important;
-    height: 20px !important;
+    width: var(--mas-menu-icon-size) !important;
+    height: var(--mas-menu-icon-size) !important;
 }
 
 /* Menu Separators */
@@ -159,11 +301,11 @@ body.wp-admin.mas-v2-modern-style:not(.mas-v2-menu-floating):not(.folded) #admin
     position: static !important;
     left: auto !important;
     top: auto !important;
-    margin: 8px 12px 4px 12px !important;
+    margin: var(--mas-submenu-margin) !important;
     width: auto !important;
-    box-shadow: none !important;
-    border-radius: 8px !important;
-    background: rgba(0, 0, 0, 0.15) !important;
+    box-shadow: var(--mas-submenu-box-shadow) !important;
+    border-radius: var(--mas-submenu-border-radius) !important;
+    background: var(--mas-submenu-background) !important;
     backdrop-filter: none !important;
     display: block !important;
     opacity: 1 !important;
@@ -172,8 +314,10 @@ body.wp-admin.mas-v2-modern-style:not(.mas-v2-menu-floating):not(.folded) #admin
     z-index: auto !important;
     float: none !important;
     clear: both !important;
-    padding: 4px !important;
+    padding: var(--mas-submenu-padding) !important;
     border: none !important;
+    font-size: var(--mas-submenu-font-size) !important;
+    line-height: var(--mas-submenu-line-height) !important;
 }
 
 /* Hover Submenu dla normalnego menu (nie floating, nie collapsed) */
@@ -181,11 +325,11 @@ body.wp-admin.mas-v2-modern-style:not(.mas-v2-menu-floating):not(.folded) #admin
     position: static !important;
     left: auto !important;
     top: auto !important;
-    margin: 8px 12px 4px 12px !important;
+    margin: var(--mas-submenu-margin) !important;
     width: auto !important;
-    box-shadow: none !important;
-    border-radius: 8px !important;
-    background: rgba(0, 0, 0, 0.15) !important;
+    box-shadow: var(--mas-submenu-box-shadow) !important;
+    border-radius: var(--mas-submenu-border-radius) !important;
+    background: var(--mas-submenu-background) !important;
     backdrop-filter: none !important;
     display: block !important;
     opacity: 1 !important;
@@ -194,8 +338,10 @@ body.wp-admin.mas-v2-modern-style:not(.mas-v2-menu-floating):not(.folded) #admin
     z-index: auto !important;
     float: none !important;
     clear: both !important;
-    padding: 4px !important;
+    padding: var(--mas-submenu-padding) !important;
     border: none !important;
+    font-size: var(--mas-submenu-font-size) !important;
+    line-height: var(--mas-submenu-line-height) !important;
 }
 
 @keyframes slideInDown {
@@ -225,26 +371,27 @@ body.wp-admin.mas-v2-modern-style #adminmenu .wp-submenu {
 
 /* Submenu Items - Normal Menu (expanded, not floating) */
 body.wp-admin.mas-v2-modern-style:not(.mas-v2-menu-floating):not(.folded) #adminmenu .wp-submenu li a {
-    border-radius: 6px !important;
-    margin: 2px 8px !important;
+    border-radius: var(--mas-submenu-border-radius, 6px) !important;
+    margin: var(--mas-submenu-item-spacing, 2px) var(--mas-submenu-indent, 8px) !important;
     padding: 8px 16px !important;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    color: var(--mas-text-secondary) !important;
+    color: var(--mas-submenu-text-color) !important;
     display: block !important;
     width: auto !important;
-    font-size: 14px !important;
+    font-size: var(--mas-submenu-font-size) !important;
+    line-height: var(--mas-submenu-line-height) !important;
 }
 
 body.wp-admin.mas-v2-modern-style:not(.mas-v2-menu-floating):not(.folded) #adminmenu .wp-submenu li a:hover,
 body.wp-admin.mas-v2-modern-style:not(.mas-v2-menu-floating):not(.folded) #adminmenu .wp-submenu li a:focus {
-    background: rgba(255, 255, 255, 0.1) !important;
-    color: var(--mas-text-primary) !important;
+    background: var(--mas-submenu-hover-background) !important;
+    color: var(--mas-submenu-hover-text-color) !important;
     transform: translateX(2px) !important;
 }
 
 body.wp-admin.mas-v2-modern-style:not(.mas-v2-menu-floating):not(.folded) #adminmenu .wp-submenu li.current a {
-    background: var(--mas-primary) !important;
-    color: white !important;
+    background: var(--mas-submenu-active-background, var(--mas-primary)) !important;
+    color: var(--mas-submenu-active-text-color, white) !important;
     box-shadow: 0 1px 4px rgba(139, 92, 246, 0.2) !important;
 }
 
@@ -269,20 +416,28 @@ body.wp-admin.mas-v2-modern-style #adminmenu li:hover .wp-submenu li a:focus {
    ========================================================================== */
 
 body.wp-admin.mas-v2-modern-style #wpadminbar {
-    background: var(--mas-bg-primary) !important;
+    background: var(--mas-admin-bar-background) !important;
     border-bottom: 1px solid var(--mas-border-color) !important;
     border-radius: var(--mas-admin-bar-border-radius-all) !important;
-    height: 32px !important;
-    line-height: 32px !important;
+    height: var(--mas-admin-bar-height) !important;
+    line-height: var(--mas-admin-bar-height) !important;
+    width: var(--mas-admin-bar-width, 100)% !important;
     overflow: visible !important;
+    margin: var(--mas-admin-bar-margin) !important;
+    margin-top: var(--mas-admin-bar-margin-top) !important;
+    margin-right: var(--mas-admin-bar-margin-right) !important;
+    margin-bottom: var(--mas-admin-bar-margin-bottom) !important;
+    margin-left: var(--mas-admin-bar-margin-left) !important;
+    font-size: var(--mas-admin-bar-typography-size) !important;
+    padding: 0 var(--mas-admin-bar-spacing) !important;
 }
 
 body.wp-admin.mas-v2-modern-style #wpadminbar .ab-top-menu > li > .ab-item {
     color: var(--mas-admin-bar-text-color) !important;
-    font-size: var(--mas-admin-bar-font-size) !important;
-    padding: 0 var(--mas-admin-bar-padding) !important;
-    height: 32px !important;
-    line-height: 32px !important;
+    font-size: var(--mas-admin-bar-typography-size) !important;
+    padding: 0 var(--mas-admin-bar-spacing) !important;
+    height: var(--mas-admin-bar-height) !important;
+    line-height: var(--mas-admin-bar-height) !important;
     white-space: nowrap !important;
     border-radius: 6px !important;
     transition: all 0.2s ease !important;
@@ -294,9 +449,9 @@ body.wp-admin.mas-v2-modern-style #wpadminbar .ab-top-menu > li:hover > .ab-item
 }
 
 body.wp-admin.mas-v2-modern-style #wpadminbar .ab-icon {
-    width: 20px !important;
-    height: 20px !important;
-    font-size: 20px !important;
+    width: var(--mas-admin-bar-icon-size) !important;
+    height: var(--mas-admin-bar-icon-size) !important;
+    font-size: var(--mas-admin-bar-icon-size) !important;
 }
 
 /* Admin Bar Submenu - Replaces JavaScript manipulation */
@@ -412,6 +567,68 @@ body.wp-admin.mas-v2-modern-style.folded:not(.mas-v2-menu-floating) #adminmenu l
         animation: none !important;
         transform: none !important;
     }
+}
+
+/* ==========================================================================
+   GLOBAL STYLING WITH EXTENDED VARIABLES
+   ========================================================================== */
+
+/* Global body styling */
+body.wp-admin {
+    background: var(--mas-content-background-color, var(--mas-bg-primary)) !important;
+    color: var(--mas-content-text-color, var(--mas-text-primary)) !important;
+    font-size: var(--mas-global-font-size) !important;
+    line-height: var(--mas-global-line-height) !important;
+}
+
+/* Main content wrapper styling */
+.wrap {
+    background: var(--mas-content-background-color, var(--mas-bg-primary)) !important;
+    border-radius: var(--mas-content-border-radius, var(--mas-border-radius)) !important;
+    padding: var(--mas-content-padding) !important;
+    margin: var(--mas-content-margin) !important;
+    box-shadow: var(--mas-content-shadow, var(--mas-shadow-lg)) !important;
+}
+
+/* Button styling with variables */
+.button, .button-primary, .button-secondary, .wp-core-ui .button, .wp-core-ui .button-primary {
+    background: var(--mas-button-bg-color, var(--mas-primary)) !important;
+    color: var(--mas-button-text-color, #ffffff) !important;
+    border-radius: var(--mas-button-border-radius, var(--mas-border-radius)) !important;
+    padding: var(--mas-button-padding, 8px 16px) !important;
+    border: none !important;
+    transition: all 0.2s ease !important;
+}
+
+.button:hover, .button-primary:hover, .button-secondary:hover, 
+.wp-core-ui .button:hover, .wp-core-ui .button-primary:hover {
+    background: var(--mas-button-hover-bg-color, var(--mas-primary-dark)) !important;
+    color: var(--mas-button-hover-text-color, #ffffff) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Form field styling with variables */
+input[type="text"], input[type="email"], input[type="password"], input[type="number"],
+input[type="url"], input[type="search"], select, textarea, .wp-core-ui input[type="text"] {
+    background: var(--mas-form-field-bg-color, var(--mas-bg-secondary)) !important;
+    border-color: var(--mas-form-field-border-color, var(--mas-border-color)) !important;
+    color: var(--mas-content-text-color, var(--mas-text-primary)) !important;
+    border-radius: var(--mas-global-border-radius, var(--mas-border-radius)) !important;
+    transition: all 0.2s ease !important;
+}
+
+input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, 
+input[type="number"]:focus, input[type="url"]:focus, input[type="search"]:focus, 
+select:focus, textarea:focus, .wp-core-ui input[type="text"]:focus {
+    border-color: var(--mas-form-field-focus-color, var(--mas-primary)) !important;
+    box-shadow: 0 0 0 1px var(--mas-form-field-focus-color, var(--mas-primary)) !important;
+    outline: none !important;
+}
+
+/* Admin notices styling */
+.notice, .update-nag {
+    border-radius: var(--mas-global-border-radius, var(--mas-border-radius)) !important;
+    box-shadow: var(--mas-global-box-shadow, var(--mas-shadow-md)) !important;
 }
 
 /* ==========================================================================
@@ -559,8 +776,89 @@ body.wp-admin.mas-v2-modern-style.folded:not(.mas-v2-menu-floating) #adminmenu l
 }
 
 /* ==========================================================================
-   PERFORMANCE OPTIMIZATIONS
+   WZORZEC IMPLEMENTACJI - Body Classes dla Hide/Show
    ========================================================================== */
+
+/* Admin Bar Element Visibility - Body Classes ✅ */
+body.mas-v2-hide-wp-logo #wp-admin-bar-wp-logo {
+    display: none !important;
+}
+
+body.mas-v2-hide-site-name #wp-admin-bar-site-name {
+    display: none !important;
+}
+
+body.mas-v2-hide-update-notices #wp-admin-bar-updates {
+    display: none !important;
+}
+
+body.mas-v2-hide-comments #wp-admin-bar-comments {
+    display: none !important;
+}
+
+body.mas-v2-hide-howdy #wp-admin-bar-my-account .display-name {
+    display: none !important;
+}
+
+/* Advanced Hide Options - Body Classes ✅ */
+body.mas-v2-hide-help-tab #contextual-help-link-wrap {
+    display: none !important;
+}
+
+body.mas-v2-hide-screen-options #screen-options-link-wrap {
+    display: none !important;
+}
+
+body.mas-v2-hide-wp-version #footer-left,
+body.mas-v2-hide-wp-version #wpfooter .alignleft {
+    display: none !important;
+}
+
+body.mas-v2-hide-admin-notices .notice,
+body.mas-v2-hide-admin-notices .update-nag,
+body.mas-v2-hide-admin-notices .error,
+body.mas-v2-hide-admin-notices .updated {
+    display: none !important;
+}
+
+/* Optimization Options - Body Classes ✅ */
+body.mas-v2-disable-emojis img.emoji {
+    display: none !important;
+}
+
+body.mas-v2-disable-embeds .wp-embedded-content {
+    display: none !important;
+}
+
+body.mas-v2-remove-jquery-migrate {
+    /* jQuery Migrate removal handled in PHP */
+}
+
+/* Visual Effects - Body Classes ✅ */
+body.mas-v2-glassmorphism #adminmenu {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+body.mas-v2-glossy #wpadminbar {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+}
+
+body.mas-v2-animations-enabled * {
+    transition: all 0.3s ease !important;
+}
+
+body.mas-v2-animations-enabled #adminmenu li.menu-top:hover {
+    transform: translateX(2px) !important;
+}
+
+/* ==========================================================================
+   PERFORMANCE OPTIMIZATIONS
+   ========================================================================== */ 
 
 /* Use hardware acceleration for smooth animations */
 body.wp-admin.mas-v2-modern-style #adminmenu,
@@ -2201,3 +2499,138 @@ body.wp-admin.mas-v2-modern-style #adminmenu li.menu-top {
         will-change: transform, opacity;
     }
 } 
+
+/* ==========================================================================
+   ADVANCED HIDING FEATURES - Using CSS Variables
+   ========================================================================== */
+
+/* Hide WordPress version */
+body.wp-admin.mas-v2-modern-style .wp-admin #footer-left,
+body.wp-admin.mas-v2-modern-style .wp-admin #wpfooter .alignleft {
+    display: var(--mas-hide-wp-version, visible) !important;
+}
+
+/* Hide help tabs */
+body.wp-admin.mas-v2-modern-style #contextual-help-link-wrap {
+    display: var(--mas-hide-help-tabs, visible) !important;
+}
+
+/* Hide screen options */
+body.wp-admin.mas-v2-modern-style #screen-options-link-wrap {
+    display: var(--mas-hide-screen-options, visible) !important;
+}
+
+/* Hide admin notices */
+body.wp-admin.mas-v2-modern-style .notice,
+body.wp-admin.mas-v2-modern-style .update-nag,
+body.wp-admin.mas-v2-modern-style .error,
+body.wp-admin.mas-v2-modern-style .updated {
+    display: var(--mas-hide-admin-notices, block) !important;
+}
+
+/* Hide footer text */
+body.wp-admin.mas-v2-modern-style #footer-thankyou,
+body.wp-admin.mas-v2-modern-style #wpfooter .alignright {
+    display: var(--mas-hide-footer-text, visible) !important;
+}
+
+/* Hide update nag */
+body.wp-admin.mas-v2-modern-style .update-nag {
+    display: var(--mas-hide-update-nag, block) !important;
+}
+
+/* Typography - Apply font variables */
+body.wp-admin.mas-v2-modern-style {
+    font-family: var(--mas-body-font-family) !important;
+    font-size: var(--mas-body-font-size) !important;
+    line-height: var(--mas-body-line-height) !important;
+    font-weight: var(--mas-body-font-weight) !important;
+}
+
+body.wp-admin.mas-v2-modern-style h1,
+body.wp-admin.mas-v2-modern-style h2,
+body.wp-admin.mas-v2-modern-style h3,
+body.wp-admin.mas-v2-modern-style h4,
+body.wp-admin.mas-v2-modern-style h5,
+body.wp-admin.mas-v2-modern-style h6 {
+    font-family: var(--mas-heading-font-family) !important;
+    font-weight: var(--mas-heading-font-weight) !important;
+    line-height: var(--mas-heading-line-height) !important;
+}
+
+/* Headings Scale - NOWE! Użycie zmiennych z kalkulacji JS */
+body.wp-admin.mas-v2-modern-style h1 {
+    font-size: var(--mas-h1-font-size, calc(var(--mas-heading-font-size) * 1.5)) !important;
+}
+
+body.wp-admin.mas-v2-modern-style h2 {
+    font-size: var(--mas-h2-font-size, calc(var(--mas-heading-font-size) * 1.3)) !important;
+}
+
+body.wp-admin.mas-v2-modern-style h3 {
+    font-size: var(--mas-h3-font-size, var(--mas-heading-font-size)) !important;
+}
+
+body.wp-admin.mas-v2-modern-style h4 {
+    font-size: var(--mas-h4-font-size, calc(var(--mas-heading-font-size) * 0.9)) !important;
+}
+
+body.wp-admin.mas-v2-modern-style h5 {
+    font-size: var(--mas-h5-font-size, calc(var(--mas-heading-font-size) * 0.8)) !important;
+}
+
+body.wp-admin.mas-v2-modern-style h6 {
+    font-size: var(--mas-h6-font-size, calc(var(--mas-heading-font-size) * 0.7)) !important;
+}
+
+/* Individual Corner Radius Support for Admin Bar */
+body.wp-admin.mas-v2-modern-style #wpadminbar {
+    border-top-left-radius: var(--mas-admin-bar-border-radius-top-left, var(--mas-admin-bar-border-radius-all)) !important;
+    border-top-right-radius: var(--mas-admin-bar-border-radius-top-right, var(--mas-admin-bar-border-radius-all)) !important;
+    border-bottom-left-radius: var(--mas-admin-bar-border-radius-bottom-left, var(--mas-admin-bar-border-radius-all)) !important;
+    border-bottom-right-radius: var(--mas-admin-bar-border-radius-bottom-right, var(--mas-admin-bar-border-radius-all)) !important;
+}
+
+/* Individual Corner Radius Support for Menu */
+.mas-v2-modern-style #adminmenu {
+    border-top-left-radius: var(--mas-menu-border-radius-top-left, var(--mas-menu-border-radius-all)) !important;
+    border-top-right-radius: var(--mas-menu-border-radius-top-right, var(--mas-menu-border-radius-all)) !important;
+    border-bottom-left-radius: var(--mas-menu-border-radius-bottom-left, var(--mas-menu-border-radius-all)) !important;
+    border-bottom-right-radius: var(--mas-menu-border-radius-bottom-right, var(--mas-menu-border-radius-all)) !important;
+}
+
+.mas-v2-modern-style #adminmenu li.menu-top {
+    border-top-left-radius: var(--mas-menu-border-radius-top-left, var(--mas-menu-border-radius-all)) !important;
+    border-top-right-radius: var(--mas-menu-border-radius-top-right, var(--mas-menu-border-radius-all)) !important;
+    border-bottom-left-radius: var(--mas-menu-border-radius-bottom-left, var(--mas-menu-border-radius-all)) !important;
+    border-bottom-right-radius: var(--mas-menu-border-radius-bottom-right, var(--mas-menu-border-radius-all)) !important;
+}
+
+.mas-v2-modern-style #adminmenu li.menu-top > a {
+    border-top-left-radius: var(--mas-menu-border-radius-top-left, var(--mas-menu-border-radius-all)) !important;
+    border-top-right-radius: var(--mas-menu-border-radius-top-right, var(--mas-menu-border-radius-all)) !important;
+    border-bottom-left-radius: var(--mas-menu-border-radius-bottom-left, var(--mas-menu-border-radius-all)) !important;
+    border-bottom-right-radius: var(--mas-menu-border-radius-bottom-right, var(--mas-menu-border-radius-all)) !important;
+}
+
+/* Compact Mode Implementation */
+body.mas-menu-compact-mode.mas-v2-modern-style #adminmenu li.menu-top > a {
+    padding: 4px 8px !important;
+    height: 28px !important;
+    line-height: 20px !important;
+    font-size: calc(var(--mas-menu-font-size) * 0.9) !important;
+}
+
+body.mas-menu-compact-mode.mas-v2-modern-style #adminmenu li.menu-top {
+    margin: 1px 4px !important;
+    height: 28px !important;
+}
+
+body.mas-menu-compact-mode.mas-v2-modern-style #adminmenu .wp-menu-image {
+    width: calc(var(--mas-menu-icon-size) * 0.8) !important;
+    height: calc(var(--mas-menu-icon-size) * 0.8) !important;
+}
+
+/* ==========================================================================
+   PERFORMANCE OPTIMIZATIONS
+   ========================================================================== */ 

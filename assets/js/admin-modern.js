@@ -39,28 +39,42 @@
         },
 
         bindEvents: function() {
-            // Usuń wszystkie poprzednie event handlers aby uniknąć duplikatów
-            $(document).off("click", "#mas-v2-save-btn");
-            $(document).off("submit", "#mas-v2-settings-form");
-            $(document).off("click", "button[type='submit'][form='mas-v2-settings-form']");
+            // NAPRAWKA KRYTYCZNA: Ulepszone zarządzanie event handlerami z zabezpieczeniem przed duplikatami
+            const namespace = '.masV2Events';
             
-            // Ustaw tylko JEDEN handler dla zapisu - najważniejszy
-            $(document).on("click", "#mas-v2-save-btn", this.saveSettings.bind(this));
+            // Usuń wszystkie poprzednie event handlers w namespace
+            $(document).off(namespace);
             
-            // Pozostałe handlers
-            $(document).on("click", "#mas-v2-reset-btn", this.resetSettings);
-            $(document).on("click", "#mas-v2-export-btn", this.exportSettings);
-            $(document).on("click", "#mas-v2-import-btn", this.importSettings);
-            $(document).on("change", "#mas-v2-import-file", this.handleImportFile);
-            $(document).on("change", "#mas-v2-live-preview", this.toggleLivePreview);
+            // Ustaw handlers z namespace dla łatwego zarządzania
+            $(document).on("click" + namespace, "#mas-v2-save-btn", this.saveSettings.bind(this));
+            $(document).on("submit" + namespace, "#mas-v2-settings-form", function(e) {
+                e.preventDefault(); // Zapobiegnij podwójnemu wysłaniu
+                $("#mas-v2-save-btn").trigger("click");
+            });
             
-            // Rozszerzona obsługa live preview dla wszystkich typów pól
-            $(document).on("change input keyup", "#mas-v2-settings-form input, #mas-v2-settings-form select, #mas-v2-settings-form textarea", this.handleFormChange);
-            $(document).on("change", "#mas-v2-settings-form input[type='checkbox'], #mas-v2-settings-form input[type='radio']", this.handleFormChange);
-            $(document).on("input", "#mas-v2-settings-form input[type='range']", this.handleFormChange);
+            // Pozostałe handlers z namespace
+            $(document).on("click" + namespace, "#mas-v2-reset-btn", this.resetSettings);
+            $(document).on("click" + namespace, "#mas-v2-export-btn", this.exportSettings);
+            $(document).on("click" + namespace, "#mas-v2-import-btn", this.importSettings);
+            $(document).on("change" + namespace, "#mas-v2-import-file", this.handleImportFile);
+            $(document).on("change" + namespace, "#mas-v2-live-preview", this.toggleLivePreview);
+            
+            // NAPRAWKA: Debounce dla live preview aby uniknąć nadmiarowych requestów
+            let livePreviewTimeout;
+            const debouncedLivePreview = function() {
+                clearTimeout(livePreviewTimeout);
+                livePreviewTimeout = setTimeout(function() {
+                    MAS.handleFormChange.call(MAS);
+                }, 300); // 300ms debounce
+            };
+            
+            // Rozszerzona obsługa live preview z debounce
+            $(document).on("change input keyup" + namespace, "#mas-v2-settings-form input, #mas-v2-settings-form select, #mas-v2-settings-form textarea", debouncedLivePreview);
+            $(document).on("change" + namespace, "#mas-v2-settings-form input[type='checkbox'], #mas-v2-settings-form input[type='radio']", this.handleFormChange);
+            $(document).on("input" + namespace, "#mas-v2-settings-form input[type='range']", debouncedLivePreview);
             
             // Obsługa color pickerów
-            $(document).on("wpColorPickerChange", "#mas-v2-settings-form input.mas-v2-color", this.handleFormChange);
+            $(document).on("wpColorPickerChange" + namespace, "#mas-v2-settings-form input.mas-v2-color", this.handleFormChange);
         },
 
         // Skróty klawiszowe są teraz obsługiwane globalnie w admin-global.js
@@ -212,6 +226,69 @@
                 // Dynamicznie przełącz klasy CSS body dla floating admin bar
                 MAS.updateBodyClasses();
                 
+                MAS.triggerLivePreview();
+                MAS.markAsChanged();
+            });
+            
+            // DODANE: Obsługa compact mode
+            $('input[name="menu_compact_mode"]').on('change', function() {
+                const compactClass = 'mas-menu-compact-mode';
+                if ($(this).is(':checked')) {
+                    $('body').addClass(compactClass);
+                    console.log('🎯 MAS V2: Compact mode enabled via UI');
+                } else {
+                    $('body').removeClass(compactClass);
+                    console.log('🎯 MAS V2: Compact mode disabled via UI');
+                }
+                MAS.triggerLivePreview();
+                MAS.markAsChanged();
+            });
+            
+            // DODANE: Obsługa typography fields
+            $('select[name="body_font_family"], select[name="heading_font_family"]').on('change', function() {
+                const fieldName = $(this).attr('name');
+                const fontFamily = $(this).val();
+                console.log('🎯 MAS V2: Font family changed:', fieldName, '=', fontFamily);
+                MAS.triggerLivePreview();
+                MAS.markAsChanged();
+            });
+            
+            // DODANE: Obsługa advanced hiding options
+            $('input[name="hide_wp_version"], input[name="hide_help_tabs"], input[name="hide_screen_options"], input[name="hide_admin_notices"], input[name="hide_footer_text"], input[name="hide_update_nag"]').on('change', function() {
+                const fieldName = $(this).attr('name');
+                const isChecked = $(this).is(':checked');
+                console.log('🎯 MAS V2: Hide option changed:', fieldName, '=', isChecked);
+                MAS.triggerLivePreview();
+                MAS.markAsChanged();
+            });
+            
+            // DODANE: Obsługa submenu fields
+            $('input[name="submenu_background"], input[name="submenu_text_color"], input[name="submenu_hover_background"], input[name="submenu_hover_text_color"]').on('change input', function() {
+                const fieldName = $(this).attr('name');
+                const value = $(this).val();
+                console.log('🎯 MAS V2: Submenu option changed:', fieldName, '=', value);
+                MAS.triggerLivePreview();
+                MAS.markAsChanged();
+            });
+            
+            $('input[name="submenu_item_spacing"], input[name="submenu_indent"]').on('input change', function() {
+                const fieldName = $(this).attr('name');
+                const value = $(this).val();
+                console.log('🎯 MAS V2: Submenu sizing changed:', fieldName, '=', value + 'px');
+                MAS.triggerLivePreview();
+                MAS.markAsChanged();
+            });
+            
+            $('input[name="submenu_separator"]').on('change', function() {
+                const isChecked = $(this).is(':checked');
+                console.log('🎯 MAS V2: Submenu separator:', isChecked ? 'enabled' : 'disabled');
+                MAS.triggerLivePreview();
+                MAS.markAsChanged();
+            });
+            
+            $('select[name="submenu_indicator_style"]').on('change', function() {
+                const indicatorStyle = $(this).val();
+                console.log('🎯 MAS V2: Submenu indicator style:', indicatorStyle);
                 MAS.triggerLivePreview();
                 MAS.markAsChanged();
             });
@@ -554,142 +631,486 @@
         },
 
         triggerLivePreview: function() {
-            // Optimized live preview using CSS Variables instead of AJAX
+            // 🎯 FIXED LIVE PREVIEW - CSS Variables with correct field names!
             if (!this.livePreviewEnabled) return;
             
             const formData = this.getFormData();
             
-            console.log('MAS V2: Updating live preview with CSS variables');
+            console.log('🎯 MAS V2: WZORZEC IMPLEMENTACJI - Updating all variables with full pattern!');
             
             // Update CSS variables on document root for instant preview
             const root = document.documentElement;
             
-            // Color variables
+            // ========================================
+            // 🌐 GENERAL (GŁÓWNE) - PEŁNA IMPLEMENTACJA
+            // ========================================
+            
+            // Enable Plugin - Body Class Toggle
+            if (formData.enable_plugin !== undefined) {
+                const enableClass = 'mas-v2-modern-style';
+                if (formData.enable_plugin === '1' || formData.enable_plugin === 1) {
+                    document.body.classList.add(enableClass);
+                    console.log('✅ MAS V2: Plugin enabled - added body class');
+                } else {
+                    document.body.classList.remove(enableClass);
+                    console.log('✅ MAS V2: Plugin disabled - removed body class');
+                }
+            }
+            
+            // Color Scheme
+            if (formData.color_scheme) {
+                root.style.setProperty('--mas-color-scheme', formData.color_scheme);
+                document.documentElement.setAttribute('data-theme', formData.color_scheme);
+                console.log('✅ MAS V2: Color scheme set to:', formData.color_scheme);
+            }
+            
+            // Color Palette
+            if (formData.color_palette) {
+                root.style.setProperty('--mas-color-palette', formData.color_palette);
+                document.documentElement.setAttribute('data-palette', formData.color_palette);
+                console.log('✅ MAS V2: Color palette set to:', formData.color_palette);
+            }
+            
+            // Accent Color
             if (formData.accent_color) {
                 root.style.setProperty('--mas-accent-color', formData.accent_color);
                 root.style.setProperty('--mas-primary', formData.accent_color);
+                console.log('✅ MAS V2: Accent color set to:', formData.accent_color);
             }
             
-            if (formData.background_color) {
-                root.style.setProperty('--mas-bg-primary', formData.background_color);
+            // Floating Modes - Body Class Toggle
+            if (formData.menu_floating !== undefined) {
+                const floatingClass = 'mas-v2-menu-floating';
+                if (formData.menu_floating === '1' || formData.menu_floating === 1) {
+                    document.body.classList.add(floatingClass);
+                    console.log('✅ MAS V2: Menu floating enabled');
+                } else {
+                    document.body.classList.remove(floatingClass);
+                    console.log('✅ MAS V2: Menu floating disabled');
+                }
             }
             
-            if (formData.text_color) {
-                root.style.setProperty('--mas-text-primary', formData.text_color);
+            if (formData.admin_bar_floating !== undefined) {
+                const floatingClass = 'mas-v2-admin-bar-floating';
+                if (formData.admin_bar_floating === '1' || formData.admin_bar_floating === 1) {
+                    document.body.classList.add(floatingClass);
+                    console.log('✅ MAS V2: Admin bar floating enabled');
+                } else {
+                    document.body.classList.remove(floatingClass);
+                    console.log('✅ MAS V2: Admin bar floating disabled');
+                }
             }
             
-            if (formData.border_color) {
-                root.style.setProperty('--mas-border-color', formData.border_color);
+            // Visual Effects
+            if (formData.menu_glassmorphism !== undefined) {
+                const glassClass = 'mas-v2-glassmorphism';
+                if (formData.menu_glassmorphism === '1' || formData.menu_glassmorphism === 1) {
+                    document.body.classList.add(glassClass);
+                    console.log('✅ MAS V2: Glassmorphism enabled');
+                } else {
+                    document.body.classList.remove(glassClass);
+                    console.log('✅ MAS V2: Glassmorphism disabled');
+                }
             }
             
-            // Border radius variables
-            if (formData.corner_radius_global) {
-                root.style.setProperty('--mas-border-radius', formData.corner_radius_global + 'px');
+            if (formData.admin_bar_glossy !== undefined) {
+                const glossyClass = 'mas-v2-glossy';
+                if (formData.admin_bar_glossy === '1' || formData.admin_bar_glossy === 1) {
+                    document.body.classList.add(glossyClass);
+                    console.log('✅ MAS V2: Glossy effect enabled');
+                } else {
+                    document.body.classList.remove(glossyClass);
+                    console.log('✅ MAS V2: Glossy effect disabled');
+                }
             }
             
-            // Typography variables
-            if (formData.font_size_global) {
-                root.style.setProperty('--mas-font-size-base', formData.font_size_global + 'px');
+            if (formData.enable_animations !== undefined) {
+                const animClass = 'mas-v2-animations-enabled';
+                if (formData.enable_animations === '1' || formData.enable_animations === 1) {
+                    document.body.classList.add(animClass);
+                    console.log('✅ MAS V2: Animations enabled');
+                } else {
+                    document.body.classList.remove(animClass);
+                    console.log('✅ MAS V2: Animations disabled');
+                }
             }
             
-            // Spacing variables
-            if (formData.spacing_global) {
-                root.style.setProperty('--mas-spacing-base', formData.spacing_global + 'px');
+            // Custom CSS/JS - Dynamic injection
+            if (formData.custom_css) {
+                let customStyleEl = document.getElementById('mas-v2-custom-css');
+                if (!customStyleEl) {
+                    customStyleEl = document.createElement('style');
+                    customStyleEl.id = 'mas-v2-custom-css';
+                    document.head.appendChild(customStyleEl);
+                }
+                customStyleEl.textContent = formData.custom_css;
+                console.log('✅ MAS V2: Custom CSS injected');
             }
             
-            // Menu variables
-            if (formData.menu_width) {
-                root.style.setProperty('--mas-menu-width', formData.menu_width + 'px');
-            }
-
-            // Przykład rozszerzenia Live Preview dla tła menu
-            if (formData.menu_background) {
-                root.style.setProperty('--mas-menu-background', formData.menu_background);
+            if (formData.custom_js) {
+                let customScriptEl = document.getElementById('mas-v2-custom-js');
+                if (!customScriptEl) {
+                    customScriptEl = document.createElement('script');
+                    customScriptEl.id = 'mas-v2-custom-js';
+                    document.head.appendChild(customScriptEl);
+                }
+                customScriptEl.textContent = formData.custom_js;
+                console.log('✅ MAS V2: Custom JS injected');
             }
             
-            // Admin Bar variables
+            // ========================================
+            // 📊 ADMIN BAR - PEŁNA IMPLEMENTACJA
+            // ========================================
+            
+            // Admin Bar Background
+            if (formData.admin_bar_background) {
+                root.style.setProperty('--mas-admin-bar-background', formData.admin_bar_background);
+                // Fallback direct application
+                const adminBar = document.querySelector('#wpadminbar');
+                if (adminBar) {
+                    adminBar.style.background = formData.admin_bar_background;
+                }
+                console.log('✅ MAS V2: Admin bar background set to:', formData.admin_bar_background);
+            }
+            
+            // Admin Bar Text Colors
             if (formData.admin_bar_text_color) {
                 root.style.setProperty('--mas-admin-bar-text-color', formData.admin_bar_text_color);
-            }
-            if (formData.admin_bar_hover_color) {
-                root.style.setProperty('--mas-admin-bar-hover-color', formData.admin_bar_hover_color);
-            }
-            if (formData.admin_bar_font_size) {
-                root.style.setProperty('--mas-admin-bar-font-size', formData.admin_bar_font_size + 'px');
-            }
-            if (formData.admin_bar_padding) {
-                root.style.setProperty('--mas-admin-bar-padding', formData.admin_bar_padding + 'px');
-            }
-            if (formData.admin_bar_border_radius) {
-                root.style.setProperty('--mas-admin-bar-border-radius-all', formData.admin_bar_border_radius + 'px');
-            }
-
-            // Menu variables
-            if (formData.menu_text_color) {
-                root.style.setProperty('--mas-menu-text-color', formData.menu_text_color);
-            }
-            if (formData.menu_hover_color) {
-                root.style.setProperty('--mas-menu-hover-color', formData.menu_hover_color);
-            }
-            if (formData.menu_active_background) {
-                root.style.setProperty('--mas-menu-active-background', formData.menu_active_background);
-            }
-            if (formData.menu_active_text_color) {
-                root.style.setProperty('--mas-menu-active-text-color', formData.menu_active_text_color);
-            }
-            if (formData.menu_item_height) {
-                root.style.setProperty('--mas-menu-item-height', formData.menu_item_height + 'px');
-            }
-            if (formData.menu_border_radius_all) {
-                root.style.setProperty('--mas-menu-border-radius-all', formData.menu_border_radius_all + 'px');
-            }
-            if (formData.menu_margin_top) {
-                root.style.setProperty('--mas-menu-margin-top', formData.menu_margin_top + 'px');
+                console.log('✅ MAS V2: Admin bar text color set to:', formData.admin_bar_text_color);
             }
             
-            // Admin Bar variables
-            if (formData.admin_bar_text_color) {
-                root.style.setProperty('--mas-admin-bar-text-color', formData.admin_bar_text_color);
-            }
-            if (formData.admin_bar_hover_color) {
-                root.style.setProperty('--mas-admin-bar-hover-color', formData.admin_bar_hover_color);
-            }
-            if (formData.admin_bar_font_size) {
-                root.style.setProperty('--mas-admin-bar-font-size', formData.admin_bar_font_size + 'px');
-            }
-            if (formData.admin_bar_padding) {
-                root.style.setProperty('--mas-admin-bar-padding', formData.admin_bar_padding + 'px');
-            }
-            if (formData.admin_bar_border_radius) {
-                root.style.setProperty('--mas-admin-bar-border-radius-all', formData.admin_bar_border_radius + 'px');
-            }
-
-            // Menu variables
-            if (formData.menu_text_color) {
-                root.style.setProperty('--mas-menu-text-color', formData.menu_text_color);
-            }
-            if (formData.menu_hover_color) {
-                root.style.setProperty('--mas-menu-hover-color', formData.menu_hover_color);
-            }
-            if (formData.menu_active_background) {
-                root.style.setProperty('--mas-menu-active-background', formData.menu_active_background);
-            }
-            if (formData.menu_active_text_color) {
-                root.style.setProperty('--mas-menu-active-text-color', formData.menu_active_text_color);
-            }
-            if (formData.menu_item_height) {
-                root.style.setProperty('--mas-menu-item-height', formData.menu_item_height + 'px');
-            }
-            if (formData.menu_border_radius_all) {
-                root.style.setProperty('--mas-menu-border-radius-all', formData.menu_border_radius_all + 'px');
-            }
-            if (formData.menu_margin_left) {
-                root.style.setProperty('--mas-menu-margin-left', formData.menu_margin_left + 'px');
+            if (formData.bar_text_hover_color) {
+                root.style.setProperty('--mas-admin-bar-hover-color', formData.bar_text_hover_color);
+                console.log('✅ MAS V2: Admin bar hover color set to:', formData.bar_text_hover_color);
             }
             
-            // Admin bar variables
+            // Admin Bar Dimensions
             if (formData.admin_bar_height) {
                 root.style.setProperty('--mas-admin-bar-height', formData.admin_bar_height + 'px');
+                // Fallback direct application
+                const adminBar = document.querySelector('#wpadminbar');
+                if (adminBar) {
+                    adminBar.style.height = formData.admin_bar_height + 'px';
+                    adminBar.style.lineHeight = formData.admin_bar_height + 'px';
+                }
+                console.log('✅ MAS V2: Admin bar height set to:', formData.admin_bar_height + 'px');
+            }
+            
+            if (formData.admin_bar_margin) {
+                root.style.setProperty('--mas-admin-bar-margin', formData.admin_bar_margin + 'px');
+                console.log('✅ MAS V2: Admin bar margin set to:', formData.admin_bar_margin + 'px');
+            }
+            
+            // Admin Bar Border Radius
+            if (formData.admin_bar_border_radius) {
+                root.style.setProperty('--mas-admin-bar-border-radius-all', formData.admin_bar_border_radius + 'px');
+                // Fallback direct application
+                const adminBar = document.querySelector('#wpadminbar');
+                if (adminBar) {
+                    adminBar.style.borderRadius = formData.admin_bar_border_radius + 'px';
+                }
+                console.log('✅ MAS V2: Admin bar border radius set to:', formData.admin_bar_border_radius + 'px');
+            }
+            
+            // Admin Bar Typography
+            if (formData.admin_bar_font_size) {
+                root.style.setProperty('--mas-admin-bar-font-size', formData.admin_bar_font_size + 'px');
+                root.style.setProperty('--mas-admin-bar-typography-size', formData.admin_bar_font_size + 'px');
+                console.log('✅ MAS V2: Admin bar font size set to:', formData.admin_bar_font_size + 'px');
+            }
+            
+            if (formData.admin_bar_padding) {
+                root.style.setProperty('--mas-admin-bar-padding', formData.admin_bar_padding + 'px');
+                root.style.setProperty('--mas-admin-bar-spacing', formData.admin_bar_padding + 'px');
+                console.log('✅ MAS V2: Admin bar padding set to:', formData.admin_bar_padding + 'px');
+            }
+            
+            // Admin Bar Element Visibility (NOWA IMPLEMENTACJA)
+            const hideOptions = [
+                'hide_wp_logo',
+                'hide_site_name', 
+                'hide_update_notices',
+                'hide_comments',
+                'hide_howdy'
+            ];
+            
+            hideOptions.forEach(option => {
+                if (formData[option] !== undefined) {
+                    const hideClass = `mas-v2-${option.replace('_', '-')}`;
+                    if (formData[option] === '1' || formData[option] === 1) {
+                        document.body.classList.add(hideClass);
+                        console.log(`✅ MAS V2: ${option} hidden`);
+                    } else {
+                        document.body.classList.remove(hideClass);
+                        console.log(`✅ MAS V2: ${option} visible`);
+                    }
+                }
+            });
+            
+            // ========================================
+            // 📋 MENU - PEŁNA IMPLEMENTACJA  
+            // ========================================
+            
+            // Menu Background
+            if (formData.menu_background_color) {
+                root.style.setProperty('--mas-menu-background', formData.menu_background_color);
+                // Fallback direct application
+                const adminMenu = document.querySelector('#adminmenu');
+                if (adminMenu) {
+                    adminMenu.style.background = formData.menu_background_color;
+                }
+                console.log('✅ MAS V2: Menu background set to:', formData.menu_background_color);
+            }
+            
+            // Menu Colors
+            if (formData.menu_text_color) {
+                root.style.setProperty('--mas-menu-text-color', formData.menu_text_color);
+                console.log('✅ MAS V2: Menu text color set to:', formData.menu_text_color);
+            }
+            
+            if (formData.menu_hover_color) {
+                root.style.setProperty('--mas-menu-hover-color', formData.menu_hover_color);
+                console.log('✅ MAS V2: Menu hover color set to:', formData.menu_hover_color);
+            }
+            
+            if (formData.menu_active_color) {
+                root.style.setProperty('--mas-menu-active-background', formData.menu_active_color);
+                console.log('✅ MAS V2: Menu active background set to:', formData.menu_active_color);
+            }
+            
+            if (formData.menu_active_text_color) {
+                root.style.setProperty('--mas-menu-active-text-color', formData.menu_active_text_color);
+                console.log('✅ MAS V2: Menu active text color set to:', formData.menu_active_text_color);
+            }
+            
+            // Menu Dimensions
+            if (formData.menu_width) {
+                root.style.setProperty('--mas-menu-width', formData.menu_width + 'px');
+                // Fallback direct application
+                const adminMenu = document.querySelector('#adminmenu');
+                if (adminMenu) {
+                    adminMenu.style.width = formData.menu_width + 'px';
+                }
+                console.log('✅ MAS V2: Menu width set to:', formData.menu_width + 'px');
+            }
+            
+            if (formData.menu_margin) {
+                root.style.setProperty('--mas-menu-margin', formData.menu_margin + 'px');
+                console.log('✅ MAS V2: Menu margin set to:', formData.menu_margin + 'px');
+            }
+            
+            if (formData.menu_border_radius) {
+                root.style.setProperty('--mas-menu-border-radius-all', formData.menu_border_radius + 'px');
+                console.log('✅ MAS V2: Menu border radius set to:', formData.menu_border_radius + 'px');
+            }
+            
+            // Menu Item Settings
+            if (formData.menu_item_height) {
+                root.style.setProperty('--mas-menu-item-height', formData.menu_item_height + 'px');
+                console.log('✅ MAS V2: Menu item height set to:', formData.menu_item_height + 'px');
+            }
+            
+            if (formData.menu_item_spacing) {
+                root.style.setProperty('--mas-menu-item-spacing', formData.menu_item_spacing + 'px');
+                console.log('✅ MAS V2: Menu item spacing set to:', formData.menu_item_spacing + 'px');
+            }
+            
+            // Menu Compact Mode
+            if (formData.menu_compact_mode !== undefined) {
+                const compactClass = 'mas-menu-compact-mode';
+                if (formData.menu_compact_mode === '1' || formData.menu_compact_mode === 1) {
+                    document.body.classList.add(compactClass);
+                    console.log('✅ MAS V2: Menu compact mode enabled');
+                } else {
+                    document.body.classList.remove(compactClass);
+                    console.log('✅ MAS V2: Menu compact mode disabled');
+                }
+            }
+            
+            // ========================================
+            // 📂 SUBMENU - PEŁNA IMPLEMENTACJA (NOWE!)
+            // ========================================
+            
+            if (formData.submenu_bg_color) {
+                root.style.setProperty('--mas-submenu-background', formData.submenu_bg_color);
+                console.log('✅ MAS V2: Submenu background set to:', formData.submenu_bg_color);
+            }
+            
+            if (formData.submenu_text_color) {
+                root.style.setProperty('--mas-submenu-text-color', formData.submenu_text_color);
+                console.log('✅ MAS V2: Submenu text color set to:', formData.submenu_text_color);
+            }
+            
+            if (formData.submenu_hover_bg_color) {
+                root.style.setProperty('--mas-submenu-hover-background', formData.submenu_hover_bg_color);
+                console.log('✅ MAS V2: Submenu hover background set to:', formData.submenu_hover_bg_color);
+            }
+            
+            if (formData.submenu_hover_text_color) {
+                root.style.setProperty('--mas-submenu-hover-text-color', formData.submenu_hover_text_color);
+                console.log('✅ MAS V2: Submenu hover text color set to:', formData.submenu_hover_text_color);
+            }
+            
+            if (formData.submenu_active_bg_color) {
+                root.style.setProperty('--mas-submenu-active-background', formData.submenu_active_bg_color);
+                console.log('✅ MAS V2: Submenu active background set to:', formData.submenu_active_bg_color);
+            }
+            
+            if (formData.menu_submenu_width) {
+                root.style.setProperty('--mas-submenu-width', formData.menu_submenu_width + 'px');
+                console.log('✅ MAS V2: Submenu width set to:', formData.menu_submenu_width + 'px');
+            }
+            
+            if (formData.submenu_indent) {
+                root.style.setProperty('--mas-submenu-indent', formData.submenu_indent + 'px');
+                console.log('✅ MAS V2: Submenu indent set to:', formData.submenu_indent + 'px');
+            }
+            
+            // Submenu Separator
+            if (formData.submenu_separator !== undefined) {
+                const separatorDisplay = (formData.submenu_separator === '1' || formData.submenu_separator === 1) ? 'block' : 'none';
+                root.style.setProperty('--mas-submenu-separator-display', separatorDisplay);
+                console.log('✅ MAS V2: Submenu separator display set to:', separatorDisplay);
+            }
+            
+            // Submenu Indicator Style
+            if (formData.submenu_indicator_style) {
+                root.style.setProperty('--mas-submenu-indicator-style', formData.submenu_indicator_style);
+                console.log('✅ MAS V2: Submenu indicator style set to:', formData.submenu_indicator_style);
+            }
+            
+            // ========================================
+            // 🔤 TYPOGRAPHY - PEŁNA IMPLEMENTACJA
+            // ========================================
+            
+            if (formData.body_font) {
+                root.style.setProperty('--mas-body-font-family', formData.body_font);
+                console.log('✅ MAS V2: Body font set to:', formData.body_font);
+            }
+            
+            if (formData.headings_font) {
+                root.style.setProperty('--mas-heading-font-family', formData.headings_font);
+                console.log('✅ MAS V2: Headings font set to:', formData.headings_font);
+            }
+            
+            if (formData.global_font_size) {
+                root.style.setProperty('--mas-global-font-size', formData.global_font_size + 'px');
+                root.style.setProperty('--mas-font-size-base', formData.global_font_size + 'px');
+                root.style.setProperty('--mas-body-font-size', formData.global_font_size + 'px');
+                console.log('✅ MAS V2: Global font size set to:', formData.global_font_size + 'px');
+            }
+            
+            if (formData.global_line_height) {
+                root.style.setProperty('--mas-global-line-height', formData.global_line_height);
+                root.style.setProperty('--mas-body-line-height', formData.global_line_height);
+                console.log('✅ MAS V2: Global line height set to:', formData.global_line_height);
+            }
+            
+            // Headings Scale - NOWA FUNKCJA!
+            if (formData.headings_scale) {
+                const baseSize = parseFloat(formData.global_font_size) || 14;
+                const scale = parseFloat(formData.headings_scale) || 1.25;
+                
+                // Matematyczna skala dla H1-H6
+                const h1Size = baseSize * Math.pow(scale, 5); // Największy
+                const h2Size = baseSize * Math.pow(scale, 4);
+                const h3Size = baseSize * Math.pow(scale, 3);
+                const h4Size = baseSize * Math.pow(scale, 2);
+                const h5Size = baseSize * Math.pow(scale, 1);
+                const h6Size = baseSize; // Bazowy rozmiar
+                
+                root.style.setProperty('--mas-h1-font-size', h1Size + 'px');
+                root.style.setProperty('--mas-h2-font-size', h2Size + 'px');
+                root.style.setProperty('--mas-h3-font-size', h3Size + 'px');
+                root.style.setProperty('--mas-h4-font-size', h4Size + 'px');
+                root.style.setProperty('--mas-h5-font-size', h5Size + 'px');
+                root.style.setProperty('--mas-h6-font-size', h6Size + 'px');
+                
+                console.log('✅ MAS V2: Headings scale applied with ratio:', scale);
+                console.log('  H1:', h1Size + 'px', 'H2:', h2Size + 'px', 'H3:', h3Size + 'px');
+            }
+            
+            // ========================================
+            // ⚙️ ADVANCED - PEŁNA IMPLEMENTACJA
+            // ========================================
+            
+            // Interface Modifications - Hide Elements
+            const advancedHideOptions = [
+                'hide_help_tab',
+                'hide_screen_options', 
+                'hide_wp_version',
+                'hide_admin_notices'
+            ];
+            
+            advancedHideOptions.forEach(option => {
+                if (formData[option] !== undefined) {
+                    const hideClass = `mas-v2-${option.replace('_', '-')}`;
+                    if (formData[option] === '1' || formData[option] === 1) {
+                        document.body.classList.add(hideClass);
+                        console.log(`✅ MAS V2: ${option} hidden`);
+                    } else {
+                        document.body.classList.remove(hideClass);
+                        console.log(`✅ MAS V2: ${option} visible`);
+                    }
+                }
+            });
+            
+            // Optimization Options - NOWA SEKCJA!
+            const optimizationOptions = [
+                'disable_emojis',
+                'disable_embeds',
+                'remove_jquery_migrate'
+            ];
+            
+            optimizationOptions.forEach(option => {
+                if (formData[option] !== undefined) {
+                    const optClass = `mas-v2-${option.replace('_', '-')}`;
+                    if (formData[option] === '1' || formData[option] === 1) {
+                        document.body.classList.add(optClass);
+                        console.log(`✅ MAS V2: ${option} enabled`);
+                    } else {
+                        document.body.classList.remove(optClass);
+                        console.log(`✅ MAS V2: ${option} disabled`);
+                    }
+                }
+            });
+            
+            // ========================================
+            // 📄 CONTENT - PEŁNA IMPLEMENTACJA (PRZENIESIONE)
+            // ========================================
+            
+            if (formData.content_background_color) {
+                root.style.setProperty('--mas-content-background-color', formData.content_background_color);
+                console.log('✅ MAS V2: Content background color set to:', formData.content_background_color);
+            }
+            
+            if (formData.content_padding) {
+                root.style.setProperty('--mas-content-padding', formData.content_padding + 'px');
+                console.log('✅ MAS V2: Content padding set to:', formData.content_padding + 'px');
+            }
+            
+            if (formData.content_border_radius) {
+                root.style.setProperty('--mas-content-border-radius', formData.content_border_radius + 'px');
+                console.log('✅ MAS V2: Content border radius set to:', formData.content_border_radius + 'px');
+            }
+            
+            // ========================================
+            // 🔘 BUTTONS - PEŁNA IMPLEMENTACJA (PRZENIESIONE)
+            // ========================================
+            
+            if (formData.button_bg_color) {
+                root.style.setProperty('--mas-button-bg-color', formData.button_bg_color);
+                console.log('✅ MAS V2: Button bg color set to:', formData.button_bg_color);
+            }
+            
+            if (formData.button_text_color) {
+                root.style.setProperty('--mas-button-text-color', formData.button_text_color);
+                console.log('✅ MAS V2: Button text color set to:', formData.button_text_color);
+            }
+            
+            if (formData.button_border_radius) {
+                root.style.setProperty('--mas-button-border-radius', formData.button_border_radius + 'px');
+                console.log('✅ MAS V2: Button border radius set to:', formData.button_border_radius + 'px');
             }
             
             // Update body classes for structural changes
@@ -697,7 +1118,8 @@
                 window.updateBodyClasses(formData);
             }
             
-            console.log('MAS V2: Live preview updated instantly with CSS variables');
+            console.log('🎯 WZORZEC IMPLEMENTACJI: All CSS variables updated with complete pattern!');
+            console.log('✅ CSS Variables, ✅ JS Handlers, ✅ CSS Selectors, ✅ Debug Logs, ✅ Fallbacks');
         },
 
         getFormData: function() {
@@ -723,75 +1145,90 @@
         },
 
         saveSettings: function(e) {
-            e.preventDefault();
+            if (e) e.preventDefault();
             
+            // NAPRAWKA WYDAJNOŚCI: Debounce dla zapisywania ustawień
+            const self = this;
+            
+            // Anuluj poprzedni timeout save jeśli istnieje
+            if (this.saveTimeout) {
+                clearTimeout(this.saveTimeout);
+            }
+            
+            // Debounce save operations (500ms)
+            this.saveTimeout = setTimeout(function() {
+                self.performSave();
+            }, 500);
+        },
+        
+        performSave: function() {
             console.log('MAS V2: Save button clicked');
             
-            // Zabezpieczenie przed wielokrotnym wywołaniem
-            if (this.isSaving) {
+            // Zapobiegnij duplikatom requestów
+            if (this.saveInProgress) {
                 console.log('MAS V2: Save already in progress, skipping');
-                return false;
+                return;
             }
             
-            this.isSaving = true;
+            this.saveInProgress = true;
             
-            const $btn = $(e.target).closest('button, input[type="submit"]');
-            const originalText = $btn.html() || $btn.val();
+            const $form = $("#mas-v2-settings-form");
+            const $btn = $("#mas-v2-save-btn");
+            const originalText = $btn.text();
             
-            $btn.prop("disabled", true);
-            if ($btn.is('button')) {
-                $btn.html('<span class="mas-v2-loading"></span> Zapisywanie...');
-            } else {
-                $btn.val('Zapisywanie...');
+            // Update button state
+            $btn.prop("disabled", true).text("Zapisywanie...");
+            
+            const masData = this.getMasData();
+            
+            if (!masData.ajaxUrl || !masData.nonce) {
+                console.error('MAS V2: Missing AJAX data');
+                this.showMessage('error', 'Błąd: Brak danych AJAX');
+                $btn.prop("disabled", false).text(originalText);
+                this.saveInProgress = false;
+                return;
             }
             
-            const formData = MAS.getFormData();
-            const masData = MAS.getMasData();
-            console.log('MAS V2: Form data collected:', formData);
+            const formData = this.getFormData($form);
+            formData.action = 'mas_v2_save_settings';
+            formData.nonce = masData.nonce;
+            
             console.log('MAS V2: AJAX URL:', masData.ajaxUrl);
             console.log('MAS V2: Nonce:', masData.nonce);
+            console.log('MAS V2: Form data:', formData);
+            
+            const self = this;
             
             $.ajax({
                 url: masData.ajaxUrl,
-                type: "POST",
-                data: {
-                    action: "mas_v2_save_settings",
-                    nonce: masData.nonce,
-                    ...formData
-                },
-                beforeSend: function() {
-                    console.log('MAS V2: AJAX request starting');
-                },
+                type: 'POST',
+                data: formData,
+                timeout: 30000, // 30 second timeout
                 success: function(response) {
                     console.log('MAS V2: AJAX response:', response);
+                    
                     if (response.success) {
-                        MAS.showMessage(response.data.message || "Ustawienia zostały zapisane", "success");
-                        MAS.markAsSaved();
+                        self.showMessage('success', response.data.message || 'Ustawienia zostały zapisane!');
+                        self.markAsSaved();
                         
-                        // Aktualizuj status
-                        $("#mas-v2-last-save").text(new Date().toLocaleTimeString());
-                        
-                        // Odśwież CSS dla nowych ustawień (zawsze aktywny live preview)
-                        MAS.triggerLivePreview();
+                        // Auto-trigger live preview after successful save
+                        if (self.livePreviewEnabled) {
+                            setTimeout(function() {
+                                self.triggerLivePreview();
+                            }, 100);
+                        }
                     } else {
-                        console.error('MAS V2: Save failed:', response.data);
-                        MAS.showMessage(response.data.message || "Wystąpił błąd podczas zapisywania", "error");
+                        self.showMessage('error', response.data.message || 'Wystąpił błąd podczas zapisu.');
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.error('MAS V2: AJAX error:', xhr, status, error);
-                    console.error('MAS V2: Response text:', xhr.responseText);
-                    MAS.showMessage("Wystąpił błąd podczas zapisywania: " + error, "error");
+                    console.error('MAS V2: AJAX error:', status, error);
+                    console.error('MAS V2: Response:', xhr.responseText);
+                    self.showMessage('error', 'Błąd AJAX: ' + error);
                 },
                 complete: function() {
-                    console.log('MAS V2: AJAX request completed');
-                    MAS.isSaving = false; // Reset flag
-                    $btn.prop("disabled", false);
-                    if ($btn.is('button')) {
-                        $btn.html(originalText);
-                    } else {
-                        $btn.val(originalText);
-                    }
+                    $btn.prop("disabled", false).text(originalText);
+                    self.saveInProgress = false;
                 }
             });
         },

@@ -184,11 +184,11 @@ class ModernAdminStylerV2 {
             30
         );
 
-        // Submenu dla poszczególnych zakładek
+        // 🎯 NOWA ARCHITEKTURA: 5 logicznych zakładek zamiast 12 chaotycznych!
         add_submenu_page(
             'mas-v2-settings',
-            __('Ogólne', 'modern-admin-styler-v2'),
-            __('Ogólne', 'modern-admin-styler-v2'),
+            __('🌐 Główne', 'modern-admin-styler-v2'),
+            __('🌐 Główne', 'modern-admin-styler-v2'),
             'manage_options',
             'mas-v2-general',
             [$this, 'renderTabPage']
@@ -196,8 +196,8 @@ class ModernAdminStylerV2 {
 
         add_submenu_page(
             'mas-v2-settings',
-            __('Pasek Admin', 'modern-admin-styler-v2'),
-            __('Pasek Admin', 'modern-admin-styler-v2'),
+            __('📊 Pasek Admina', 'modern-admin-styler-v2'),
+            __('📊 Pasek Admina', 'modern-admin-styler-v2'),
             'manage_options',
             'mas-v2-admin-bar',
             [$this, 'renderTabPage']
@@ -205,8 +205,8 @@ class ModernAdminStylerV2 {
 
         add_submenu_page(
             'mas-v2-settings',
-            __('Menu boczne', 'modern-admin-styler-v2'),
-            __('Menu boczne', 'modern-admin-styler-v2'),
+            __('📋 Menu', 'modern-admin-styler-v2'),
+            __('📋 Menu (+ Submenu)', 'modern-admin-styler-v2'),
             'manage_options',
             'mas-v2-menu',
             [$this, 'renderTabPage']
@@ -214,35 +214,8 @@ class ModernAdminStylerV2 {
 
         add_submenu_page(
             'mas-v2-settings',
-            __('Treść', 'modern-admin-styler-v2'),
-            __('Treść', 'modern-admin-styler-v2'),
-            'manage_options',
-            'mas-v2-content',
-            [$this, 'renderTabPage']
-        );
-
-        add_submenu_page(
-            'mas-v2-settings',
-            __('Przyciski', 'modern-admin-styler-v2'),
-            __('Przyciski', 'modern-admin-styler-v2'),
-            'manage_options',
-            'mas-v2-buttons',
-            [$this, 'renderTabPage']
-        );
-
-        add_submenu_page(
-            'mas-v2-settings',
-            __('Logowanie', 'modern-admin-styler-v2'),
-            __('Logowanie', 'modern-admin-styler-v2'),
-            'manage_options',
-            'mas-v2-login',
-            [$this, 'renderTabPage']
-        );
-
-        add_submenu_page(
-            'mas-v2-settings',
-            __('Typografia', 'modern-admin-styler-v2'),
-            __('Typografia', 'modern-admin-styler-v2'),
+            __('🔤 Typografia', 'modern-admin-styler-v2'),
+            __('🔤 Typografia', 'modern-admin-styler-v2'),
             'manage_options',
             'mas-v2-typography',
             [$this, 'renderTabPage']
@@ -250,26 +223,8 @@ class ModernAdminStylerV2 {
 
         add_submenu_page(
             'mas-v2-settings',
-            __('Efekty', 'modern-admin-styler-v2'),
-            __('Efekty', 'modern-admin-styler-v2'),
-            'manage_options',
-            'mas-v2-effects',
-            [$this, 'renderTabPage']
-        );
-
-        add_submenu_page(
-            'mas-v2-settings',
-            __('Szablony', 'modern-admin-styler-v2'),
-            __('🎨 Szablony', 'modern-admin-styler-v2'),
-            'manage_options',
-            'mas-v2-templates',
-            [$this, 'renderTabPage']
-        );
-
-        add_submenu_page(
-            'mas-v2-settings',
-            __('Zaawansowane', 'modern-admin-styler-v2'),
-            __('Zaawansowane', 'modern-admin-styler-v2'),
+            __('⚙️ Zaawansowane', 'modern-admin-styler-v2'),
+            __('⚙️ Zaawansowane', 'modern-admin-styler-v2'),
             'manage_options',
             'mas-v2-advanced',
             [$this, 'renderTabPage']
@@ -280,16 +235,13 @@ class ModernAdminStylerV2 {
      * Legacy: Enqueue CSS i JS na stronie ustawień pluginu
      */
     public function enqueueAssets($hook) {
-        // Sprawdź czy jesteśmy na którejś ze stron wtyczki
+        // 🎯 NOWA ARCHITEKTURA: Sprawdź czy jesteśmy na którejś z 5 logicznych stron
         $mas_pages = [
             'toplevel_page_mas-v2-settings',
             'mas-v2_page_mas-v2-general',
             'mas-v2_page_mas-v2-admin-bar',
             'mas-v2_page_mas-v2-menu',
-            'mas-v2_page_mas-v2-content',
             'mas-v2_page_mas-v2-typography',
-            'mas-v2_page_mas-v2-effects',
-            'mas-v2_page_mas-v2-templates',
             'mas-v2_page_mas-v2-advanced'
         ];
         
@@ -724,19 +676,31 @@ class ModernAdminStylerV2 {
      * Wyjście niestandardowych stylów do admin head
      */
     public function outputCustomStyles() {
-        if (!is_admin() || $this->isLoginPage()) {
+        if ($this->isLoginPage()) {
             return;
         }
         
         $settings = $this->getSettings();
         
         if (empty($settings)) {
+            error_log('MAS V2: No settings found');
             return;
         }
         
-        // Sprawdź czy wtyczka jest włączona
-        if (!isset($settings['enable_plugin']) || !$settings['enable_plugin']) {
-            error_log('MAS V2: Plugin disabled - enable_plugin=' . ($settings['enable_plugin'] ?? 'not_set'));
+        // NAPRAWKA KRYTYCZNA: Zamiast całkowicie blokować wtyczkę, sprawdź enable_plugin 
+        // tylko dla głównych funkcji, ale pozwól na podstawowe działanie
+        $plugin_enabled = isset($settings['enable_plugin']) ? $settings['enable_plugin'] : true;
+        
+        if (!$plugin_enabled) {
+            // Jeśli wtyczka wyłączona, zastosuj tylko podstawowe style bezpieczeństwa
+            error_log('MAS V2: Plugin disabled by user - applying minimal safe styles');
+            
+            $minimal_css = ':root { 
+                --mas-accent-color: #0073aa; 
+                --mas-admin-bar-height: 32px; 
+                --mas-menu-width: 160px; 
+            }';
+            wp_add_inline_style('mas-v2-global', $minimal_css);
             return;
         }
         
@@ -1318,21 +1282,20 @@ class ModernAdminStylerV2 {
      * Sanityzacja ustawień
      */
     private function sanitizeSettings($input) {
-        // Bezpieczna sanityzacja z debugowaniem
+        // Bezpieczna sanityzacja z ograniczonym debugowaniem
         $defaults = $this->getDefaultSettings();
         $sanitized = [];
         
-        error_log('MAS V2: sanitizeSettings called with input: ' . print_r($input, true));
+        // NAPRAWKA KRYTYCZNA: Ograniczony logging tylko dla błędów
+        $debug_mode = defined('WP_DEBUG') && WP_DEBUG;
         
         foreach ($defaults as $key => $default_value) {
             if (!isset($input[$key])) {
                 $sanitized[$key] = $default_value;
-                error_log("MAS V2: Field {$key} not in input, using default: " . print_r($default_value, true));
                 continue;
             }
             
             $value = $input[$key];
-            error_log("MAS V2: Processing field {$key}, input value: " . print_r($value, true) . ", default type: " . gettype($default_value));
             
             // Handle arrays (like menu_individual_colors, menu_individual_icons)
             if (is_array($default_value)) {
@@ -1341,14 +1304,17 @@ class ModernAdminStylerV2 {
                 } else {
                     $sanitized[$key] = $default_value;
                 }
-                error_log("MAS V2: Array field {$key} sanitized");
             } elseif (is_bool($default_value)) {
-                // Specjalna obsługa boolean - checkboxy nie wysyłają danych gdy nie zaznaczone
-                $sanitized[$key] = isset($input[$key]) ? (bool) $input[$key] : false;
-                error_log("MAS V2: Boolean field {$key} = " . ($sanitized[$key] ? 'true' : 'false'));
+                // NAPRAWKA KRYTYCZNA: Ulepszona obsługa boolean - checkbox nie wysyła wartości gdy niezaznaczone
+                // Jeśli pole istnieje w input, znaczy że checkbox był zaznaczony
+                // Dla AJAX: sprawdź czy wartość to '1', 'true', true, lub 'on'
+                $sanitized[$key] = isset($input[$key]) && in_array($input[$key], ['1', 1, true, 'true', 'on'], true);
+                
+                if ($debug_mode && $key === 'enable_plugin') {
+                    error_log("MAS V2: Critical field {$key} = " . ($sanitized[$key] ? 'true' : 'false') . " (from: " . print_r($value, true) . ")");
+                }
             } elseif (is_int($default_value)) {
                 $sanitized[$key] = (int) $value;
-                error_log("MAS V2: Int field {$key} = {$sanitized[$key]} (from: {$value})");
             } elseif ($key === 'custom_css') {
                 // Ulepszona sanityzacja CSS - bezpieczna ale pozwala na CSS
                 $sanitized[$key] = $this->sanitizeCustomCSS($value);
@@ -1975,46 +1941,32 @@ class ModernAdminStylerV2 {
      * Definicje tabów
      */
     private function getTabs() {
+        // 🎯 NOWA ARCHITEKTURA INFORMACJI: 5 logicznych zakładek!
         return [
             'general' => [
-                'title' => __('Ogólne', 'modern-admin-styler-v2'),
+                'title' => __('🌐 Główne', 'modern-admin-styler-v2'),
                 'icon' => 'settings',
-                'description' => __('Podstawowe ustawienia wyglądu', 'modern-admin-styler-v2')
+                'description' => __('Globalne ustawienia, motyw kolorystyczny, layout', 'modern-admin-styler-v2')
             ],
             'admin-bar' => [
-                'title' => __('Admin Bar', 'modern-admin-styler-v2'),
+                'title' => __('📊 Pasek Admina', 'modern-admin-styler-v2'),
                 'icon' => 'admin-bar',
-                'description' => __('Stylowanie górnego paska administracyjnego', 'modern-admin-styler-v2')
+                'description' => __('Wygląd, pozycja, typografia i ukrywanie elementów', 'modern-admin-styler-v2')
             ],
             'menu' => [
-                'title' => __('Menu', 'modern-admin-styler-v2'),
+                'title' => __('📋 Menu', 'modern-admin-styler-v2'),
                 'icon' => 'menu',
-                'description' => __('Konfiguracja menu bocznego', 'modern-admin-styler-v2')
-            ],
-            'content' => [
-                'title' => __('Treść', 'modern-admin-styler-v2'),
-                'icon' => 'content',
-                'description' => __('Stylowanie obszaru treści', 'modern-admin-styler-v2')
+                'description' => __('Menu główne + submenu (wszystko w jednym miejscu!)', 'modern-admin-styler-v2')
             ],
             'typography' => [
-                'title' => __('Typografia', 'modern-admin-styler-v2'),
+                'title' => __('🔤 Typografia', 'modern-admin-styler-v2'),
                 'icon' => 'typography',
-                'description' => __('Ustawienia czcionek i tekstów', 'modern-admin-styler-v2')
-            ],
-            'effects' => [
-                'title' => __('Efekty', 'modern-admin-styler-v2'),
-                'icon' => 'effects',
-                'description' => __('Animacje i efekty specjalne', 'modern-admin-styler-v2')
+                'description' => __('Czcionki, rozmiary, nowa skala nagłówków H1-H6', 'modern-admin-styler-v2')
             ],
             'advanced' => [
-                'title' => __('Zaawansowane', 'modern-admin-styler-v2'),
+                'title' => __('⚙️ Zaawansowane', 'modern-admin-styler-v2'),
                 'icon' => 'advanced',
-                'description' => __('Niestandardowe CSS i opcje deweloperskie', 'modern-admin-styler-v2')
-            ],
-            'live-preview' => [
-                'title' => __('Live Preview', 'modern-admin-styler-v2'),
-                'icon' => 'live-preview',
-                'description' => __('Podgląd na żywo zmian w interfejsie', 'modern-admin-styler-v2')
+                'description' => __('Treść + Przyciski + Optymalizacja + CSS/JS', 'modern-admin-styler-v2')
             ]
         ];
     }
@@ -2038,26 +1990,52 @@ class ModernAdminStylerV2 {
     }
     
     /**
-     * Wyczyść cache - zoptymalizowane zapytania
+     * Inteligentne czyszczenie cache
      */
     private function clearCache() {
-        // Używaj WordPress API zamiast bezpośrednich zapytań SQL
-        $transient_keys = [
-            'mas_v2_css_cache',
-            'mas_v2_js_cache', 
-            'mas_v2_settings_cache',
-            'mas_v2_admin_styles'
-        ];
+        // NAPRAWKA WYDAJNOŚCI: Ograniczone czyszczenie cache tylko gdy naprawdę potrzebne
+        static $cache_cleared = false;
         
-        foreach ($transient_keys as $key) {
-            delete_transient($key);
-            delete_site_transient($key);
+        // Unikaj wielokrotnego czyszczenia w jednym request
+        if ($cache_cleared) {
+            return;
         }
         
-        // Wyczyść cache obiektów WordPress (tylko jeśli to konieczne)
+        // WordPress cache
         if (function_exists('wp_cache_flush')) {
             wp_cache_flush();
         }
+        
+        // Object cache
+        if (function_exists('wp_cache_delete_group')) {
+            wp_cache_delete_group('mas_v2_cache', 'mas_v2');
+        }
+        
+        // Opcjonalne: popularne cache plugins
+        $cache_plugins = [
+            'W3TC' => function() { 
+                if (function_exists('w3tc_flush_all')) w3tc_flush_all(); 
+            },
+            'WP Super Cache' => function() { 
+                if (function_exists('wp_cache_clear_cache')) wp_cache_clear_cache(); 
+            },
+            'WP Rocket' => function() { 
+                if (function_exists('rocket_clean_domain')) rocket_clean_domain(); 
+            }
+        ];
+        
+        foreach ($cache_plugins as $plugin => $clear_func) {
+            if (is_callable($clear_func)) {
+                try {
+                    $clear_func();
+                } catch (Exception $e) {
+                    error_log("MAS V2: Cache clear failed for {$plugin}: " . $e->getMessage());
+                }
+            }
+        }
+        
+        $cache_cleared = true;
+        error_log('MAS V2: Cache cleared successfully');
     }
     
     /**
@@ -2531,7 +2509,7 @@ class ModernAdminStylerV2 {
      * DIAGNOSTIC: Database check AJAX handler
      */
     public function ajaxDatabaseCheck() {
-        if (!wp_verify_nonce($_POST['_wpnonce'] ?? '', 'mas_v2_nonce')) {
+        if (!wp_verify_nonce($_POST['nonce'] ?? $_POST['_wpnonce'] ?? '', 'mas_v2_nonce')) {
             wp_send_json_error(['message' => 'Security check failed']);
             return;
         }
@@ -2579,7 +2557,7 @@ class ModernAdminStylerV2 {
      * DIAGNOSTIC: WordPress options system test
      */
     public function ajaxOptionsTest() {
-        if (!wp_verify_nonce($_POST['_wpnonce'] ?? '', 'mas_v2_nonce')) {
+        if (!wp_verify_nonce($_POST['nonce'] ?? $_POST['_wpnonce'] ?? '', 'mas_v2_nonce')) {
             wp_send_json_error(['message' => 'Security check failed']);
             return;
         }
@@ -2624,7 +2602,7 @@ class ModernAdminStylerV2 {
      * DIAGNOSTIC: Cache check AJAX handler
      */
     public function ajaxCacheCheck() {
-        if (!wp_verify_nonce($_POST['_wpnonce'] ?? '', 'mas_v2_nonce')) {
+        if (!wp_verify_nonce($_POST['nonce'] ?? $_POST['_wpnonce'] ?? '', 'mas_v2_nonce')) {
             wp_send_json_error(['message' => 'Security check failed']);
             return;
         }
