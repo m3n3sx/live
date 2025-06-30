@@ -23,15 +23,53 @@ define('MAS_V2_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('MAS_V2_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('MAS_V2_PLUGIN_FILE', __FILE__);
 
+// 🚀 Autoloader dla serwisów
+spl_autoload_register(function ($class) {
+    $prefix = 'ModernAdminStyler\\Services\\';
+    $base_dir = __DIR__ . '/src/services/';
+    
+    $len = strlen($prefix);
+    if (strncmp($prefix, $class, $len) !== 0) {
+        return;
+    }
+    
+    $relative_class = substr($class, $len);
+    $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
+    
+    if (file_exists($file)) {
+        require $file;
+    }
+});
+
 /**
- * Główna klasa wtyczki - Nowa architektura
+ * Główna klasa wtyczki - Refaktoryzowana architektura serwisów
  */
 class ModernAdminStylerV2 {
     
     private static $instance = null;
-    private $adminController;
-    private $assetService;
-    private $settingsService;
+    
+    // 🏗️ Nowa architektura serwisów
+    private $asset_loader;
+    private $ajax_handler;
+    private $settings_manager;
+    
+    // 🚀 Enterprise serwisy
+    private $cache_manager;
+    private $css_generator;
+    private $security_service;
+    private $metrics_collector;
+    
+    // 🎯 Serwisy WordPress API (Faza 1)
+    private $customizer_integration;
+    private $settings_api;
+    private $rest_api;
+    
+    // 🎨 Serwisy komponentów (Faza 2)
+    private $component_adapter;
+    
+    // 🔗 Serwisy ekosystemu (Faza 3)
+    private $hooks_manager;
+    private $gutenberg_manager;
     
     public static function getInstance() {
         if (self::$instance === null) {
@@ -48,14 +86,8 @@ class ModernAdminStylerV2 {
      * Inicjalizacja wtyczki
      */
     private function init() {
-        // Autoloader
-        spl_autoload_register([$this, 'autoload']);
-        
-        // Inicjalizacja serwisów
+        // 🏗️ Inicjalizacja serwisów
         $this->initServices();
-        
-        // Legacy mode dla kompatybilności
-        $this->initLegacyMode();
         
         // Hooks
         add_action('init', [$this, 'loadTextdomain']);
@@ -63,17 +95,31 @@ class ModernAdminStylerV2 {
         add_action('admin_enqueue_scripts', [$this, 'enqueueAssets']);
         add_action('admin_enqueue_scripts', [$this, 'enqueueGlobalAssets']);
         
-        // AJAX handlers - usuń dublowanie
-        add_action('wp_ajax_mas_v2_save_settings', [$this, 'ajaxSaveSettings']);
-        add_action('wp_ajax_mas_v2_reset_settings', [$this, 'ajaxResetSettings']);
-        add_action('wp_ajax_mas_v2_export_settings', [$this, 'ajaxExportSettings']);
-        add_action('wp_ajax_mas_v2_import_settings', [$this, 'ajaxImportSettings']);
-        add_action('wp_ajax_mas_v2_live_preview', [$this, 'ajaxLivePreview']);
+        // 🎯 CUSTOMIZER HOOKS - KLUCZOWE DLA LIVE PREVIEW
+        add_action('customize_register', [$this, 'registerCustomizerSettings']);
+        add_action('customize_preview_init', [$this, 'enqueueCustomizerPreviewAssets']);
         
-        // Diagnostic AJAX handlers
-        add_action('wp_ajax_mas_v2_db_check', [$this, 'ajaxDatabaseCheck']);
-        add_action('wp_ajax_mas_v2_options_test', [$this, 'ajaxOptionsTest']);
-        add_action('wp_ajax_mas_v2_cache_check', [$this, 'ajaxCacheCheck']);
+        // 🚀 AJAX handlers - teraz przez serwis
+        add_action('wp_ajax_mas_v2_save_settings', [$this->ajax_handler, 'handleSaveSettings']);
+        add_action('wp_ajax_mas_v2_reset_settings', [$this->ajax_handler, 'handleResetSettings']);
+        add_action('wp_ajax_mas_v2_export_settings', [$this->ajax_handler, 'handleExportSettings']);
+        add_action('wp_ajax_mas_v2_import_settings', [$this->ajax_handler, 'handleImportSettings']);
+        add_action('wp_ajax_mas_v2_db_check', [$this->ajax_handler, 'handleDatabaseCheck']);
+        
+        // 🚀 Enterprise AJAX endpoints - delegacja do AjaxHandler
+        add_action('wp_ajax_mas_v2_cache_flush', [$this->ajax_handler, 'handleCacheFlush']);
+        add_action('wp_ajax_mas_v2_cache_stats', [$this->ajax_handler, 'handleCacheStats']);
+        add_action('wp_ajax_mas_v2_metrics_report', [$this->ajax_handler, 'handleMetricsReport']);
+        add_action('wp_ajax_mas_v2_security_scan', [$this->ajax_handler, 'handleSecurityScan']);
+        add_action('wp_ajax_mas_v2_performance_benchmark', [$this->ajax_handler, 'handlePerformanceBenchmark']);
+        add_action('wp_ajax_mas_v2_css_regenerate', [$this->ajax_handler, 'handleCSSRegenerate']);
+        
+        // 💾 Memory Optimization AJAX endpoints
+        add_action('wp_ajax_mas_v2_memory_stats', [$this->ajax_handler, 'handleMemoryStats']);
+        add_action('wp_ajax_mas_v2_force_memory_optimization', [$this->ajax_handler, 'handleForceMemoryOptimization']);
+        
+        // 🎨 FAZA 2: Clear cache handler
+        add_action('wp_ajax_mas_v2_clear_cache', [$this, 'ajaxClearCache']);
         
         // Output custom styles
         add_action('admin_head', [$this, 'outputCustomStyles']);
@@ -107,6 +153,17 @@ class ModernAdminStylerV2 {
     }
     
     /**
+     * 💾 Memory diagnostic function (temporary fix for memory issues)
+     */
+    public function logMemoryUsage($context = '') {
+        $current_memory = memory_get_usage();
+        $peak_memory = memory_get_peak_usage();
+        $memory_limit = ini_get('memory_limit');
+        
+        error_log("MAS Memory Usage - {$context}: Current: " . number_format($current_memory / 1024 / 1024, 2) . "MB, Peak: " . number_format($peak_memory / 1024 / 1024, 2) . "MB, Limit: {$memory_limit}");
+    }
+    
+    /**
      * Autoloader dla klas
      */
     public function autoload($className) {
@@ -125,20 +182,42 @@ class ModernAdminStylerV2 {
     }
     
     /**
-     * Inicjalizacja serwisów
+     * 🏗️ Inicjalizacja serwisów przez ServiceFactory
+     * 🎯 FAZA 1: Głęboka integracja z WordPress API
      */
     public function initServices() {
-        // Serwisy są wyłączone aby uniknąć duplikatów hooks'ów
-        // Używamy tylko legacy mode w głównej klasie
-        // AdminController i AssetService powodowały konflikty rejestracji
-    }
-    
-    /**
-     * Tryb zgodności ze starą wersją
-     */
-    private function initLegacyMode() {
-        // Legacy mode jest jedynym aktywnym systemem
-        // Wszystko działa przez main class bez duplikatów
+        // 🏭 Użyj ServiceFactory do zarządzania serwisami
+        $factory = \ModernAdminStyler\Services\ServiceFactory::getInstance();
+        
+        // 🔧 Pobierz serwisy z factory
+        $this->settings_manager = $factory->get('settings_manager');
+        $this->asset_loader = $factory->get('asset_loader');
+        $this->ajax_handler = $factory->get('ajax_handler');
+        
+        // 🚀 Dodatkowe serwisy dla enterprise features
+        $this->cache_manager = $factory->get('cache_manager');
+        $this->css_generator = $factory->get('css_generator');
+        $this->security_service = $factory->get('security_service');
+        $this->metrics_collector = $factory->get('metrics_collector');
+        
+        // 🎯 NOWE SERWISY FAZY 1: WordPress API Integration
+        $this->customizer_integration = $factory->get('customizer_integration');
+        $this->settings_api = $factory->get('settings_api');
+        $this->rest_api = $factory->get('rest_api');
+        
+        // 🎨 NOWY SERWIS FAZY 2: Component Adapter
+        $this->component_adapter = $factory->get('component_adapter');
+        
+        // 🔗 NOWE SERWISY FAZY 3: Ecosystem Integration
+        $this->hooks_manager = $factory->get('hooks_manager');
+        $this->gutenberg_manager = $factory->get('gutenberg_manager');
+        
+        // 🎯 NOWE SERWISY FAZY 6: Enterprise Integration & Analytics
+        $this->analytics_engine = $factory->get('analytics_engine');
+        $this->integration_manager = $factory->get('integration_manager');
+        // TEMPORARY FIX: Commented out to prevent memory exhaustion
+        // $this->enterprise_security_manager = $factory->get('enterprise_security_manager');
+        $this->memory_optimizer = $factory->get('memory_optimizer');
     }
     
     /**
@@ -170,105 +249,181 @@ class ModernAdminStylerV2 {
     }
     
     /**
-     * Legacy: Dodanie menu w adminpanel
+     * 🎯 FAZA 1: Natywna integracja z menu WordPress
+     * Nowa architektura: Customizer + Settings API + REST API
      */
     public function addAdminMenu() {
-        // Główne menu
+        // Główna pozycja w menu
         add_menu_page(
-            __('Modern Admin Styler V2', 'modern-admin-styler-v2'),
-            __('MAS V2', 'modern-admin-styler-v2'),
+            __('Modern Admin Styler - General', 'modern-admin-styler-v2'), // Tytuł strony
+            __('Modern Admin', 'modern-admin-styler-v2'), // Tytuł w menu
             'manage_options',
-            'mas-v2-settings',
-            [$this, 'renderAdminPage'],
+            'mas-v2-general', // Slug strony głównej
+            [$this, 'renderAdminPage'], // Funkcja renderująca
             'data:image/svg+xml;base64,' . base64_encode('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>'),
             30
         );
 
-        // 🎯 NOWA ARCHITEKTURA: 5 logicznych zakładek zamiast 12 chaotycznych!
+        // Podstrona "General" (powiązana z główną)
         add_submenu_page(
-            'mas-v2-settings',
-            __('🌐 Główne', 'modern-admin-styler-v2'),
-            __('🌐 Główne', 'modern-admin-styler-v2'),
+            'mas-v2-general', // Slug rodzica
+            __('General Settings', 'modern-admin-styler-v2'),
+            __('General', 'modern-admin-styler-v2'),
             'manage_options',
+            'mas-v2-general', // Ten sam slug co rodzic
+            [$this, 'renderAdminPage']
+        );
+
+        // Podstrona "Admin Bar"
+        add_submenu_page(
             'mas-v2-general',
-            [$this, 'renderTabPage']
-        );
-
-        add_submenu_page(
-            'mas-v2-settings',
-            __('📊 Pasek Admina', 'modern-admin-styler-v2'),
-            __('📊 Pasek Admina', 'modern-admin-styler-v2'),
+            __('Admin Bar Settings', 'modern-admin-styler-v2'),
+            __('Admin Bar', 'modern-admin-styler-v2'),
             'manage_options',
-            'mas-v2-admin-bar',
-            [$this, 'renderTabPage']
+            'mas-v2-admin-bar', // Nowy, unikalny slug
+            [$this, 'renderAdminPage']
         );
 
+        // Podstrona "Menu"
         add_submenu_page(
-            'mas-v2-settings',
-            __('📋 Menu', 'modern-admin-styler-v2'),
-            __('📋 Menu (+ Submenu)', 'modern-admin-styler-v2'),
+            'mas-v2-general',
+            __('Menu Settings', 'modern-admin-styler-v2'),
+            __('Menu', 'modern-admin-styler-v2'),
             'manage_options',
             'mas-v2-menu',
-            [$this, 'renderTabPage']
+            [$this, 'renderAdminPage']
         );
 
+        // Podstrona "Typography"
         add_submenu_page(
-            'mas-v2-settings',
-            __('🔤 Typografia', 'modern-admin-styler-v2'),
-            __('🔤 Typografia', 'modern-admin-styler-v2'),
+            'mas-v2-general',
+            __('Typography Settings', 'modern-admin-styler-v2'),
+            __('Typography', 'modern-admin-styler-v2'),
             'manage_options',
             'mas-v2-typography',
-            [$this, 'renderTabPage']
+            [$this, 'renderAdminPage']
         );
 
+        // Podstrona "Advanced"
         add_submenu_page(
-            'mas-v2-settings',
-            __('⚙️ Zaawansowane', 'modern-admin-styler-v2'),
-            __('⚙️ Zaawansowane', 'modern-admin-styler-v2'),
+            'mas-v2-general',
+            __('Advanced Settings', 'modern-admin-styler-v2'),
+            __('Advanced', 'modern-admin-styler-v2'),
             'manage_options',
             'mas-v2-advanced',
-            [$this, 'renderTabPage']
+            [$this, 'renderAdminPage']
         );
+
+        // 🚀 FAZA 1: Demo page pokazująca nową architekturę
+        add_submenu_page(
+            'mas-v2-general',
+            __('🚀 Faza 1 Demo - WordPress API Integration', 'modern-admin-styler-v2'),
+            __('🚀 Faza 1 Demo', 'modern-admin-styler-v2'),
+            'manage_options',
+            'mas-v2-phase1-demo',
+            [$this, 'renderPhase1Demo']
+        );
+
+        // 🎨 FAZA 2: Demo page pokazująca WordPress komponenty
+        add_submenu_page(
+            'mas-v2-general',
+            __('🎨 Faza 2 Demo - WordPress Components', 'modern-admin-styler-v2'),
+            __('🎨 Faza 2 Demo', 'modern-admin-styler-v2'),
+            'manage_options',
+            'mas-v2-phase2-demo',
+            [$this, 'renderPhase2Demo']
+        );
+        
+        // 🔗 FAZA 3: Demo page pokazująca Ecosystem Integration
+        add_submenu_page(
+            'mas-v2-general',
+            __('🔗 Faza 3 Demo - Ecosystem Integration', 'modern-admin-styler-v2'),
+            __('🔗 Faza 3 Demo', 'modern-admin-styler-v2'),
+            'manage_options',
+            'mas-v2-phase3-demo',
+            [$this, 'renderPhase3Demo']
+        );
+        
+        // 🚀 FAZA 4: Demo page pokazująca Data-Driven Architecture & Security
+        add_submenu_page(
+            'mas-v2-general',
+            __('🚀 Faza 4 Demo - Data-Driven Architecture & Security', 'modern-admin-styler-v2'),
+            __('🚀 Faza 4 Demo', 'modern-admin-styler-v2'),
+            'manage_options',
+            'mas-v2-phase4-demo',
+            [$this, 'renderPhase4Demo']
+        );
+        
+        // 🚀 FAZA 5: Demo page pokazująca Advanced Performance & UX
+        add_submenu_page(
+            'mas-v2-general',
+            __('🚀 Faza 5 Demo - Advanced Performance & UX', 'modern-admin-styler-v2'),
+            __('🚀 Faza 5 Demo', 'modern-admin-styler-v2'),
+            'manage_options',
+            'mas-v2-phase5-demo',
+            [$this, 'renderPhase5Demo']
+        );
+        
+        // 🎯 FAZA 6: Enterprise Dashboard
+        add_submenu_page(
+            'mas-v2-general',
+            __('🎯 Enterprise Dashboard - Analytics & Security', 'modern-admin-styler-v2'),
+            __('🎯 Enterprise Dashboard', 'modern-admin-styler-v2'),
+            'manage_options',
+            'mas-v2-enterprise-dashboard',
+            [$this, 'renderEnterpriseDashboard']
+        );
+
+        // 🚧 TYMCZASOWO UKRYTE: Podstrona "3D Effects" - w przygotowaniu
+        /*
+        add_submenu_page(
+            'mas-v2-general',
+            __('3D Effects Settings', 'modern-admin-styler-v2'),
+            __('3D Effects', 'modern-admin-styler-v2'),
+            'manage_options',
+            'mas-v2-3d-effects',
+            [$this, 'renderAdminPage']
+        );
+        */
     }
     
     /**
-     * Legacy: Enqueue CSS i JS na stronie ustawień pluginu
+     * 🎯 Rejestracja opcji w Customizerze - delegacja do serwisu
+     */
+    public function registerCustomizerSettings($wp_customize) {
+        if ($this->customizer_integration) {
+            $this->customizer_integration->registerCustomizerControls($wp_customize);
+        }
+    }
+    
+    /**
+     * 🎯 Ładowanie JavaScript dla live preview w Customizerze
+     */
+    public function enqueueCustomizerPreviewAssets() {
+        if ($this->customizer_integration) {
+            $this->customizer_integration->enqueueCustomizerPreview();
+        }
+    }
+    
+    /**
+     * 🎯 Ładuje zasoby CSS/JS na stronach ustawień wtyczki
      */
     public function enqueueAssets($hook) {
-        // 🎯 NOWA ARCHITEKTURA: Sprawdź czy jesteśmy na którejś z 5 logicznych stron
+        // 🚀 Deleguj ładowanie zasobów do AssetLoader serwisu
+        $this->asset_loader->enqueueAdminAssets($hook);
+        
+        // Dodaj lokalizację AJAX tylko dla naszych stron
         $mas_pages = [
-            'toplevel_page_mas-v2-settings',
-            'mas-v2_page_mas-v2-general',
-            'mas-v2_page_mas-v2-admin-bar',
-            'mas-v2_page_mas-v2-menu',
-            'mas-v2_page_mas-v2-typography',
-            'mas-v2_page_mas-v2-advanced'
+            'toplevel_page_mas-v2-general',
+            'modern-admin_page_mas-v2-general',
+            'modern-admin_page_mas-v2-admin-bar',
+            'modern-admin_page_mas-v2-menu',
+            'modern-admin_page_mas-v2-typography',
+            'modern-admin_page_mas-v2-advanced'
         ];
         
-        if (!in_array($hook, $mas_pages)) {
-            return;
-        }
-        
-        // SKONSOLIDOWANY CSS - tylko mas-v2-main.css (zawiera wszystko)
-        wp_enqueue_style(
-            'mas-v2-interface',
-            MAS_V2_PLUGIN_URL . 'assets/css/mas-v2-main.css',
-            [],
-            MAS_V2_VERSION
-        );
-        
-        // SKONSOLIDOWANY JavaScript - tylko admin-modern.js (zawiera wszystko)
-        wp_enqueue_script(
-            'mas-v2-admin',
-            MAS_V2_PLUGIN_URL . 'assets/js/admin-modern.js',
-            ['jquery', 'wp-color-picker'],
-            MAS_V2_VERSION,
-            true
-        );
-        
-        wp_enqueue_style('wp-color-picker');
-        
-        // Localize script
+        if (in_array($hook, $mas_pages)) {
+            // Localize script - używamy tego samego obiektu co poprzednio
         wp_localize_script('mas-v2-admin', 'masV2', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('mas_v2_nonce'),
@@ -282,398 +437,233 @@ class ModernAdminStylerV2 {
                 'reset_success' => __('Ustawienia zostały przywrócone!', 'modern-admin-styler-v2'),
             ]
         ]);
+        }
     }
     
     /**
-     * Enqueue CSS i JS na wszystkich stronach wp-admin
+     * 🌐 Ładuje globalne zasoby na wszystkich stronach wp-admin
      */
     public function enqueueGlobalAssets($hook) {
-        // Nie ładuj CSS/JS na stronie logowania lub jeśli jesteśmy poza admin
-        if (!is_admin() || $this->isLoginPage()) {
+        // Sprawdź, czy jesteśmy na stronie ustawień wtyczki. Jeśli tak, nie ładuj globalnych stylów,
+        // ponieważ zostaną one załadowane przez enqueueAssets() z innymi zależnościami.
+        $mas_pages = [
+            'toplevel_page_mas-v2-general',
+            'modern-admin_page_mas-v2-general',
+            'modern-admin_page_mas-v2-admin-bar',
+            'modern-admin_page_mas-v2-menu',
+            'modern-admin_page_mas-v2-typography',
+            'modern-admin_page_mas-v2-advanced',
+        ];
+        if (in_array($hook, $mas_pages)) {
             return;
         }
         
-        // Dodaj wczesny JavaScript PRZED wszystkimi innymi skryptami
-        add_action('admin_head', [$this, 'addEarlyLoadingProtection'], 1);
+        // 🚀 Deleguj ładowanie globalnych zasobów do AssetLoader serwisu
+        $this->asset_loader->enqueueGlobalAssets($hook);
         
-        // SKONSOLIDOWANY CSS - mas-v2-main.css zawiera wszystkie potrzebne style
-        wp_enqueue_style(
-            'mas-v2-main',
-            MAS_V2_PLUGIN_URL . 'assets/css/mas-v2-main.css',
-            [],
-            MAS_V2_VERSION
-        );
+        // Dodaj wczesne zabezpieczenia przeciwko animacjom
+        add_action('admin_head', [$this->asset_loader, 'addEarlyLoadingProtection'], 1);
         
-        // SKONSOLIDOWANY JavaScript - admin-global.js (lekka wersja)
-        wp_enqueue_script(
-            'mas-v2-global',
-            MAS_V2_PLUGIN_URL . 'assets/js/admin-global.js',
-            ['jquery'],
-            MAS_V2_VERSION,
-            true
-        );
+        // Dodaj globalne ustawienia JS tylko jeśli zasoby zostały załadowane
+        if (!$this->isLoginPage() && is_admin()) {
+            $mas_pages = [
+                'toplevel_page_mas-v2-general',
+                'modern-admin_page_mas-v2-general',
+                'modern-admin_page_mas-v2-admin-bar',
+                'modern-admin_page_mas-v2-menu',
+                'modern-admin_page_mas-v2-typography',
+                'modern-admin_page_mas-v2-advanced'
+            ];
+            
+            if (!in_array($hook, $mas_pages)) {
+        // Debug: Sprawdź ustawienia przed przekazaniem do JS
+        $settings = $this->getSettings();
+        error_log('🔍 MAS V2 PHP Debug - Settings being passed to JS: ' . print_r($settings, true));
+        error_log('🔍 MAS V2 PHP Debug - admin_bar_floating value: ' . ($settings['admin_bar_floating'] ?? 'NOT SET'));
         
         // Przekaż ustawienia do globalnego JS (z nonce dla kompatybilności)
         wp_localize_script('mas-v2-global', 'masV2Global', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('mas_v2_nonce'),
-            'settings' => $this->getSettings()
+            'settings' => $settings
         ]);
+            }
+        }
     }
     
     /**
-     * Dodaje wczesną ochronę przed animacjami podczas ładowania strony
+     * ⚠️ DEPRECATED: Ta metoda jest teraz w AssetLoader serwisie
      */
     public function addEarlyLoadingProtection() {
-        ?>
-        <script>
-        // NAPRAW PROBLEM "ODLATUJĄCEGO MENU" - Wczesna ochrona
-        (function() {
-            // Dodaj klasę mas-loading NATYCHMIAST
-            document.documentElement.classList.add('mas-loading');
-            document.body.classList.add('mas-loading');
-            
-            // Usuń klasę po pełnym załadowaniu
-            document.addEventListener('DOMContentLoaded', function() {
-                setTimeout(function() {
-                    document.documentElement.classList.remove('mas-loading');
-                    document.body.classList.remove('mas-loading');
-                }, 500);
-            });
-        })();
-        </script>
-        <?php
+        // Deleguj do AssetLoader
+        $this->asset_loader->addEarlyLoadingProtection();
     }
     
     /**
-     * Sprawdza czy jesteśmy na stronie logowania
+     * ⚠️ DEPRECATED: Ta metoda powinna być prywatna w AssetLoader
      */
     private function isLoginPage() {
         return in_array($GLOBALS['pagenow'], ['wp-login.php', 'wp-register.php']);
     }
     
     /**
-     * Legacy: Renderowanie strony administracyjnej  
+     * 🎯 INTELIGENTNE RENDEROWANIE: Określa aktywną zakładkę na podstawie URL
      */
     public function renderAdminPage() {
+        // Określ aktywną zakładkę na podstawie parametru 'page' w URL
+        $current_page_slug = $_GET['page'] ?? 'mas-v2-general';
+        $active_tab = str_replace('mas-v2-', '', $current_page_slug);
+
+        // Upewnij się, że mamy poprawną wartość domyślną
+        $valid_tabs = ['general', 'admin-bar', 'menu', 'typography', 'advanced']; // 🚧 3d-effects tymczasowo ukryte
+        if (!in_array($active_tab, $valid_tabs)) {
+        $active_tab = 'general';
+        }
+
+        // Pobierz aktualne ustawienia, aby przekazać je do widoku
         $settings = $this->getSettings();
         $tabs = $this->getTabs();
+        $plugin_instance = $this;
         
-        // Używaj nowego template jeśli istnieje
-        $newTemplate = MAS_V2_PLUGIN_DIR . 'src/views/admin-page.php';
-        if (file_exists($newTemplate)) {
-            // Dodaj zmienną dostępną w template
-            $plugin_instance = $this;
-            include $newTemplate;
-        } else {
-            // Fallback do starego template
-        include MAS_V2_PLUGIN_DIR . 'templates/admin-page.php';
-        }
+        // Załaduj widok strony
+        // Zmienne $settings, $active_tab, $tabs i $plugin_instance będą dostępne w pliku widoku
+        require_once MAS_V2_PLUGIN_DIR . 'src/views/admin-page.php';
+            }
+
+    /**
+     * 🚀 FAZA 1: Renderowanie strony demo pokazującej nową architekturę
+     */
+    public function renderPhase1Demo() {
+        require_once MAS_V2_PLUGIN_DIR . 'src/views/phase1-demo.php';
     }
 
     /**
-     * Renderowanie strony poszczególnych zakładek
+     * 🎨 FAZA 2: Renderowanie strony demo pokazującej WordPress komponenty
      */
-    public function renderTabPage() {
-        $settings = $this->getSettings();
-        
-        // Określ aktywną zakładkę na podstawie URL
-        $current_page = $_GET['page'] ?? '';
-        $active_tab = 'general';
-        
-        switch ($current_page) {
-            case 'mas-v2-general':
-                $active_tab = 'general';
-                break;
-            case 'mas-v2-admin-bar':
-                $active_tab = 'admin-bar';
-                break;
-            case 'mas-v2-menu':
-                $active_tab = 'menu';
-                break;
-            case 'mas-v2-content':
-                $active_tab = 'content';
-                break;
-            case 'mas-v2-buttons':
-                $active_tab = 'buttons';
-                break;
-            case 'mas-v2-login':
-                $active_tab = 'login';
-                break;
-            case 'mas-v2-typography':
-                $active_tab = 'typography';
-                break;
-            case 'mas-v2-effects':
-                $active_tab = 'effects';
-                break;
-            case 'mas-v2-templates':
-                $active_tab = 'templates';
-                break;
-            case 'mas-v2-advanced':
-                $active_tab = 'advanced';
-                break;
+    public function renderPhase2Demo() {
+        // Sprawdź uprawnienia
+        if (!current_user_can('manage_options')) {
+            wp_die(__('You do not have sufficient permissions to access this page.'));
         }
         
-        // Sprawdź czy formularz został wysłany (fallback dla POST)
-        if (isset($_POST['mas_v2_nonce']) && wp_verify_nonce($_POST['mas_v2_nonce'], 'mas_v2_nonce')) {
-            error_log('MAS V2: POST form submitted (non-AJAX)');
-            
-            // Filtruj tylko odpowiednie pola formularza
-            $form_data = $_POST;
-            unset($form_data['mas_v2_nonce'], $form_data['_wp_http_referer'], $form_data['submit']);
-            
-            $settings = $this->sanitizeSettings($form_data);
-            $result = update_option('mas_v2_settings', $settings);
-            
-            error_log('MAS V2: POST save result: ' . ($result ? 'success' : 'failed'));
-            $this->clearCache();
-            
-            echo '<div class="notice notice-success is-dismissible"><p>' . 
-                 __('Ustawienia zostały zapisane!', 'modern-admin-styler-v2') . 
-                 '</p></div>';
-        }
+        // Inicjalizuj ComponentAdapter
+        $factory = \ModernAdminStyler\Services\ServiceFactory::getInstance();
+        $component_adapter = $factory->get('component_adapter');
+        $settings_manager = $factory->get('settings_manager');
         
-        // Załaduj template z aktywną zakładką
-        $plugin_instance = $this;
-        include MAS_V2_PLUGIN_DIR . 'src/views/admin-page.php';
+        // Wymuś pełną szerokość i dodaj style dla Phase 2
+        echo '<style>
+            .wrap { max-width: none; }
+            .phase2-container { max-width: 1400px; margin: 0 auto; }
+        </style>';
+        
+        // Załaduj template Phase 2
+        require_once MAS_V2_PLUGIN_DIR . 'src/views/admin-page-phase2.php';
     }
+    
+    /**
+     * 🔗 FAZA 3: Renderowanie strony demo pokazującej Ecosystem Integration
+     */
+    public function renderPhase3Demo() {
+        // Sprawdź uprawnienia
+        if (!current_user_can('manage_options')) {
+            wp_die(__('You do not have sufficient permissions to access this page.'));
+        }
+        
+        // Dodaj style dla Phase 3
+        echo '<style>
+            .wrap { max-width: none; }
+            .mas-admin-page { max-width: 1400px; margin: 0 auto; }
+        </style>';
+        
+        // Załaduj template Phase 3
+        require_once MAS_V2_PLUGIN_DIR . 'src/views/admin-page-phase3.php';
+    }
+    
+    /**
+     * 🚀 FAZA 4: Renderowanie strony demo pokazującej Data-Driven Architecture & Security
+     */
+    public function renderPhase4Demo() {
+        // Sprawdź uprawnienia
+        if (!current_user_can('manage_options')) {
+            wp_die(__('You do not have sufficient permissions to access this page.'));
+        }
+        
+        // Dodaj style dla Phase 4
+        echo '<style>
+            .wrap { max-width: none; }
+            .mas-admin-page { max-width: 1400px; margin: 0 auto; }
+        </style>';
+        
+        // Załaduj template Phase 4
+        require_once MAS_V2_PLUGIN_DIR . 'src/views/admin-page-phase4-demo.php';
+    }
+    
+    /**
+     * 🚀 FAZA 5: Renderowanie strony demo pokazującej Advanced Performance & UX
+     */
+    public function renderPhase5Demo() {
+        // Sprawdź uprawnienia
+        if (!current_user_can('manage_options')) {
+            wp_die(__('You do not have sufficient permissions to access this page.'));
+        }
+        
+        // Inicjalizuj serwisy
+        $this->serviceFactory = \ModernAdminStyler\Services\ServiceFactory::getInstance();
+        
+        // Dodaj style dla Phase 5
+        echo '<style>
+            .wrap { max-width: none; }
+            .mas-admin-page { max-width: 1400px; margin: 0 auto; }
+        </style>';
+        
+        // Załaduj template Phase 5
+        require_once MAS_V2_PLUGIN_DIR . 'src/views/admin-page-phase5-demo.php';
+    }
+    
+    /**
+     * 🎯 FAZA 6: Renderowanie Enterprise Dashboard
+     */
+    public function renderEnterpriseDashboard() {
+        // Sprawdź uprawnienia
+        if (!current_user_can('manage_options')) {
+            wp_die(__('You do not have sufficient permissions to access this page.'));
+        }
+        
+        // Inicjalizuj serwisy
+        $this->serviceFactory = \ModernAdminStyler\Services\ServiceFactory::getInstance();
+        
+        // Dodaj style dla Phase 6
+        echo '<style>
+            .wrap { max-width: none; }
+            .mas-v2-enterprise-dashboard { max-width: none; margin: 0; }
+        </style>';
+        
+        // Załaduj template Phase 6
+        require_once MAS_V2_PLUGIN_DIR . 'src/views/admin-page-phase6-dashboard.php';
+    }
+
+    /**
+     * 🗑️ USUNIĘTE: renderTabPage() - martwy kod zastąpiony przez renderAdminPage()
+     * Ta metoda była pozostałością po starym systemie zakładek
+     */
     
     /**
      * Legacy: AJAX Zapisywanie ustawień
      */
-    public function ajaxSaveSettings() {
-        // Weryfikacja nonce
-        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'mas_v2_nonce')) {
-            wp_send_json_error(['message' => __('Błąd bezpieczeństwa', 'modern-admin-styler-v2')]);
-            return;
-        }
-        
-        // Sprawdzenie uprawnień
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => __('Brak uprawnień', 'modern-admin-styler-v2')]);
-            return;
-        }
-        
-        try {
-            // Debug info
-            error_log('MAS V2: AJAX Save Settings called');
-            error_log('MAS V2: POST data: ' . print_r($_POST, true));
-            
-            // Filtruj tylko odpowiednie pola formularza
-            $form_data = $_POST;
-            unset($form_data['nonce'], $form_data['action']);
-            
-            // Sanityzacja i zapisanie danych
-            $old_settings = $this->getSettings();
-            error_log('MAS V2: Old settings before save: ' . print_r($old_settings, true));
-            
-            $settings = $this->sanitizeSettings($form_data);
-            error_log('MAS V2: New settings after sanitization: ' . print_r($settings, true));
-            
-            // Test specific field
-            error_log('MAS V2: admin_bar_height - old: ' . ($old_settings['admin_bar_height'] ?? 'not set') . ', new: ' . ($settings['admin_bar_height'] ?? 'not set'));
-            
-            $result = update_option('mas_v2_settings', $settings);
-            error_log('MAS V2: update_option() returned: ' . var_export($result, true));
-            
-            // Verify the save by reading back from database
-            $saved_settings = get_option('mas_v2_settings');
-            error_log('MAS V2: Settings read back from DB: ' . print_r($saved_settings, true));
-            error_log('MAS V2: admin_bar_height in DB: ' . ($saved_settings['admin_bar_height'] ?? 'not set'));
-            
-            // update_option() zwraca false, jeśli wartości są takie same, co nie jest błędem.
-            // Uznajemy zapis za udany, jeśli funkcja zwróciła true LUB jeśli nowe ustawienia są identyczne jak stare.
-            $is_success = ($result === true || serialize($settings) === serialize($old_settings));
-            
-            error_log('MAS V2: Save success determined as: ' . ($is_success ? 'true' : 'false'));
-            
-            // Wyczyść cache
-            $this->clearCache();
-            
-            if ($is_success) {
-                wp_send_json_success([
-                    'message' => __('Ustawienia zostały zapisane pomyślnie!', 'modern-admin-styler-v2'),
-                    'settings' => $settings
-                ]);
-            } else {
-                wp_send_json_error(['message' => __('Wystąpił błąd podczas zapisu do bazy danych.', 'modern-admin-styler-v2')]);
-            }
-        } catch (Exception $e) {
-            error_log('MAS V2: Save error: ' . $e->getMessage());
-            wp_send_json_error(['message' => $e->getMessage()]);
-        }
-    }
+    // 🗑️ USUNIĘTE: Legacy AJAX methods - przeniesione do AjaxHandler serwisu
     
     /**
-     * AJAX Reset ustawień
+     * 🗑️ USUNIĘTE: ajaxLivePreview() - martwy kod
+     * Live Preview działa teraz w 100% po stronie klienta (admin-modern.js)
+     * Zapytania AJAX przy każdej zmianie były niepotrzebne i spowalniały system
      */
-    public function ajaxResetSettings() {
-        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'mas_v2_nonce')) {
-            wp_send_json_error(['message' => __('Błąd bezpieczeństwa', 'modern-admin-styler-v2')]);
-        }
-        
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => __('Brak uprawnień', 'modern-admin-styler-v2')]);
-        }
-        
-        try {
-            $defaults = $this->getDefaultSettings();
-            update_option('mas_v2_settings', $defaults);
-            $this->clearCache();
-        
-        wp_send_json_success([
-                'message' => __('Ustawienia zostały przywrócone do domyślnych!', 'modern-admin-styler-v2')
-            ]);
-        } catch (Exception $e) {
-            wp_send_json_error(['message' => $e->getMessage()]);
-        }
-    }
-    
-    /**
-     * AJAX Export ustawień
-     */
-    public function ajaxExportSettings() {
-        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'mas_v2_nonce')) {
-            wp_send_json_error(['message' => __('Błąd bezpieczeństwa', 'modern-admin-styler-v2')]);
-        }
-        
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => __('Brak uprawnień', 'modern-admin-styler-v2')]);
-        }
-        
-        try {
-            $settings = $this->getSettings();
-            $export_data = [
-                'version' => MAS_V2_VERSION,
-                'exported' => date('Y-m-d H:i:s'),
-                'settings' => $settings
-            ];
-            
-            wp_send_json_success([
-                'data' => $export_data,
-                'filename' => 'mas-v2-settings-' . date('Y-m-d-H-i-s') . '.json'
-            ]);
-        } catch (Exception $e) {
-            wp_send_json_error(['message' => $e->getMessage()]);
-        }
-    }
-    
-    /**
-     * AJAX Import ustawień - ulepszona walidacja bezpieczeństwa
-     */
-    public function ajaxImportSettings() {
-        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'mas_v2_nonce')) {
-            wp_send_json_error(['message' => __('Błąd bezpieczeństwa', 'modern-admin-styler-v2')]);
-        }
-        
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => __('Brak uprawnień', 'modern-admin-styler-v2')]);
-        }
-        
-        try {
-            $raw_data = $_POST['data'] ?? '';
-            
-            // Walidacja rozmiaru danych (max 500KB)
-            if (strlen($raw_data) > 500000) {
-                wp_send_json_error(['message' => __('Plik jest zbyt duży (max 500KB)', 'modern-admin-styler-v2')]);
-                return;
-            }
-            
-            // Walidacja JSON
-            $import_data = json_decode(stripslashes($raw_data), true);
-            
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                wp_send_json_error(['message' => __('Nieprawidłowy format JSON', 'modern-admin-styler-v2')]);
-                return;
-            }
-            
-            if (!$import_data || !is_array($import_data)) {
-                wp_send_json_error(['message' => __('Nieprawidłowa struktura pliku', 'modern-admin-styler-v2')]);
-                return;
-            }
-            
-            // Walidacja wymaganych pól
-            if (!isset($import_data['settings']) || !is_array($import_data['settings'])) {
-                wp_send_json_error(['message' => __('Brak sekcji ustawień w pliku', 'modern-admin-styler-v2')]);
-                return;
-            }
-            
-            // Opcjonalna walidacja wersji dla kompatybilności
-            if (isset($import_data['version'])) {
-                $import_version = $import_data['version'];
-                $current_version = MAS_V2_VERSION;
-                
-                // Sprawdź czy wersja nie jest z przyszłości
-                if (version_compare($import_version, $current_version, '>')) {
-                    wp_send_json_error(['message' => sprintf(
-                        __('Plik został utworzony w nowszej wersji (%s). Obecna wersja: %s', 'modern-admin-styler-v2'),
-                        $import_version,
-                        $current_version
-                    )]);
-                    return;
-                }
-            }
-            
-            // Walidacja i sanityzacja ustawień
-            $settings = $this->sanitizeSettings($import_data['settings']);
-            
-            if (empty($settings)) {
-                wp_send_json_error(['message' => __('Brak prawidłowych ustawień do importu', 'modern-admin-styler-v2')]);
-                return;
-            }
-            
-            // Zapisz ustawienia
-            $result = update_option('mas_v2_settings', $settings);
-            
-            if (!$result && get_option('mas_v2_settings') !== $settings) {
-                wp_send_json_error(['message' => __('Błąd podczas zapisywania ustawień', 'modern-admin-styler-v2')]);
-                return;
-            }
-            
-            $this->clearCache();
-            
-            wp_send_json_success([
-                'message' => __('Ustawienia zostały zaimportowane pomyślnie!', 'modern-admin-styler-v2'),
-                'settings_count' => count($settings)
-            ]);
-            
-        } catch (Exception $e) {
-            error_log('MAS V2 Import Error: ' . $e->getMessage());
-            wp_send_json_error(['message' => __('Wystąpił błąd podczas importu', 'modern-admin-styler-v2')]);
-        }
-    }
-    
-    /**
-     * AJAX Live Preview
-     */
-    public function ajaxLivePreview() {
-        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'mas_v2_nonce')) {
-            wp_send_json_error(['message' => __('Błąd bezpieczeństwa', 'modern-admin-styler-v2')]);
-        }
-        
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => __('Brak uprawnień', 'modern-admin-styler-v2')]);
-        }
-        
-        try {
-            // Filtruj tylko odpowiednie pola formularza
-            $form_data = $_POST;
-            unset($form_data['nonce'], $form_data['action']);
-            
-            $settings = $this->sanitizeSettings($form_data);
-            $css = $this->generateCSSVariables($settings);
-            $css .= $this->generateAdminCSS($settings);
-            
-            wp_send_json_success([
-                'css' => $css
-            ]);
-        } catch (Exception $e) {
-            wp_send_json_error(['message' => $e->getMessage()]);
-        }
-    }
     
     /**
      * Wyjście niestandardowych stylów do admin head
+     */
+    /**
+     * 🎨 Wyprowadza style CSS (używa CSSGenerator z cache)
      */
     public function outputCustomStyles() {
         if ($this->isLoginPage()) {
@@ -688,8 +678,7 @@ class ModernAdminStylerV2 {
         }
         
         // NAPRAWKA KRYTYCZNA: Zamiast całkowicie blokować wtyczkę, sprawdź enable_plugin 
-        // tylko dla głównych funkcji, ale pozwól na podstawowe działanie
-        $plugin_enabled = isset($settings['enable_plugin']) ? $settings['enable_plugin'] : true;
+        $plugin_enabled = isset($settings['enable_plugin']) ? $settings['enable_plugin'] : false;  // 🔒 DOMYŚLNIE WYŁĄCZONE
         
         if (!$plugin_enabled) {
             // Jeśli wtyczka wyłączona, zastosuj tylko podstawowe style bezpieczeństwa
@@ -704,23 +693,23 @@ class ModernAdminStylerV2 {
             return;
         }
         
-        // Generowanie stylów jest teraz scentralizowane i ładowane przez `wp_add_inline_style`
-        // dla lepszej wydajności i uniknięcia FOUC (Flash of Unstyled Content).
-        $dynamic_css = $this->generateCSSVariables($settings);
+        // 🚀 NOWY: Użyj CSSGenerator z zaawansowanym cache
+        $dynamic_css = $this->css_generator->generate();
 
         // Dodaj style w linii w sposób rekomendowany przez WordPress
         wp_add_inline_style('mas-v2-global', $dynamic_css);
 
-        // Dodaj niestandardowy JS w bezpieczny sposób
+        // NAPRAWKA BEZPIECZEŃSTWA: Dodaj niestandardowy JS w bezpieczny sposób
         if (!empty($settings['custom_js'])) {
-            wp_add_inline_script('mas-v2-global', $settings['custom_js']);
+            // Double check permissions
+            if (current_user_can('manage_options')) {
+                $safe_js = $this->security_service->sanitizeInput($settings['custom_js'], 'js');
+                if (!empty($safe_js) && strpos($safe_js, '/* Dangerous') !== 0 && strpos($safe_js, '/* JavaScript too large') !== 0) {
+                    wp_add_inline_script('mas-v2-global', $safe_js);
+                }
+            }
         }
         
-        // Dodaj JavaScript dla dynamicznego zarządzania klasami body
-        $body_classes_js = $this->generateBodyClassesJS($settings);
-        if (!empty($body_classes_js)) {
-            wp_add_inline_script('mas-v2-global', $body_classes_js);
-        }
     }
     
     /**
@@ -753,7 +742,7 @@ class ModernAdminStylerV2 {
         
         // Define adaptive color palettes
         $colorPalettes = $this->getAdaptiveColorPalettes();
-        $currentPalette = $settings['color_palette'] ?? 'modern-blue';
+        $currentPalette = $settings['color_palette'] ?? 'modern';
         
         // Get light and dark variants
         $lightColors = $colorPalettes[$currentPalette]['light'] ?? $colorPalettes['modern-blue']['light'];
@@ -974,11 +963,11 @@ class ModernAdminStylerV2 {
                     'border' => '#334155'
                 ]
             ],
-            'elegant-purple' => [
+            'modern' => [
                 'light' => [
-                    'primary' => '#8B5CF6',
-                    'secondary' => '#A78BFA',
-                    'accent' => '#7C3AED',
+                    'primary' => '#667eea',
+                    'secondary' => '#764ba2',
+                    'accent' => '#f093fb',
                     'background' => '#fafafa',
                     'surface' => '#ffffff',
                     'text' => '#1f2937',
@@ -986,80 +975,58 @@ class ModernAdminStylerV2 {
                     'border' => '#e5e7eb'
                 ],
                 'dark' => [
-                    'primary' => '#A78BFA',
-                    'secondary' => '#C4B5FD',
-                    'accent' => '#8B5CF6',
-                    'background' => '#111827',
-                    'surface' => '#1f2937',
-                    'text' => '#f9fafb',
-                    'text_secondary' => '#d1d5db',
-                    'border' => '#374151'
+                    'primary' => '#667eea',
+                    'secondary' => '#764ba2',
+                    'accent' => '#f093fb',
+                    'background' => '#0f0f0f',
+                    'surface' => '#1a1a1a',
+                    'text' => '#ffffff',
+                    'text_secondary' => '#a0a0a0',
+                    'border' => '#333333'
                 ]
             ],
-            'warm-orange' => [
+            'white' => [
                 'light' => [
-                    'primary' => '#F59E0B',
-                    'secondary' => '#FBBF24',
-                    'accent' => '#D97706',
-                    'background' => '#fffbeb',
-                    'surface' => '#ffffff',
-                    'text' => '#1c1917',
-                    'text_secondary' => '#78716c',
-                    'border' => '#e7e5e4'
-                ],
-                'dark' => [
-                    'primary' => '#FBBF24',
-                    'secondary' => '#FCD34D',
-                    'accent' => '#F59E0B',
-                    'background' => '#1c1917',
-                    'surface' => '#292524',
-                    'text' => '#fafaf9',
-                    'text_secondary' => '#d6d3d1',
-                    'border' => '#44403c'
-                ]
-            ],
-            'forest-green' => [
-                'light' => [
-                    'primary' => '#10B981',
-                    'secondary' => '#34D399',
+                    'primary' => '#1f2937',
+                    'secondary' => '#374151',
                     'accent' => '#059669',
-                    'background' => '#f0fdf4',
-                    'surface' => '#ffffff',
-                    'text' => '#14532d',
-                    'text_secondary' => '#65a30d',
-                    'border' => '#dcfce7'
-                ],
-                'dark' => [
-                    'primary' => '#34D399',
-                    'secondary' => '#6EE7B7',
-                    'accent' => '#10B981',
-                    'background' => '#14532d',
-                    'surface' => '#166534',
-                    'text' => '#f0fdf4',
-                    'text_secondary' => '#bbf7d0',
-                    'border' => '#15803d'
-                ]
-            ],
-            'crimson-red' => [
-                'light' => [
-                    'primary' => '#EF4444',
-                    'secondary' => '#F87171',
-                    'accent' => '#DC2626',
-                    'background' => '#fef2f2',
-                    'surface' => '#ffffff',
-                    'text' => '#1f2937',
+                    'background' => '#ffffff',
+                    'surface' => '#f8fafc',
+                    'text' => '#111827',
                     'text_secondary' => '#6b7280',
-                    'border' => '#fecaca'
+                    'border' => '#e5e7eb'
                 ],
                 'dark' => [
-                    'primary' => '#F87171',
-                    'secondary' => '#FCA5A5',
-                    'accent' => '#EF4444',
+                    'primary' => '#f8fafc',
+                    'secondary' => '#e2e8f0',
+                    'accent' => '#10b981',
                     'background' => '#1f2937',
                     'surface' => '#374151',
                     'text' => '#f9fafb',
                     'text_secondary' => '#d1d5db',
                     'border' => '#4b5563'
+                ]
+            ],
+            'green' => [
+                'light' => [
+                    'primary' => '#10b981',
+                    'secondary' => '#34d399',
+                    'accent' => '#059669',
+                    'background' => '#f0fdf4',
+                    'surface' => '#ecfdf5',
+                    'text' => '#064e3b',
+                    'text_secondary' => '#065f46',
+                    'border' => '#a7f3d0'
+                ],
+                'dark' => [
+                    'primary' => '#34d399',
+                    'secondary' => '#6ee7b7',
+                    'accent' => '#10b981',
+                    'background' => '#064e3b',
+                    'surface' => '#065f46',
+                    'text' => '#f0fdf4',
+                    'text_secondary' => '#bbf7d0',
+                    'border' => '#059669'
                 ]
             ]
         ];
@@ -1177,175 +1144,130 @@ class ModernAdminStylerV2 {
     /**
      * Dodaje klasy CSS do body admin
      */
+    /**
+     * 🎯 NAPRAWKA: Dodaje klasy CSS do body admin z "jednym źródłem prawdy"
+     * ROZWIĄZUJE: Problem konfliktu między PHP a JavaScript w zarządzaniu klasami
+     */
     public function addAdminBodyClasses($classes) {
         $settings = $this->getSettings();
+        $class_array = explode(' ', $classes);
+
+        // --- KROK 1: CZYSZCZENIE STANU ---
+        // Usuń wszystkie potencjalne klasy wtyczki, aby uniknąć duplikatów i konfliktów.
+        $class_array = array_filter($class_array, function($class) {
+            return strpos($class, 'mas-') !== 0;
+        });
         
-        if (isset($settings['compact_mode']) && $settings['compact_mode']) {
-            $classes .= ' mas-compact-mode';
+        // --- KROK 2: DODAWANIE POPRAWNEGO STANU ---
+        
+        if (!empty($settings['compact_mode'])) {
+            $class_array[] = 'mas-compact-mode';
         }
         
-        if (isset($settings['color_scheme'])) {
-            $classes .= ' mas-theme-' . $settings['color_scheme'];
+        if (!empty($settings['color_scheme'])) {
+            $class_array[] = 'mas-theme-' . $settings['color_scheme'];
         }
         
-        // Core menu floating class (unified system)
-        if (isset($settings['menu_floating']) && $settings['menu_floating']) {
-            $classes .= ' mas-v2-menu-floating'; // Use unified CSS class
-            
-            if (isset($settings['menu_glassmorphism']) && $settings['menu_glassmorphism']) {
-                $classes .= ' mas-v2-menu-glossy';
+        if (!empty($settings['menu_floating'])) {
+            $class_array[] = 'mas-v2-menu-floating';
+            if (!empty($settings['menu_glassmorphism'])) {
+                $class_array[] = 'mas-v2-menu-glossy';
             }
         }
-        
-        // Add responsive classes (Phase 6)
-        if (!empty($settings['menu_responsive_enabled'])) {
-            $classes .= ' mas-responsive-enabled';
+
+        if (!empty($settings['admin_bar_floating'])) {
+            $class_array[] = 'mas-v2-admin-bar-floating';
         }
         
-        // Add positioning classes
+        // Add responsive classes (Phase 6) - NAPRAWIONO: używaj $class_array
+        if (!empty($settings['menu_responsive_enabled'])) {
+            $class_array[] = 'mas-responsive-enabled';
+        }
+        
+        // Add positioning classes - NAPRAWIONO: używaj $class_array
         $positionType = $settings['menu_position_type'] ?? 'default';
         if ($positionType !== 'default') {
-            $classes .= ' mas-menu-position-' . $positionType;
+            $class_array[] = 'mas-menu-position-' . $positionType;
         }
         
-        // Add floating menu classes
+        // Add floating menu classes - NAPRAWIONO: używaj $class_array
         if ($positionType === 'floating') {
             if (!empty($settings['menu_floating_shadow'])) {
-                $classes .= ' mas-floating-shadow';
+                $class_array[] = 'mas-floating-shadow';
             }
             if (!empty($settings['menu_floating_blur_background'])) {
-                $classes .= ' mas-floating-blur';
+                $class_array[] = 'mas-floating-blur';
             }
             if (!empty($settings['menu_floating_auto_hide'])) {
-                $classes .= ' mas-floating-auto-hide';
+                $class_array[] = 'mas-floating-auto-hide';
             }
             if (!empty($settings['menu_floating_trigger_hover'])) {
-                $classes .= ' mas-floating-trigger-hover';
+                $class_array[] = 'mas-floating-trigger-hover';
             }
         }
         
-        // Add mobile behavior classes
+        // Add mobile behavior classes - NAPRAWIONO: używaj $class_array
         if (!empty($settings['menu_responsive_enabled'])) {
             $mobileBehavior = $settings['menu_mobile_behavior'] ?? 'collapse';
             $togglePosition = $settings['menu_mobile_toggle_position'] ?? 'top-left';
             $toggleStyle = $settings['menu_mobile_toggle_style'] ?? 'hamburger';
             $mobileAnimation = $settings['menu_mobile_animation'] ?? 'slide';
             
-            $classes .= ' mas-mobile-behavior-' . $mobileBehavior;
-            $classes .= ' mas-toggle-' . $togglePosition;
-            $classes .= ' mas-toggle-' . $toggleStyle;
-            $classes .= ' mas-animation-' . $mobileAnimation;
+            $class_array[] = 'mas-mobile-behavior-' . $mobileBehavior;
+            $class_array[] = 'mas-toggle-' . $togglePosition;
+            $class_array[] = 'mas-toggle-' . $toggleStyle;
+            $class_array[] = 'mas-animation-' . $mobileAnimation;
         }
         
-        // Add tablet behavior classes
+        // Add tablet behavior classes - NAPRAWIONO: używaj $class_array
         $tabletBehavior = $settings['menu_tablet_behavior'] ?? 'auto';
         if ($tabletBehavior === 'mobile') {
-            $classes .= ' mas-tablet-behavior-mobile';
+            $class_array[] = 'mas-tablet-behavior-mobile';
         }
         
         if (!empty($settings['menu_tablet_compact'])) {
-            $classes .= ' mas-tablet-compact';
+            $class_array[] = 'mas-tablet-compact';
         }
         
-        // Add feature classes
+        // Add feature classes - NAPRAWIONO: używaj $class_array
         if (!empty($settings['menu_touch_friendly'])) {
-            $classes .= ' mas-touch-friendly';
+            $class_array[] = 'mas-touch-friendly';
         }
         
         if (!empty($settings['menu_swipe_gestures'])) {
-            $classes .= ' mas-swipe-enabled';
+            $class_array[] = 'mas-swipe-enabled';
         }
         
         if (!empty($settings['menu_reduce_animations_mobile'])) {
-            $classes .= ' mas-reduce-animations';
+            $class_array[] = 'mas-reduce-animations';
         }
         
         if (!empty($settings['menu_optimize_performance'])) {
-            $classes .= ' mas-optimize-performance';
+            $class_array[] = 'mas-optimize-performance';
         }
         
-        return $classes;
+        // Zwróć unikalne klasy jako string
+        return implode(' ', array_unique($class_array));
     }
     
     /**
      * Pobieranie ustawień
      */
+    /**
+     * 🔧 Pobiera ustawienia z bazy danych
+     */
     public function getSettings() {
-        // Używaj fallback - bezpieczna implementacja
-        $settings = get_option('mas_v2_settings', []);
-        $defaults = $this->getDefaultSettings();
-        
-        return wp_parse_args($settings, $defaults);
+        // 🚀 Deleguj do SettingsManager serwisu
+        return $this->settings_manager->getSettings();
     }
     
     /**
-     * Sanityzacja ustawień
+     * ⚠️ DEPRECATED: Sanityzacja przeniesiona do SettingsManager serwisu
+     * Pozostawiona dla kompatybilności wstecznej
      */
     private function sanitizeSettings($input) {
-        // Bezpieczna sanityzacja z ograniczonym debugowaniem
-        $defaults = $this->getDefaultSettings();
-        $sanitized = [];
-        
-        // NAPRAWKA KRYTYCZNA: Ograniczony logging tylko dla błędów
-        $debug_mode = defined('WP_DEBUG') && WP_DEBUG;
-        
-        foreach ($defaults as $key => $default_value) {
-            if (!isset($input[$key])) {
-                $sanitized[$key] = $default_value;
-                continue;
-            }
-            
-            $value = $input[$key];
-            
-            // Handle arrays (like menu_individual_colors, menu_individual_icons)
-            if (is_array($default_value)) {
-                if (is_array($value)) {
-                    $sanitized[$key] = $this->sanitizeArrayRecursive($value, $default_value);
-                } else {
-                    $sanitized[$key] = $default_value;
-                }
-            } elseif (is_bool($default_value)) {
-                // NAPRAWKA KRYTYCZNA: Ulepszona obsługa boolean - checkbox nie wysyła wartości gdy niezaznaczone
-                // Jeśli pole istnieje w input, znaczy że checkbox był zaznaczony
-                // Dla AJAX: sprawdź czy wartość to '1', 'true', true, lub 'on'
-                $sanitized[$key] = isset($input[$key]) && in_array($input[$key], ['1', 1, true, 'true', 'on'], true);
-                
-                if ($debug_mode && $key === 'enable_plugin') {
-                    error_log("MAS V2: Critical field {$key} = " . ($sanitized[$key] ? 'true' : 'false') . " (from: " . print_r($value, true) . ")");
-                }
-            } elseif (is_int($default_value)) {
-                $sanitized[$key] = (int) $value;
-            } elseif ($key === 'custom_css') {
-                // Ulepszona sanityzacja CSS - bezpieczna ale pozwala na CSS
-                $sanitized[$key] = $this->sanitizeCustomCSS($value);
-            } elseif (strpos($key, 'color') !== false) {
-                // Obsługa kolorów w różnych formatach
-                if (is_array($value)) {
-                    // Jeśli to tablica, użyj wartości domyślnej
-                    $sanitized[$key] = $default_value;
-                } else {
-                    // Obsługa pustych wartości i formatów #ddd oraz #dddddd
-                    if (empty($value)) {
-                        $sanitized[$key] = $default_value;
-                    } else {
-                        $color = sanitize_hex_color($value);
-                        // Jeśli sanitize_hex_color zwróci null dla #ddd, sprawdź czy jest to prawidłowy 3-znakowy hex
-                        if ($color === null && preg_match('/^#[0-9a-fA-F]{3}$/', $value)) {
-                            // Konwertuj #ddd na #dddddd
-                            $sanitized[$key] = '#' . substr($value, 1, 1) . substr($value, 1, 1) . 
-                                               substr($value, 2, 1) . substr($value, 2, 1) . 
-                                               substr($value, 3, 1) . substr($value, 3, 1);
-                        } else {
-                            $sanitized[$key] = $color ?: $default_value;
-                        }
-                    }
-                }
-            } else {
-                $sanitized[$key] = sanitize_text_field($value);
-            }
-        }
-        
-        return $sanitized;
+        // Deleguj do SettingsManager serwisu
+        return $this->settings_manager->sanitizeSettings($input);
     }
     
     /**
@@ -1392,60 +1314,112 @@ class ModernAdminStylerV2 {
     }
     
     /**
-     * Bezpieczna sanityzacja CSS
+     * NAPRAWKA BEZPIECZEŃSTWA: Ulepszona sanityzacja CSS
      */
     private function sanitizeCustomCSS($css) {
-        // Usuń potencjalnie niebezpieczne elementy
+        // Limit rozmiaru (50KB)
+        if (strlen($css) > 50000) {
+            error_log('MAS V2: CSS too large, truncated');
+            return substr($css, 0, 50000) . '/* CSS truncated for security */';
+        }
+        
+        // NAPRAWKA: Więcej comprehensive cleaning
         $dangerous_patterns = [
-            '/<script\b[^>]*>.*?<\/script>/is',  // JavaScript
-            '/javascript:/i',                    // javascript: URLs
-            '/expression\s*\(/i',               // CSS expressions (IE)
-            '/behavior\s*:/i',                  // CSS behaviors (IE)
-            '/binding\s*:/i',                   // CSS bindings (IE)
-            '/@import\s+/i',                    // @import rules
-            '/url\s*\(\s*[\'"]?data:/i',       // Data URLs
-            '/url\s*\(\s*[\'"]?javascript:/i',  // JavaScript URLs w CSS
+            '/javascript\s*:/i',
+            '/expression\s*\(/i',
+            '/behavior\s*:/i',
+            '/@import/i',
+            '/data\s*:/i',
+            '/vbscript\s*:/i',
+            '/mocha\s*:/i',
+            '/livescript\s*:/i',
+            '/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/mi',
+            '/url\s*\(\s*[\'"]?javascript:/i',
+            '/url\s*\(\s*[\'"]?data:/i'
         ];
         
         foreach ($dangerous_patterns as $pattern) {
             $css = preg_replace($pattern, '', $css);
         }
         
-        // Dodatkowa walidacja - usuń komentarze HTML
+        // Remove any remaining script tags and HTML comments
         $css = preg_replace('/<!--.*?-->/s', '', $css);
-        
-        // Limit długości (max 50KB)
-        if (strlen($css) > 50000) {
-            $css = substr($css, 0, 50000) . '/* ... CSS truncated for security */';
-        }
+        $css = wp_strip_all_tags($css);
         
         return $css;
     }
     
     /**
-     * Domyślne ustawienia
+     * NAPRAWKA BEZPIECZEŃSTWA: Nowa funkcja sanityzacji JS
+     */
+    private function sanitizeCustomJS($js) {
+        // NAPRAWKA: Size limit (30KB)
+        if (strlen($js) > 30000) {
+            error_log('MAS V2: JS too large, truncated');
+            return '/* JavaScript too large and was removed for security */';
+        }
+        
+        // NAPRAWKA: Remove dangerous functions
+        $dangerous_functions = [
+            'eval(',
+            'Function(',
+            'setTimeout(',
+            'setInterval(',
+            'document.write',
+            'innerHTML =',
+            'outerHTML =',
+            'document.cookie',
+            'localStorage.',
+            'sessionStorage.',
+            'window.location'
+        ];
+        
+        foreach ($dangerous_functions as $func) {
+            if (stripos($js, $func) !== false) {
+                error_log('MAS V2: Dangerous JS function detected: ' . $func);
+                return '/* Dangerous JavaScript code detected and removed for security */';
+        }
+        }
+        
+        // Additional security - strip HTML tags
+        $js = wp_strip_all_tags($js);
+        
+        return $js;
+    }
+    
+    /**
+     * ⚠️ DEPRECATED: Domyślne ustawienia przeniesione do SettingsManager serwisu
+     * Pozostawiona dla kompatybilności wstecznej
      */
     private function getDefaultSettings() {
+        // Deleguj do SettingsManager serwisu
+        return $this->settings_manager->getDefaultSettings();
+    }
+    
+    /**
+     * ⚠️ DEPRECATED: Oryginalna metoda domyślnych ustawień
+     */
+    private function getDefaultSettingsLegacy() {
         return [
-            // Ogólne
-            'enable_plugin' => true,
+            // Ogólne - WYŁĄCZONE
+            'enable_plugin' => false,  // 🔒 Główny wyłącznik
             'theme' => 'modern',
             'color_scheme' => 'auto',
-            'color_palette' => 'modern-blue',
-            'auto_dark_mode' => true,
+            'color_palette' => 'modern',
+            'auto_dark_mode' => false,  // WYŁĄCZONE
             'font_family' => 'system',
             'font_size' => 14,
-            'enable_animations' => true,
+            'enable_animations' => false,  // WYŁĄCZONE
             'animation_type' => 'smooth',
-            'live_preview' => true,
+            'live_preview' => false,  // WYŁĄCZONE
             'auto_save' => false,
             'compact_mode' => false,
             'global_border_radius' => 8,
-            'enable_shadows' => true,
+            'enable_shadows' => false,  // WYŁĄCZONE
             'shadow_color' => '#000000',
             'shadow_blur' => 10,
             
-            // Admin Bar
+            // Admin Bar - WYŁĄCZONE
             'admin_bar_background' => '#23282d',
             'admin_bar_text_color' => '#ffffff',
             'admin_bar_hover_color' => '#00a0d2',
@@ -1454,12 +1428,12 @@ class ModernAdminStylerV2 {
             'admin_bar_padding' => 8,
             'admin_bar_border_radius' => 0,
             'admin_bar_shadow' => false,
-            'admin_bar_glassmorphism' => true,
-            'admin_bar_detached' => true,
+            'admin_bar_glassmorphism' => false,  // WYŁĄCZONE
+            'admin_bar_detached' => false,  // WYŁĄCZONE
             
-            // Admin Bar - Nowe opcje floating/glossy
-            'admin_bar_floating' => true,
-            'admin_bar_glossy' => true,
+            // Admin Bar - Nowe opcje floating/glossy - WYŁĄCZONE
+            'admin_bar_floating' => false,  // WYŁĄCZONE
+            'admin_bar_glossy' => false,  // WYŁĄCZONE
             'admin_bar_border_radius_type' => 'all',
             'admin_bar_radius_tl' => false,
             'admin_bar_radius_tr' => false,
@@ -1495,10 +1469,10 @@ class ModernAdminStylerV2 {
             'menu_width' => 160,
             'menu_item_height' => 34,
             'menu_rounded_corners' => false,
-            'menu_shadow' => true,
+            'menu_shadow' => false,  // WYŁĄCZONE
             'menu_compact_mode' => false,
-            'menu_glassmorphism' => true,
-            'menu_floating' => true,
+            'menu_glassmorphism' => false,  // WYŁĄCZONE
+            'menu_floating' => false,  // WYŁĄCZONE
             'menu_floating_margin' => 10, // Backward compatibility
             'menu_floating_margin_type' => 'all',
             'menu_floating_margin_all' => 10,
@@ -2439,73 +2413,6 @@ class ModernAdminStylerV2 {
     }
     
     /**
-     * Generuje JavaScript dla dynamicznego zarządzania klasami body
-     */
-    private function generateBodyClassesJS($settings) {
-        $js = 'document.addEventListener("DOMContentLoaded", function() {';
-        $js .= 'var body = document.body;';
-        
-        // Floating menu classes
-        if (isset($settings['menu_floating']) && $settings['menu_floating']) {
-            $js .= 'body.classList.add("mas-v2-menu-floating");';
-            $js .= 'body.classList.add("mas-menu-floating");';
-            $js .= 'body.classList.remove("mas-menu-normal");';
-        } else {
-            $js .= 'body.classList.remove("mas-v2-menu-floating");';
-            $js .= 'body.classList.add("mas-menu-normal");';
-            $js .= 'body.classList.remove("mas-menu-floating");';
-        }
-        
-        // Admin bar floating
-        if (isset($settings['admin_bar_floating']) && $settings['admin_bar_floating']) {
-            $js .= 'body.classList.add("mas-v2-admin-bar-floating");';
-        } else {
-            $js .= 'body.classList.remove("mas-v2-admin-bar-floating");';
-        }
-        
-        // Admin bar detached (legacy compatibility)
-        if (isset($settings['admin_bar_detached']) && $settings['admin_bar_detached']) {
-            $js .= 'body.classList.add("mas-admin-bar-floating");';
-        } else {
-            $js .= 'body.classList.remove("mas-admin-bar-floating");';
-        }
-        
-        // Glossy effects
-        if (isset($settings['menu_glossy']) && $settings['menu_glossy']) {
-            $js .= 'body.classList.add("mas-v2-menu-glossy");';
-        } else {
-            $js .= 'body.classList.remove("mas-v2-menu-glossy");';
-        }
-        
-        if (isset($settings['admin_bar_glossy']) && $settings['admin_bar_glossy']) {
-            $js .= 'body.classList.add("mas-v2-admin-bar-glossy");';
-        } else {
-            $js .= 'body.classList.remove("mas-v2-admin-bar-glossy");';
-        }
-        
-        // Border radius individual settings
-        if (isset($settings['menu_border_radius_type']) && $settings['menu_border_radius_type'] === 'individual') {
-            $js .= 'body.classList.add("mas-v2-menu-radius-individual");';
-        } else {
-            $js .= 'body.classList.remove("mas-v2-menu-radius-individual");';
-        }
-        
-        if (isset($settings['admin_bar_border_radius_type']) && $settings['admin_bar_border_radius_type'] === 'individual') {
-            $js .= 'body.classList.add("mas-v2-admin-bar-radius-individual");';
-        } else {
-            $js .= 'body.classList.remove("mas-v2-admin-bar-radius-individual");';
-        }
-        
-        // Debug info
-        $js .= 'console.log("MAS V2: Unified styles active on all pages");';
-        $js .= 'console.log("MAS V2: Body classes added:", body.className.split(" ").filter(function(c) { return c.startsWith("mas-"); }));';
-        
-        $js .= '});';
-        
-        return $js;
-    }
-    
-    /**
      * DIAGNOSTIC: Database check AJAX handler
      */
     public function ajaxDatabaseCheck() {
@@ -2655,6 +2562,37 @@ class ModernAdminStylerV2 {
             wp_send_json_error(['message' => 'Cache check error: ' . $e->getMessage()]);
         }
     }
+    
+    /**
+     * 🎨 FAZA 2: AJAX Clear Cache handler
+     */
+    public function ajaxClearCache() {
+        // Security check
+        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'mas_v2_clear_cache') || !current_user_can('manage_options')) {
+            wp_send_json_error(['message' => __('Security check failed', 'modern-admin-styler-v2')]);
+        }
+        
+        try {
+            // Clear plugin cache using cache manager
+            $this->cache_manager->flush();
+            
+            // Clear WordPress transients
+            delete_transient('mas_v2_css_cache');
+            delete_transient('mas_v2_settings_cache');
+            
+            // Clear object cache if available
+            if (function_exists('wp_cache_flush')) {
+                wp_cache_flush();
+            }
+            
+            wp_send_json_success(['message' => __('Cache cleared successfully!', 'modern-admin-styler-v2')]);
+            
+        } catch (Exception $e) {
+            wp_send_json_error(['message' => __('Error clearing cache: ', 'modern-admin-styler-v2') . $e->getMessage()]);
+        }
+    }
+    
+    // 🗑️ USUNIĘTE: Enterprise AJAX methods - przeniesione do AjaxHandler serwisu
 }
 
 // Inicjalizuj wtyczkę
