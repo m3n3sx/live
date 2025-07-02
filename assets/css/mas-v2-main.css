@@ -5439,3 +5439,587 @@ body.mas-v2-glassmorphism-enabled .postbox {
         display: none;
     }
 }
+
+/* ==========================================================================
+   🟡 PRIORYTET 2: WYSOKIE NAPRAWY UX & INTERFACE
+   ========================================================================== */
+
+/* NAPRAWKA: Advanced Admin Bar Conflicts Resolution */
+body.admin-bar .mas-global-live-edit-toggle {
+    top: calc(32px + 20px) !important;
+    z-index: 99998 !important; /* Below WordPress admin bar but above everything else */
+}
+
+/* Enhanced admin bar positioning for different screen sizes */
+@media screen and (max-width: 782px) {
+    body.admin-bar .mas-global-live-edit-toggle {
+        top: calc(46px + 10px) !important;
+    }
+    
+    /* Mobile admin bar considerations */
+    body.admin-bar.folded .mas-global-live-edit-toggle {
+        top: calc(46px + 10px) !important;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    body.admin-bar .mas-global-live-edit-toggle {
+        top: calc(46px + 5px) !important;
+        right: 10px !important;
+    }
+}
+
+/* Admin bar color scheme compatibility */
+.admin-color-fresh body.admin-bar .mas-global-live-edit-toggle,
+.admin-color-light body.admin-bar .mas-global-live-edit-toggle,
+.admin-color-modern body.admin-bar .mas-global-live-edit-toggle,
+.admin-color-blue body.admin-bar .mas-global-live-edit-toggle,
+.admin-color-coffee body.admin-bar .mas-global-live-edit-toggle,
+.admin-color-ectoplasm body.admin-bar .mas-global-live-edit-toggle,
+.admin-color-midnight body.admin-bar .mas-global-live-edit-toggle,
+.admin-color-ocean body.admin-bar .mas-global-live-edit-toggle,
+.admin-color-sunrise body.admin-bar .mas-global-live-edit-toggle {
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Admin menu conflicts resolution */
+body.admin-bar.folded .mas-micro-panel {
+    left: 46px !important; /* Account for collapsed admin menu */
+}
+
+body.admin-bar:not(.folded) .mas-micro-panel {
+    left: 172px !important; /* Account for expanded admin menu */
+}
+
+/* WordPress update nag conflicts */
+.update-nag + .mas-global-live-edit-toggle {
+    top: calc(32px + 40px + 20px) !important; /* Account for update nag height */
+}
+
+@media screen and (max-width: 782px) {
+    .update-nag + .mas-global-live-edit-toggle {
+        top: calc(46px + 40px + 10px) !important;
+    }
+}
+
+/* NAPRAWKA: Enhanced Error Messaging & User Feedback */
+.mas-error-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 999999;
+    max-width: 500px;
+    width: 90%;
+}
+
+.mas-error-panel {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 
+        0 20px 25px -5px rgba(0, 0, 0, 0.25),
+        0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: errorPanelSlide 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes errorPanelSlide {
+    0% { 
+        opacity: 0; 
+        transform: translate(-50%, -60%) scale(0.8);
+    }
+    100% { 
+        opacity: 1; 
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+.mas-error-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mas-error-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.mas-error-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.mas-error-message {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    opacity: 0.95;
+}
+
+.mas-error-details {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 16px;
+    font-family: var(--mas-font-mono);
+    font-size: 12px;
+    line-height: 1.4;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mas-error-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.mas-error-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.mas-error-btn-primary {
+    background: rgba(255, 255, 255, 0.9);
+    color: #dc2626;
+}
+
+.mas-error-btn-primary:hover {
+    background: white;
+    transform: translateY(-1px);
+}
+
+.mas-error-btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.mas-error-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+/* NAPRAWKA: Success/Warning Panels */
+.mas-success-panel {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.mas-warning-panel {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.mas-info-panel {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+}
+
+/* NAPRAWKA: Loading States & Progress Indicators */
+.mas-loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 999998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.mas-loading-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mas-loading-content {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.mas-loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(99, 102, 241, 0.1);
+    border-left: 4px solid #6366f1;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px;
+}
+
+.mas-loading-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+}
+
+.mas-loading-subtext {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 8px 0 0 0;
+}
+
+/* NAPRAWKA: Form Validation States */
+.mas-field-error .mas-v2-input {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+.mas-field-success .mas-v2-input {
+    border-color: #10b981 !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+}
+
+.mas-field-warning .mas-v2-input {
+    border-color: #f59e0b !important;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1) !important;
+}
+
+.mas-field-message {
+    font-size: 12px;
+    margin-top: 6px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mas-field-message.error {
+    color: #ef4444;
+}
+
+.mas-field-message.success {
+    color: #10b981;
+}
+
+.mas-field-message.warning {
+    color: #f59e0b;
+}
+
+.mas-field-message-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+/* ==========================================================================
+   🟢 PRIORYTET 3: ŚREDNIE NAPRAWY - PERFORMANCE & OPTIMIZATION
+   ========================================================================== */
+
+/* NAPRAWKA: Advanced Memory Optimization */
+.mas-memory-efficient {
+    contain: layout style paint;
+    will-change: auto;
+}
+
+.mas-memory-efficient:hover {
+    will-change: transform, opacity;
+}
+
+.mas-memory-efficient:not(:hover) {
+    will-change: auto;
+}
+
+/* GPU acceleration optimization */
+.mas-gpu-optimized {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* Reduce paint operations */
+.mas-paint-optimized {
+    contain: paint;
+    isolation: isolate;
+}
+
+/* NAPRAWKA: Server Compatibility Enhancements */
+.mas-server-status {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+}
+
+.mas-server-metric {
+    background: var(--mas-glass-bg);
+    border: 1px solid var(--mas-glass-border);
+    border-radius: var(--mas-radius-lg);
+    padding: 16px;
+    backdrop-filter: var(--mas-blur-md);
+}
+
+.mas-server-metric-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.mas-server-metric-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: #374151;
+}
+
+.mas-server-metric-status {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mas-server-metric-status.optimal {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+}
+
+.mas-server-metric-status.warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+}
+
+.mas-server-metric-status.critical {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
+
+.mas-server-metric-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+    font-family: var(--mas-font-mono);
+}
+
+.mas-server-metric-description {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+/* NAPRAWKA: Cache Performance Indicators */
+.mas-cache-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--mas-glass-bg);
+    border: 1px solid var(--mas-glass-border);
+    border-radius: var(--mas-radius-md);
+    backdrop-filter: var(--mas-blur-sm);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.mas-cache-status.active {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #059669;
+}
+
+.mas-cache-status.inactive {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #dc2626;
+}
+
+.mas-cache-icon {
+    font-size: 14px;
+}
+
+/* NAPRAWKA: Performance Monitoring Widgets */
+.mas-performance-widget {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-radius: var(--mas-radius-xl);
+    padding: 20px;
+    margin: 16px 0;
+}
+
+.mas-performance-widget-header {
+    display: flex;
+    align-items: center;
+    justify-content: between;
+    margin-bottom: 16px;
+}
+
+.mas-performance-widget-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.mas-performance-widget-icon {
+    font-size: 20px;
+    margin-left: auto;
+}
+
+.mas-performance-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 16px;
+}
+
+.mas-performance-metric {
+    text-align: center;
+}
+
+.mas-performance-metric-value {
+    font-size: 20px;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.mas-performance-metric-label {
+    font-size: 12px;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* NAPRAWKA: Database Optimization Status */
+.mas-db-optimization {
+    border-left: 4px solid #6366f1;
+    background: rgba(99, 102, 241, 0.05);
+    padding: 16px 20px;
+    margin: 16px 0;
+    border-radius: 0 var(--mas-radius-md) var(--mas-radius-md) 0;
+}
+
+.mas-db-optimization.warning {
+    border-left-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.05);
+}
+
+.mas-db-optimization.error {
+    border-left-color: #ef4444;
+    background: rgba(239, 68, 68, 0.05);
+}
+
+.mas-db-optimization-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #374151;
+}
+
+.mas-db-optimization-description {
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+.mas-db-optimization-actions {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+}
+
+.mas-db-action-btn {
+    padding: 6px 12px;
+    background: #6366f1;
+    color: white;
+    border: none;
+    border-radius: var(--mas-radius-md);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mas-db-action-btn:hover {
+    background: #4f46e5;
+    transform: translateY(-1px);
+}
+
+.mas-db-action-btn.secondary {
+    background: transparent;
+    color: #6366f1;
+    border: 1px solid #6366f1;
+}
+
+.mas-db-action-btn.secondary:hover {
+    background: #6366f1;
+    color: white;
+}
+
+/* ==========================================================================
+   RESPONSIVE ENHANCEMENTS - PRIORITY 2/3
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+    .mas-performance-metrics {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .mas-server-status {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .mas-performance-metrics {
+        grid-template-columns: 1fr;
+    }
+    
+    .mas-server-status {
+        grid-template-columns: 1fr;
+    }
+    
+    .mas-error-panel {
+        margin: 20px;
+        padding: 20px;
+    }
+    
+    .mas-error-actions {
+        flex-direction: column;
+    }
+    
+    .mas-error-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .mas-db-optimization-actions {
+        flex-direction: column;
+    }
+    
+    .mas-db-action-btn {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .mas-performance-widget {
+        padding: 16px;
+    }
+    
+    .mas-cache-status {
+        font-size: 11px;
+        padding: 6px 10px;
+    }
+}
