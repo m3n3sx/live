@@ -1,16 +1,22 @@
 # WordPress specific
 wp-config.php
 wp-content/uploads/
+wp-content/cache/
+wp-content/backup-db/
+wp-content/backups/
 wp-content/blogs.dir/
 wp-content/upgrade/
+wp-content/uploads/
+wp-content/wp-cache-config.php
+wp-content/plugins/hello.php
 
-# Plugin specific - temp files
-*.tmp
-*.backup
-*.bak
-*.log
+# Node modules
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Development files
+# IDE files
 .vscode/
 .idea/
 *.swp
@@ -26,55 +32,59 @@ wp-content/upgrade/
 ehthumbs.db
 Thumbs.db
 
-# Node modules (if any)
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Logs
+*.log
 
-# Composer (if any)
-vendor/
-composer.phar
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
 
-# Test results
-test-results/
-playwright-report/
-test-output/
+# Coverage directory used by tools like istanbul
+coverage/
 
-# Documentation files (keeping only README.md)
-*.md
-!README.md
-!CONTRIBUTING.md
-!LICENSE.md
+# Temporary folders
+tmp/
+temp/
 
-# Temporary WordPress files
-*.php~
-error_log
+# Build outputs
+dist/
+build/
+out/
 
-# Cache files
-wp-content/cache/
-wp-content/w3tc-config/
-
-# Environment files
+# Environment variables
 .env
 .env.local
-.env.production
+.env.development.local
+.env.test.local
+.env.production.local 
 
-# Screenshots and diagnostic files
+# WordPress Plugin - Modern Admin Styler V2
+# Ignore test files and temporary artifacts
+
+# Test directories and files
+/tests/
+/test-results/
+/playwright/
+/a/
+*.spec.js
+playwright*.config.js
+package*.json
 *.png
-*.jpg
-*.jpeg
-*.gif
-diagnostic-*
+*.webm
+*.zip
+*.html
+diagnostic-screenshot.png
 
-# JavaScript build files
-/dist/
+# Development artifacts
+*.md
+!README.md
+
+# Temporary files
+*.tmp
+*.bak
+
+# Build artifacts
 /build/
-
-# Package manager files
-package-lock.json
-yarn.lock
-
-# IDE files
-*.sublime-project
-*.sublime-workspace 
+/dist/ 

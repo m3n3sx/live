@@ -60,8 +60,6 @@ class ModernAdminStylerV2 {
     private $metrics_collector;
     
     // 🎯 Serwisy WordPress API (Faza 1)
-    // ❌ DEPRECATED: customizer_integration removed in Phase 6 consolidation
-    // private $customizer_integration;
     private $settings_api;
     private $rest_api;
     
@@ -220,8 +218,6 @@ class ModernAdminStylerV2 {
         $this->metrics_collector = $factory->get('metrics_collector');
         
         // 🎯 NOWE SERWISY FAZY 1: WordPress API Integration
-        // ❌ DEPRECATED: customizer_integration removed in Phase 6 consolidation
-        // $this->customizer_integration = $factory->get('customizer_integration');
         $this->settings_api = $factory->get('settings_api');
         $this->rest_api = $factory->get('rest_api');
         
@@ -235,8 +231,6 @@ class ModernAdminStylerV2 {
         // 🎯 NOWE SERWISY FAZY 6: Enterprise Integration & Analytics
         $this->analytics_engine = $factory->get('analytics_engine');
         $this->integration_manager = $factory->get('integration_manager');
-        // TEMPORARY FIX: Commented out to prevent memory exhaustion
-        // $this->enterprise_security_manager = $factory->get('enterprise_security_manager');
         $this->memory_optimizer = $factory->get('memory_optimizer');
         
         // 🎨 PRESET SYSTEM: Enterprise Preset Management
@@ -397,7 +391,6 @@ class ModernAdminStylerV2 {
             [$this, 'renderEnterpriseDashboard']
         );
         
-        /*
         // 🎨 PRESET SYSTEM: Style Presets Management
         add_submenu_page(
             'mas-v2-general',
@@ -405,18 +398,7 @@ class ModernAdminStylerV2 {
             __('🎨 Style Presets', 'modern-admin-styler-v2'),
             'manage_options',
             'mas-v2-presets',
-            [$this, 'renderAdminPage']
-        );
-        */
-
-        // 🚀 PHASE 6: Strategic Interface Consolidation
-        add_submenu_page(
-            'mas-v2-general',
-            '🎯 Phase 6: Interface Consolidation',
-            '🎯 Phase 6: Consolidation',
-            'manage_options',
-            'mas-v2-phase6-consolidation',
-            [$this, 'renderPhase6Demo']
+            [$this, 'renderPresetsPage']
         );
     }
     

@@ -318,25 +318,112 @@
 .mas-basic-panel .mas-panel-title {
     font-size: 16px;
     font-weight: 600;
-    color: white;
+    color: #ffffff;
 }
 
 .mas-basic-panel .mas-panel-close {
-    background: rgba(255, 255, 255, 0.2);
+    background: none;
     border: none;
-    color: white;
+    color: #ffffff;
+    font-size: 20px;
+    cursor: pointer;
     width: 24px;
     height: 24px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 16px;
-    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
     transition: all 0.2s ease;
 }
 
 .mas-basic-panel .mas-panel-close:hover {
-    background: rgba(255, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.1);
     transform: scale(1.1);
+}
+
+/* 🌐 GLOBAL CONTEXT COGS - Dla wszystkich stron admin */
+.mas-context-cog {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 999;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.mas-context-cog .mas-cog-icon {
+    font-size: 16px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.mas-context-cog .mas-cog-tooltip {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    margin-top: 8px;
+}
+
+.mas-context-cog::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #667eea, #764ba2, #667eea);
+    border-radius: 50%;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mas-edit-mode-active [data-mas-editable="true"]:hover .mas-context-cog,
+.mas-edit-mode-active #wpadminbar:hover .mas-context-cog,
+.mas-edit-mode-active #adminmenumain:hover .mas-context-cog,
+.mas-edit-mode-active #wpcontent:hover .mas-context-cog,
+.mas-edit-mode-active .postbox:hover .mas-context-cog,
+.mas-edit-mode-active .wrap:hover > .mas-context-cog {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.mas-context-cog:hover {
+    transform: scale(1.1) !important;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.5);
+}
+
+.mas-context-cog:hover::before {
+    opacity: 1;
+}
+
+.mas-context-cog:hover .mas-cog-tooltip {
+    opacity: 1;
 }
 
 .mas-basic-panel .mas-control-group {
@@ -514,39 +601,6 @@
     outline-width: 3px;
     box-shadow: 0 0 20px rgba(0, 160, 210, 0.3);
     transform: translateZ(5px);
-}
-
-/* Ikonka zębatki (context cog) */
-.mas-context-cog {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    z-index: 99999;
-    background: linear-gradient(135deg, var(--mas-primary, #007cba), var(--mas-accent, #00a0d2));
-    color: white;
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    display: grid;
-    place-items: center;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    font-size: 14px;
-    transition: all 0.3s ease;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    opacity: 0;
-    transform: scale(0.8) rotate(-90deg);
-}
-
-.mas-edit-mode-active [data-mas-editable="true"]:hover .mas-context-cog {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-}
-
-.mas-context-cog:hover {
-    transform: scale(1.1) rotate(15deg);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-    background: linear-gradient(135deg, var(--mas-accent, #00a0d2), var(--mas-primary, #007cba));
 }
 
 /* Micro Panel (mały panel edycji) - FAZA 2: Zaawansowane Panele */
@@ -819,7 +873,7 @@
     cursor: grab;
     border-radius: var(--mas-radius-sm);
     transition: all 0.3s ease;
-    opacity: 0;
+        opacity: 0;
     backdrop-filter: var(--mas-blur-sm);
     -webkit-backdrop-filter: var(--mas-blur-sm);
 }
@@ -829,7 +883,7 @@
 }
 
 .mas-edit-mode-active [data-mas-editable="true"]:hover .mas-drag-handle {
-    opacity: 1;
+        opacity: 1;
 }
 
 .mas-drag-handle-x {
@@ -1581,7 +1635,7 @@
     
     .mas-v2-actions-vertical {
         flex-wrap: wrap;
-        justify-content: center;
+    justify-content: center;
     }
     
     .mas-v2-user-welcome {
@@ -2292,14 +2346,14 @@
     border-radius: 6px;
     font-size: 12px;
     white-space: nowrap;
-    opacity: 0;
+        opacity: 0;
     pointer-events: none;
     transition: all 0.3s ease;
     margin-bottom: 8px;
-}
+    }
 
 .mas-quick-theme-btn:hover::after {
-    opacity: 1;
+        opacity: 1;
     transform: translateX(-50%) translateY(-5px);
 }
 
@@ -3051,7 +3105,7 @@ body.wp-admin {
         transform: translateY(20px);
     }
     to {
-        opacity: 1;
+    opacity: 1;
         transform: translateY(0);
     }
 }
@@ -3330,11 +3384,11 @@ body.wp-admin:not(.mas-glassmorphism-enabled) .notice {
     border: 1px solid #ddd !important;
 }
 
-/*body.wp-admin:not(.mas-animated-bg-enabled) {
+body.wp-admin:not(.mas-animated-bg-enabled) {
     background: #f1f1f1 !important;
     animation: none !important;
 }
-*/
+
 body.wp-admin:not(.mas-animated-bg-enabled)::before {
     display: none !important;
 }
@@ -3418,7 +3472,7 @@ body.wp-admin:not(.mas-parallax-scroll-enabled) {
 
 /* ==========================================================================
    PERFORMANCE MODE ADJUSTMENTS
-   ========================================================================== */
+   ========================================================================== */ 
 
 /* High Performance Mode - All effects enabled */
 body.wp-admin.mas-3d-high .wrap .postbox:hover,
@@ -3643,11 +3697,11 @@ body.wp-admin:not(.mas-glassmorphism-enabled) .notice {
     border: 1px solid #ddd !important;
 }
 
-/*body.wp-admin:not(.mas-animated-bg-enabled) {
+body.wp-admin:not(.mas-animated-bg-enabled) {
     background: #f1f1f1 !important;
     animation: none !important;
 }
-*/
+
 body.wp-admin:not(.mas-animated-bg-enabled)::before {
     display: none !important;
 }
@@ -3731,7 +3785,7 @@ body.wp-admin:not(.mas-parallax-scroll-enabled) {
 
 /* ==========================================================================
    PERFORMANCE MODE ADJUSTMENTS
-   ========================================================================== */
+   ========================================================================== */ 
 
 /* High Performance Mode - All effects enabled */
 body.wp-admin.mas-3d-high .wrap .postbox:hover,
@@ -3956,11 +4010,11 @@ body.wp-admin:not(.mas-glassmorphism-enabled) .notice {
     border: 1px solid #ddd !important;
 }
 
-/*body.wp-admin:not(.mas-animated-bg-enabled) {
+body.wp-admin:not(.mas-animated-bg-enabled) {
     background: #f1f1f1 !important;
     animation: none !important;
 }
-*/
+
 body.wp-admin:not(.mas-animated-bg-enabled)::before {
     display: none !important;
 }
@@ -4044,7 +4098,7 @@ body.wp-admin:not(.mas-parallax-scroll-enabled) {
 
 /* ==========================================================================
    PERFORMANCE MODE ADJUSTMENTS
-   ========================================================================== */
+   ========================================================================== */ 
 
 /* High Performance Mode - All effects enabled */
 body.wp-admin.mas-3d-high .wrap .postbox:hover,
@@ -4230,7 +4284,7 @@ body.wp-admin h5 {
 
 body.wp-admin h6 {
     font-size: calc(1rem * var(--mas-typography-scale)) !important;
-}
+} 
 
 /* ==========================================================================
    CONTENT & BOXES - NOWA SEKCJA
@@ -4378,7 +4432,7 @@ body.wp-admin h6 {
 
 /* ==========================================================================
    🎨 COLOR SCHEME SUPPORT - LIGHT/DARK MODES
-   ========================================================================== */
+   ========================================================================== */ 
 
 /* ===== LIGHT MODE ===== */
 body.mas-v2-scheme-light {
@@ -4707,106 +4761,52 @@ body.mas-v2-glassmorphism-enabled .postbox {
     border: 1px solid var(--mas-glass-border) !important;
 }
 
-/* ========================================
-   🎭 STATE MANAGEMENT CSS VARIABLES
-   ======================================== */
-
-/* ========================================
-   🎭 STATE MANAGEMENT CSS VARIABLES
-   ======================================== */
-
-/* ========================================
-   🎯 CORE LAYOUT FIXES - Enhanced Margin/Padding Resolution
-   ======================================== */
-
-/* 1. Resetuj domyślne zachowanie WP, abyśmy mieli pełną kontrolę */
-html.wp-toolbar {
-    padding-top: 0 !important;
+/* Global Live Edit Toggle - Original Style - Responsive */
+.mas-global-live-edit-toggle .mas-v2-edit-mode-section {
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    z-index: 999999;
+    width: auto;
+    margin: 0;
+    padding: 16px;
+    background: var(--mas-glass-bg);
+    backdrop-filter: var(--mas-blur-md);
+    border: 1px solid var(--mas-glass-border);
+    border-radius: var(--mas-radius-xl);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 }
 
-/* 2. Ustaw odległość od góry dla całej zawartości na podstawie naszej zmiennej CSS */
-body.wp-admin {
-    padding-top: var(--mas-admin-bar-height, 32px) !important;
-    transition: padding-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* 3. Kiedy pasek admina jest "pływający", nie zajmuje już miejsca na górze,
-      więc resetujemy padding body i dodajemy margines do głównego kontenera */
-body.mas-v2-admin-bar-floating {
-    padding-top: 0 !important;
-}
-
-body.mas-v2-admin-bar-floating #wpcontent {
-    margin-top: calc(var(--mas-admin-bar-height, 32px) + var(--mas-admin-bar-margin, 10px)) !important;
-    transition: margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* 4. Wrappcontent też musi być skorygowany dla floating mode */
-body.mas-v2-admin-bar-floating #wpwrap {
-    padding-top: 0 !important;
-}
-
-/* 5. Dla floating menu podobna logika z smooth transitions */
-body.mas-v2-menu-floating #adminmenu {
-    margin-left: var(--mas-menu-margin, 10px);
-    margin-top: var(--mas-menu-margin, 10px);
-    transition: margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* 6. Gdy oba są floating, dostosuj layout accordingly z improved calculations */
-body.mas-v2-admin-bar-floating.mas-v2-menu-floating #wpcontent {
-    margin-left: calc(var(--mas-menu-width, 160px) + var(--mas-menu-margin, 10px) * 2) !important;
-    transition: margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* 7. Enhanced responsive behavior for floating elements */
-@media screen and (max-width: 960px) {
-    body.mas-v2-admin-bar-floating #wpcontent,
-    body.mas-v2-menu-floating #wpcontent {
-        margin-top: calc(var(--mas-admin-bar-height, 32px) + 10px) !important;
-        margin-left: 0 !important;
-        transition: margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* Mobile optimizations for global toggle */
+@media (max-width: 768px) {
+    .mas-global-live-edit-toggle .mas-v2-edit-mode-section {
+        top: 50px;
+        right: 10px;
+        padding: 12px;
+        max-width: calc(100vw - 40px);
     }
     
-    /* Mobile-specific adjustments */
-    body.mas-v2-admin-bar-floating.mas-v2-menu-floating #wpcontent {
-        margin-left: 0 !important;
+    .mas-global-live-edit-toggle .mas-v2-edit-mode-label {
+        font-size: 14px;
+    }
+    
+    .mas-global-live-edit-toggle .mas-v2-edit-text {
+        display: none;
+    }
+    
+    .mas-global-live-edit-toggle .mas-v2-edit-help-text {
+        font-size: 11px;
     }
 }
 
-/* 8. Prevent layout shifts during state changes */
-body.mas-v2-admin-bar-floating #wpadminbar,
-body.mas-v2-menu-floating #adminmenu {
-    will-change: transform, margin;
-}
-
-/* 9. Fix for potential overflow issues */
-body.mas-v2-admin-bar-floating #wpbody-content,
-body.mas-v2-menu-floating #wpbody-content {
-    overflow-x: hidden;
-}
-
-/* 3. Kiedy pasek admina jest "pływający", nie zajmuje już miejsca na górze,
-      więc resetujemy padding body i dodajemy margines do głównego kontenera */
-body.mas-v2-admin-bar-floating {
-    padding-top: 0 !important;
-}
-
-/* 🎯 NAPRAWKA: Style dla floating admin bar */
-body.mas-v2-admin-bar-floating #wpadminbar {
-    position: fixed !important;
-    top: var(--mas-admin-bar-margin-top, 10px) !important;
-    left: var(--mas-admin-bar-margin-left, 10px) !important;
-    right: var(--mas-admin-bar-margin-right, 10px) !important;
-    width: auto !important;
-    border-radius: var(--mas-admin-bar-border-radius, 8px) !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
-    z-index: 99999 !important;
-    backdrop-filter: blur(10px);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-body.mas-v2-admin-bar-floating #wpcontent {
-    margin-top: calc(var(--mas-admin-bar-height, 32px) + var(--mas-admin-bar-margin, 10px)) !important;
-    transition: margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+@media (max-width: 480px) {
+    .mas-global-live-edit-toggle .mas-v2-edit-mode-section {
+        top: 40px;
+        right: 5px;
+        padding: 8px;
+    }
+    
+    .mas-global-live-edit-toggle .mas-v2-edit-badge {
+        display: none;
+    }
 }

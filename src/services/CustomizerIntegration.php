@@ -1,15 +1,37 @@
 <?php
 /**
- * Customizer Integration Service
+ * ❌ DEPRECATED: Customizer Integration Service
  * 
- * Faza 1: Głęboka integracja z WordPress Customizer API
- * Przenosi opcje wizualne do natywnego Customizera WordPress
+ * ⚠️ THIS SERVICE HAS BEEN DEPRECATED AS OF PHASE 6
+ * 
+ * REASON FOR DEPRECATION:
+ * As part of the strategic interface consolidation, all visual editing has been
+ * unified into the superior Live Edit Mode. This service created user confusion
+ * by providing duplicate editing interfaces and required maintaining two separate
+ * systems for the same functionality.
+ * 
+ * MIGRATION PATH:
+ * All visual customization now happens through Live Edit Mode, which provides:
+ * - Context-aware editing directly on admin pages
+ * - Real-time visual feedback without page refresh
+ * - Data-driven architecture that scales infinitely
+ * - Zero user confusion about "where to edit"
+ * 
+ * LEGACY SUPPORT:
+ * This file is kept for reference but the service is no longer initialized
+ * in the main plugin class. All functionality has been superseded by the
+ * Live Edit Mode system using admin-modern-v3.js and data-* attributes.
  * 
  * @package ModernAdminStyler\Services
- * @version 2.2.0
+ * @version 2.3.0
+ * @deprecated Since Phase 6 - Use Live Edit Mode instead
  */
 
 namespace ModernAdminStyler\Services;
+
+/**
+ * @deprecated This service is no longer used. Use Live Edit Mode instead.
+ */
 
 class CustomizerIntegration {
     

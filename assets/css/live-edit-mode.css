@@ -1,0 +1,634 @@
+/**
+ * 🎨 Live Edit Mode Styles
+ * 
+ * Beautiful, professional interface for contextual editing
+ * Implements the micro-panel system for 107+ options
+ * 
+ * @package ModernAdminStyler
+ * @version 3.0.0
+ */
+
+/* ================================
+   🚀 Live Edit Toggle Button
+   ================================ */
+
+.mas-live-edit-toggle {
+    position: fixed;
+    top: 42px; /* WordPress admin bar is ~32px + some margin */
+    right: 20px;
+    z-index: 999998;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+}
+
+.mas-live-edit-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+}
+
+.mas-live-edit-toggle .dashicons {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.mas-live-edit-toggle .label {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Active state */
+body.mas-live-edit-active .mas-live-edit-toggle {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    box-shadow: 0 4px 20px rgba(255, 107, 107, 0.3);
+}
+
+body.mas-live-edit-active .mas-live-edit-toggle:hover {
+    box-shadow: 0 8px 30px rgba(255, 107, 107, 0.4);
+}
+
+/* ================================
+   🌐 Global Edit Triggers
+   ================================ */
+
+.mas-global-edit-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    margin-top: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 12px;
+}
+
+.mas-global-edit-trigger:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(5px);
+}
+
+.mas-global-edit-trigger .dashicons {
+    font-size: 14px;
+}
+
+/* ================================
+   🎯 Element Edit Triggers
+   ================================ */
+
+.mas-edit-trigger {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 999997;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+}
+
+.mas-edit-trigger .dashicons {
+    color: white;
+    font-size: 16px;
+}
+
+/* Show triggers when Live Edit is active */
+body.mas-live-edit-active .mas-edit-trigger {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.mas-edit-trigger:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Highlight elements when Live Edit is active */
+body.mas-live-edit-active #wpadminbar,
+body.mas-live-edit-active #adminmenuwrap,
+body.mas-live-edit-active #wpcontent {
+    position: relative;
+    outline: 2px dashed rgba(102, 126, 234, 0.3);
+    outline-offset: 4px;
+    transition: outline 0.3s ease;
+}
+
+body.mas-live-edit-active #wpadminbar:hover,
+body.mas-live-edit-active #adminmenuwrap:hover,
+body.mas-live-edit-active #wpcontent:hover {
+    outline-color: rgba(102, 126, 234, 0.6);
+}
+
+/* ================================
+   📱 Micro Panel Styles
+   ================================ */
+
+.mas-micro-panel {
+    position: fixed;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 
+        0 20px 80px rgba(0, 0, 0, 0.1),
+        0 4px 20px rgba(0, 0, 0, 0.05);
+    max-width: 320px;
+    min-width: 280px;
+    max-height: 80vh;
+    overflow: hidden;
+    z-index: 999999;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: panelSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes panelSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Panel Header */
+.mas-panel-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.mas-panel-header h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.mas-panel-header .dashicons {
+    font-size: 18px;
+}
+
+.mas-panel-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+
+.mas-panel-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Panel Content */
+.mas-panel-content {
+    padding: 0;
+    max-height: calc(80vh - 60px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #ddd transparent;
+}
+
+.mas-panel-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.mas-panel-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mas-panel-content::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 3px;
+}
+
+/* ================================
+   📑 Section Styles
+   ================================ */
+
+.mas-section {
+    border-bottom: 1px solid #f0f0f1;
+}
+
+.mas-section:last-child {
+    border-bottom: none;
+}
+
+.mas-section h5 {
+    margin: 0;
+    padding: 16px 20px 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.mas-controls {
+    padding: 0 20px 16px;
+}
+
+/* ================================
+   🎛️ Control Styles
+   ================================ */
+
+.mas-control {
+    margin-bottom: 16px;
+}
+
+.mas-control:last-child {
+    margin-bottom: 0;
+}
+
+.mas-control label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #1d2327;
+    margin-bottom: 6px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Color Controls */
+.mas-control-color input[type="color"] {
+    width: 100%;
+    height: 40px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.mas-control-color input[type="color"]:hover {
+    border-color: #667eea;
+}
+
+/* Slider Controls */
+.mas-control-slider label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mas-value {
+    background: #f8f9fa;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #666;
+    min-width: 45px;
+    text-align: center;
+}
+
+.mas-control-slider input[type="range"] {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #e0e0e0;
+    outline: none;
+    -webkit-appearance: none;
+    margin: 8px 0;
+}
+
+.mas-control-slider input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+    transition: transform 0.2s ease;
+}
+
+.mas-control-slider input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.mas-control-slider input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+}
+
+/* Toggle Controls */
+.mas-control-toggle label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+.mas-control-toggle input[type="checkbox"] {
+    display: none;
+}
+
+.mas-toggle-switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: #e0e0e0;
+    border-radius: 12px;
+    transition: background 0.3s ease;
+    flex-shrink: 0;
+}
+
+.mas-toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mas-control-toggle input[type="checkbox"]:checked + .mas-toggle-switch {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.mas-control-toggle input[type="checkbox"]:checked + .mas-toggle-switch::after {
+    transform: translateX(20px);
+}
+
+/* Select Controls */
+.mas-control-select select,
+.mas-control-font select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.mas-control-select select:hover,
+.mas-control-font select:hover {
+    border-color: #667eea;
+}
+
+.mas-control-select select:focus,
+.mas-control-font select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* ================================
+   🍞 Toast Notifications
+   ================================ */
+
+.mas-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: white;
+    color: #1d2327;
+    padding: 16px 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    z-index: 1000000;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 300px;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    border-left: 4px solid #667eea;
+}
+
+.mas-toast-show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.mas-toast-success {
+    border-left-color: #28a745;
+}
+
+.mas-toast-error {
+    border-left-color: #dc3545;
+}
+
+.mas-toast-warning {
+    border-left-color: #ffc107;
+}
+
+/* ================================
+   📱 Responsive Design
+   ================================ */
+
+@media (max-width: 768px) {
+    .mas-live-edit-toggle {
+        top: 52px; /* Admin bar on mobile + margin */
+        right: 10px;
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+    
+    .mas-micro-panel {
+        max-width: calc(100vw - 20px);
+        min-width: calc(100vw - 20px);
+        left: 10px !important;
+        right: 10px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+    }
+    
+    .mas-edit-trigger {
+        width: 28px;
+        height: 28px;
+        top: 5px;
+        right: 5px;
+    }
+    
+    .mas-edit-trigger .dashicons {
+        font-size: 14px;
+    }
+}
+
+/* ================================
+   🎨 Dark Mode Support
+   ================================ */
+
+@media (prefers-color-scheme: dark) {
+    .mas-micro-panel {
+        background: #1e1e1e;
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .mas-section {
+        border-color: #333;
+    }
+    
+    .mas-section h5 {
+        color: #999;
+    }
+    
+    .mas-control label {
+        color: #e0e0e0;
+    }
+    
+    .mas-control-color input[type="color"],
+    .mas-control-select select,
+    .mas-control-font select {
+        background: #2a2a2a;
+        border-color: #444;
+        color: #e0e0e0;
+    }
+    
+    .mas-value {
+        background: #2a2a2a;
+        color: #999;
+    }
+    
+    .mas-toggle-switch {
+        background: #444;
+    }
+    
+    .mas-toast {
+        background: #2a2a2a;
+        color: #e0e0e0;
+    }
+}
+
+/* ================================
+   ✨ Animation & Interaction States
+   ================================ */
+
+.mas-micro-panel * {
+    box-sizing: border-box;
+}
+
+/* Smooth transitions for all interactive elements */
+.mas-control input,
+.mas-control select,
+.mas-toggle-switch {
+    transition: all 0.2s ease;
+}
+
+/* Focus states for accessibility */
+.mas-control input:focus,
+.mas-control select:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* Hover effects for better UX */
+.mas-control:hover label {
+    color: #667eea;
+}
+
+/* Loading state (for future use) */
+.mas-micro-panel.loading {
+    pointer-events: none;
+}
+
+.mas-micro-panel.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ================================
+   🎯 Accessibility Enhancements
+   ================================ */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .mas-micro-panel {
+        border: 2px solid #000;
+    }
+    
+    .mas-panel-header {
+        background: #000;
+    }
+    
+    .mas-control input,
+    .mas-control select {
+        border: 2px solid #000;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .mas-micro-panel,
+    .mas-edit-trigger,
+    .mas-toggle-switch::after,
+    .mas-toast {
+        animation: none;
+        transition: none;
+    }
+}
+
+/**
+ * 🎨 LIVE EDIT MODE STYLES COMPLETE
+ * 
+ * This CSS provides a beautiful, professional interface for the Live Edit Mode:
+ * 
+ * ✅ Floating toggle button with gradient and glassmorphism
+ * ✅ Contextual edit triggers that appear on hover
+ * ✅ Beautiful micro-panels with smooth animations
+ * ✅ Professional control styling for all input types
+ * ✅ Responsive design for mobile devices
+ * ✅ Dark mode and accessibility support
+ * ✅ Toast notifications for user feedback
+ * ✅ Smooth transitions and hover effects
+ * 
+ * The design language matches modern design tools like Figma, Sketch,
+ * and premium WordPress page builders, providing a professional editing
+ * experience that users will love.
+ */ 

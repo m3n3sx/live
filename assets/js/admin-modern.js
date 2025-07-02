@@ -21,47 +21,24 @@
         },
 
         init: function() {
-            console.log('🚀 MAS V2: Initializing Advanced Live Preview System');
-            
-            // Set up form listeners
-            if (this.form) {
-                this.form.addEventListener('input', this.triggerLivePreview.bind(this));
-                this.form.addEventListener('change', this.triggerLivePreview.bind(this));
-            }
-            
-            // Run initial sync to set correct state on page load
-            this.handleFormChange();
-            
-            // Set up keyboard shortcuts for development
-            this.setupKeyboardShortcuts();
-            
-            console.log('✅ MAS V2: Live Preview System fully initialized');
-        },
-
-        setupKeyboardShortcuts: function() {
-            document.addEventListener('keydown', (e) => {
-                // Ctrl+Shift+S = Force sync
-                if (e.ctrlKey && e.shiftKey && e.key === 'S') {
-                    e.preventDefault();
-                    console.log('🔧 MANUAL SYNC TRIGGERED');
-                    this.handleFormChange();
-                }
-                
-                // Ctrl+Shift+D = Debug state
-                if (e.ctrlKey && e.shiftKey && e.key === 'D') {
-                    e.preventDefault();
-                    this.debugCurrentState();
-                }
-            });
-        },
-
-        debugCurrentState: function() {
-            console.group('🐛 DEBUG: Current State');
-            console.log('Body classes:', Array.from(document.body.classList));
-            console.log('Theme classes:', Array.from(document.body.classList).filter(cls => cls.startsWith('mas-theme-')));
-            console.log('Palette classes:', Array.from(document.body.classList).filter(cls => cls.startsWith('mas-palette-')));
-            console.log('Form data:', this.getFormData());
-            console.groupEnd();
+            console.log('🚀 MAS V2: Initializing all systems...');
+            this.bindEvents();
+            this.initTabs();
+            this.initColorPickers();
+            this.initSliders();
+            this.initCornerRadius();
+            this.initConditionalFields();
+            this.initFloatingFields();
+            this.initLivePreview();
+            this.checkAutoSave();
+            this.initTooltips();
+            this.updateBodyClasses(); // Ustaw klasy na starcie
+            this.initSystemMonitor(); // Inicjalizuj monitor systemu
+            this.loadCustomTemplates(); // Załaduj własne szablony
+            this.initNewFeatures(); // Inicjalizuj nowe funkcje
+            this.initLiveEditMode(); // FAZA 1: Inicjalizuj Live Edit Mode
+            console.log('✅ MAS V2: All systems initialized successfully!');
+            // Skróty klawiszowe są obsługiwane globalnie w admin-global.js
         },
 
         bindEvents: function() {
@@ -667,20 +644,34 @@
             if (!this.livePreviewEnabled) return;
             
             const data = formData || this.getFormData();
-            console.log('🚀 MAS V2: TRIGGERING LIVE PREVIEW');
+            console.log('🚀 MAS V2: Starting AUTOMATED Live Preview with data-* attributes');
             
             // ========================================
-            // 🎯 NEW CENTRALIZED APPROACH
+            // 🎯 AUTOMATED LIVE PREVIEW ENGINE
             // ========================================
             
-            // Use the new centralized sync function as single source of truth
-            this.syncUiWithSettings(data);
-            
-            // Legacy: Still run automated processor for data-* attributes
-            // (This provides backward compatibility and handles any missed cases)
             this.processAutomatedLivePreview(data);
             
-            console.log('✅ LIVE PREVIEW COMPLETE: Both centralized sync and automated processing finished');
+            // ========================================
+            // 🔧 SPECIAL CASES (remain manual)
+            // ========================================
+            
+            // Special case: Headings Scale (mathematical calculation)
+            if (data.headings_scale || data.global_font_size) {
+                this.updateHeadingsScale(data.headings_scale, data.global_font_size);
+            }
+            
+            // Special case: Custom CSS injection
+            if (data.custom_css !== undefined) {
+                this.injectCustomCSS(data.custom_css);
+            }
+            
+            // Update body classes for structural changes
+            if (window.updateBodyClasses && typeof window.updateBodyClasses === 'function') {
+                window.updateBodyClasses(data);
+            }
+            
+            console.log('✅ AUTOMATED LIVE PREVIEW: Complete! Zero manual field handling.');
         },
 
         /**
@@ -1559,149 +1550,6 @@
             console.log('Menu classes after cleanup:', Array.from(body.classList).filter(cls => cls.includes('floating')));
             
             console.groupEnd();
-        },
-
-        /**
-         * 🎯 CENTRALIZED STATE SYNCHRONIZATION
-         * Single source of truth for UI state management
-         */
-        
-        /**
-         * 🔄 Centralna funkcja synchronizująca UI z ustawieniami
-         * To jest jedyne źródło prawdy o wyglądzie panelu
-         * @param {object} settings - Obiekt z aktualnymi ustawieniami z formularza
-         */
-        syncUiWithSettings: function(settings) {
-            const body = document.body;
-            const root = document.documentElement;
-            
-            console.group('🔄 SYNC UI WITH SETTINGS - Single Source of Truth');
-            
-            // ========================================
-            // 🏷️ ZARZĄDZANIE KLASAMI BODY (Exclusive States)
-            // ========================================
-            
-            // 1. Motyw kolorystyczny (klasy wykluczające się)
-            const themeClasses = ['mas-theme-light', 'mas-theme-dark', 'mas-theme-auto'];
-            body.classList.remove(...themeClasses); // Najpierw wyczyść stary stan
-            if (settings.color_scheme) {
-                const newThemeClass = 'mas-theme-' + settings.color_scheme;
-                if (themeClasses.includes(newThemeClass)) {
-                    body.classList.add(newThemeClass);
-                    console.log(`✅ Theme: ${newThemeClass}`);
-                }
-            }
-            
-            // 2. Paleta kolorów (exclusive)
-            const paletteClasses = ['mas-palette-modern', 'mas-palette-white', 'mas-palette-green'];
-            body.classList.remove(...paletteClasses);
-            if (settings.color_palette) {
-                const newPaletteClass = 'mas-palette-' + settings.color_palette;
-                if (paletteClasses.includes(newPaletteClass)) {
-                    body.classList.add(newPaletteClass);
-                    console.log(`✅ Palette: ${newPaletteClass}`);
-                }
-            }
-            
-            // 3. Pływające Menu (przełącznik + czyszczenie legacy)
-            body.classList.remove('mas-menu-floating'); // Zawsze usuwaj przestarzałą klasę
-            body.classList.toggle('mas-v2-menu-floating', settings.menu_floating === '1');
-            console.log(`✅ Menu Floating: ${settings.menu_floating === '1' ? 'ON' : 'OFF'}`);
-            
-            // 4. Pływający Pasek Admina (przełącznik)
-            body.classList.remove('mas-admin-bar-floating'); // Legacy cleanup
-            body.classList.toggle('mas-v2-admin-bar-floating', settings.admin_bar_floating === '1');
-            console.log(`✅ Admin Bar Floating: ${settings.admin_bar_floating === '1' ? 'ON' : 'OFF'}`);
-            
-            // 5. Efekty wizualne (z legacy cleanup)
-            body.classList.remove('mas-glassmorphism', 'mas-menu-glassmorphism'); // Legacy
-            body.classList.toggle('mas-v2-glassmorphism', settings.menu_glassmorphism === '1');
-            
-            body.classList.remove('mas-admin-bar-glossy'); // Legacy
-            body.classList.toggle('mas-v2-glossy', settings.admin_bar_glossy === '1');
-            
-            body.classList.remove('mas-animations-enabled', 'mas-enable-animations'); // Legacy
-            body.classList.toggle('mas-v2-animations-enabled', settings.enable_animations === '1');
-            
-            // 6. Plugin główny toggle
-            body.classList.toggle('mas-v2-modern-style', settings.enable_plugin === '1');
-            
-            // ========================================
-            // 🎨 ZARZĄDZANIE ZMIENNYMI CSS
-            // ========================================
-            
-            // Admin Bar
-            if (settings.admin_bar_height) {
-                root.style.setProperty('--mas-admin-bar-height', settings.admin_bar_height + 'px');
-                console.log(`✅ CSS Var: --mas-admin-bar-height = ${settings.admin_bar_height}px`);
-            }
-            
-            if (settings.admin_bar_margin) {
-                root.style.setProperty('--mas-admin-bar-margin', settings.admin_bar_margin + 'px');
-            }
-            
-            if (settings.admin_bar_border_radius) {
-                root.style.setProperty('--mas-admin-bar-border-radius', settings.admin_bar_border_radius + 'px');
-            }
-            
-            if (settings.admin_bar_background) {
-                root.style.setProperty('--mas-admin-bar-background', settings.admin_bar_background);
-            }
-            
-            if (settings.admin_bar_text_color) {
-                root.style.setProperty('--mas-admin-bar-text-color', settings.admin_bar_text_color);
-            }
-            
-            // Menu
-            if (settings.menu_width) {
-                root.style.setProperty('--mas-menu-width', settings.menu_width + 'px');
-            }
-            
-            if (settings.menu_background_color) {
-                root.style.setProperty('--mas-menu-background', settings.menu_background_color);
-            }
-            
-            if (settings.menu_text_color) {
-                root.style.setProperty('--mas-menu-text-color', settings.menu_text_color);
-            }
-            
-            // Accent Color
-            if (settings.accent_color) {
-                root.style.setProperty('--mas-accent-color', settings.accent_color);
-                root.style.setProperty('--mas-primary', settings.accent_color);
-            }
-            
-            // Typography
-            if (settings.global_font_size) {
-                root.style.setProperty('--mas-global-font-size', settings.global_font_size + 'px');
-                root.style.setProperty('--mas-body-font-size', settings.global_font_size + 'px');
-            }
-            
-            // ========================================
-            // 🧩 SPECIAL CASES
-            // ========================================
-            
-            // Custom CSS injection
-            if (settings.custom_css !== undefined) {
-                this.injectCustomCSS(settings.custom_css);
-            }
-            
-            // Headings scale calculation
-            if (settings.headings_scale || settings.global_font_size) {
-                this.updateHeadingsScale(settings.headings_scale, settings.global_font_size);
-            }
-            
-            console.groupEnd();
-            console.log('🎯 SYNC COMPLETE: UI perfectly synchronized with settings state');
-        },
-
-        /**
-         * 📊 Pobiera dane z formularza i uruchamia synchronizację UI
-         */
-        handleFormChange: function() {
-            const formData = this.getFormData();
-            console.log('📊 Form Change Detected - Triggering Full Sync');
-            this.syncUiWithSettings(formData);
         }
     };
 

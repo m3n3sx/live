@@ -55,9 +55,12 @@ class ServiceFactory {
                 return new SettingsManager();
                 
             case 'asset_loader':
+                // Enterprise AssetLoader with CSS optimization dependencies
                 return new AssetLoader(
                     $this->config['plugin_url'],
-                    $this->config['plugin_version']
+                    $this->config['plugin_version'],
+                    $this->get('settings_manager'),
+                    $this->get('css_generator')
                 );
                 
             case 'ajax_handler':
@@ -71,9 +74,9 @@ class ServiceFactory {
                 );
                 
             case 'css_generator':
+                // Optimized CSSGenerator - only generates CSS variables now
                 return new CSSGenerator(
-                    $this->get('settings_manager'),
-                    $this->get('cache_manager')
+                    $this->get('settings_manager')
                 );
                 
             case 'security_service':
@@ -84,11 +87,11 @@ class ServiceFactory {
                     $this->get('cache_manager')
                 );
                 
-            // 🎯 NOWE SERWISY FAZY 1: WordPress API Integration
+            // ❌ DEPRECATED: CustomizerIntegration removed in Phase 6
+            // All visual editing unified into Live Edit Mode
             case 'customizer_integration':
-                return new CustomizerIntegration(
-                    $this->get('settings_manager')
-                );
+                error_log("MAS: CustomizerIntegration deprecated - use Live Edit Mode instead");
+                return null;
                 
             case 'settings_api':
                 return new SettingsAPI(
@@ -99,7 +102,8 @@ class ServiceFactory {
                 return new RestAPI(
                     $this->get('cache_manager'),
                     $this->get('security_service'),
-                    $this->get('metrics_collector')
+                    $this->get('metrics_collector'),
+                    $this->get('preset_manager')
                 );
                 
             // 🎨 NOWY SERWIS FAZY 2: Component Adapter
@@ -144,6 +148,12 @@ class ServiceFactory {
                 
             case 'memory_optimizer':
                 return new MemoryOptimizer($this);
+                
+            // 🎨 NOWY SERWIS: Preset Manager (Enterprise Preset System)
+            case 'preset_manager':
+                return new PresetManager(
+                    $this->get('settings_manager')
+                );
                 
             default:
                 throw new \InvalidArgumentException("Unknown service: {$service_name}");
@@ -244,6 +254,13 @@ class ServiceFactory {
      */
     public function getMemoryOptimizer() {
         return $this->get('memory_optimizer');
+    }
+    
+    /**
+     * 🎨 Preset Manager Service - Enterprise Preset System
+     */
+    public function getPresetManager() {
+        return $this->get('preset_manager');
     }
     
     /**

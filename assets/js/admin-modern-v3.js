@@ -116,7 +116,33 @@
                 console.log('Available preview types:', Object.keys(this.previewTypes));
                 console.log('Form fields with live preview:', this.getPreviewFields().length);
                 console.log('Cache initialized:', this.cache);
+                console.log('Live Edit Mode:', window.masLiveEditMode ? 'Available' : 'Not loaded');
                 console.groupEnd();
+            }
+        },
+        
+        /**
+         * 🔗 Integration with Live Edit Mode
+         */
+        integrateWithLiveEditMode: function() {
+            if (window.masLiveEditMode) {
+                // Listen for Live Edit Mode changes and sync with form
+                $(document).on('mas:live-edit-changed', (e, data) => {
+                    this.syncFromLiveEdit(data);
+                });
+                
+                console.log('🔗 Integrated with Live Edit Mode');
+            }
+        },
+        
+        /**
+         * 🔄 Sync changes from Live Edit Mode to traditional form
+         */
+        syncFromLiveEdit: function(data) {
+            const field = this.cache.form?.querySelector(`[name="${data.optionId}"]`);
+            if (field && field.value !== data.value) {
+                field.value = data.value;
+                this.handleFieldChange(field);
             }
         },
         

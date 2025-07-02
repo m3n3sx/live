@@ -17,11 +17,13 @@ class RestAPI {
     private $cache_manager;
     private $security_service;
     private $metrics_collector;
+    private $preset_manager;
     
-    public function __construct($cache_manager, $security_service, $metrics_collector) {
+    public function __construct($cache_manager, $security_service, $metrics_collector, $preset_manager = null) {
         $this->cache_manager = $cache_manager;
         $this->security_service = $security_service;
         $this->metrics_collector = $metrics_collector;
+        $this->preset_manager = $preset_manager;
         $this->init();
     }
     
@@ -125,6 +127,171 @@ class RestAPI {
             'methods' => 'GET',
             'callback' => [$this, 'getPluginStatus'],
             'permission_callback' => [$this, 'checkPermissions']
+        ]);
+        
+        // === PRESET MANAGEMENT ===
+        if ($this->preset_manager) {
+            $this->registerPresetEndpoints();
+        }
+    }
+    
+    /**
+     * 🎨 Register Preset Management Endpoints
+     * Enterprise-grade preset system REST API
+     */
+    private function registerPresetEndpoints() {
+        // GET all presets
+        register_rest_route($this->namespace, '/presets', [
+            'methods' => 'GET',
+            'callback' => [$this, 'getPresets'],
+            'permission_callback' => [$this, 'checkPermissions'],
+            'args' => [
+                'search' => [
+                    'required' => false,
+                    'type' => 'string',
+                    'description' => 'Search presets by name'
+                ],
+                'orderby' => [
+                    'required' => false,
+                    'type' => 'string',
+                    'enum' => ['name', 'date', 'modified'],
+                    'default' => 'name'
+                ],
+                'order' => [
+                    'required' => false,
+                    'type' => 'string',
+                    'enum' => ['ASC', 'DESC'],
+                    'default' => 'ASC'
+                ]
+            ]
+        ]);
+        
+        // POST new preset
+        register_rest_route($this->namespace, '/presets', [
+            'methods' => 'POST',
+            'callback' => [$this, 'savePreset'],
+            'permission_callback' => [$this, 'checkPermissions'],
+            'args' => [
+                'name' => [
+                    'required' => true,
+                    'type' => 'string',
+                    'description' => 'Preset name',
+                    'validate_callback' => function($param) {
+                        return !empty(trim($param));
+                    }
+                ],
+                'description' => [
+                    'required' => false,
+                    'type' => 'string',
+                    'description' => 'Preset description'
+                ],
+                'settings' => [
+                    'required' => true,
+                    'type' => 'object',
+                    'description' => 'Preset settings data'
+                ]
+            ]
+        ]);
+        
+        // GET single preset by ID
+        register_rest_route($this->namespace, '/presets/(?P<id>\d+)', [
+            'methods' => 'GET',
+            'callback' => [$this, 'getPreset'],
+            'permission_callback' => [$this, 'checkPermissions'],
+            'args' => [
+                'id' => [
+                    'required' => true,
+                    'type' => 'integer',
+                    'validate_callback' => 'is_numeric'
+                ]
+            ]
+        ]);
+        
+        // PUT/PATCH update preset
+        register_rest_route($this->namespace, '/presets/(?P<id>\d+)', [
+            'methods' => ['PUT', 'PATCH'],
+            'callback' => [$this, 'updatePreset'],
+            'permission_callback' => [$this, 'checkPermissions'],
+            'args' => [
+                'id' => [
+                    'required' => true,
+                    'type' => 'integer',
+                    'validate_callback' => 'is_numeric'
+                ],
+                'name' => [
+                    'required' => false,
+                    'type' => 'string'
+                ],
+                'description' => [
+                    'required' => false,
+                    'type' => 'string'
+                ],
+                'settings' => [
+                    'required' => false,
+                    'type' => 'object'
+                ]
+            ]
+        ]);
+        
+        // DELETE preset
+        register_rest_route($this->namespace, '/presets/(?P<id>\d+)', [
+            'methods' => 'DELETE',
+            'callback' => [$this, 'deletePreset'],
+            'permission_callback' => [$this, 'checkPermissions'],
+            'args' => [
+                'id' => [
+                    'required' => true,
+                    'type' => 'integer',
+                    'validate_callback' => 'is_numeric'
+                ]
+            ]
+        ]);
+        
+        // POST apply preset
+        register_rest_route($this->namespace, '/presets/(?P<id>\d+)/apply', [
+            'methods' => 'POST',
+            'callback' => [$this, 'applyPreset'],
+            'permission_callback' => [$this, 'checkPermissions'],
+            'args' => [
+                'id' => [
+                    'required' => true,
+                    'type' => 'integer',
+                    'validate_callback' => 'is_numeric'
+                ]
+            ]
+        ]);
+        
+        // GET preset export
+        register_rest_route($this->namespace, '/presets/(?P<id>\d+)/export', [
+            'methods' => 'GET',
+            'callback' => [$this, 'exportPreset'],
+            'permission_callback' => [$this, 'checkPermissions'],
+            'args' => [
+                'id' => [
+                    'required' => true,
+                    'type' => 'integer',
+                    'validate_callback' => 'is_numeric'
+                ]
+            ]
+        ]);
+        
+        // POST preset import
+        register_rest_route($this->namespace, '/presets/import', [
+            'methods' => 'POST',
+            'callback' => [$this, 'importPreset'],
+            'permission_callback' => [$this, 'checkPermissions'],
+            'args' => [
+                'data' => [
+                    'required' => true,
+                    'type' => 'string',
+                    'description' => 'JSON preset data'
+                ],
+                'name' => [
+                    'required' => false,
+                    'type' => 'string',
+                    'description' => 'Override preset name'
+                ]
+            ]
         ]);
     }
     
@@ -584,16 +751,377 @@ class RestAPI {
         return $features;
     }
     
+    /**
+     * Analizuje wpływ ustawień na wydajność
+     */
     private function calculatePerformanceImpact($settings) {
         $impact = 0;
         
-        if ($settings['glassmorphism_enabled'] ?? false) $impact += 2;
-        if ($settings['animations_enabled'] ?? false) $impact += 1;
-        if (!empty($settings['custom_css'])) $impact += 1;
-        if (!empty($settings['custom_js'])) $impact += 2;
+        // Analiza różnych ustawień
+        if (isset($settings['floating_admin_bar']) && $settings['floating_admin_bar']) {
+            $impact += 5;
+        }
         
-        if ($impact <= 2) return 'low';
-        if ($impact <= 4) return 'medium';
-        return 'high';
+        if (isset($settings['custom_fonts']) && $settings['custom_fonts']) {
+            $impact += 10;
+        }
+        
+        if (isset($settings['animations_enabled']) && $settings['animations_enabled']) {
+            $impact += 8;
+        }
+        
+        return $impact;
+    }
+    
+    /**
+     * === PRESET ENDPOINTS IMPLEMENTATION ===
+     * Enterprise-grade preset management REST API callbacks
+     */
+    
+    /**
+     * 📋 Get all presets
+     */
+    public function getPresets(\WP_REST_Request $request) {
+        if (!$this->preset_manager) {
+            return new \WP_REST_Response([
+                'success' => false,
+                'message' => '❌ Preset Manager not available'
+            ], 500);
+        }
+        
+        try {
+            $search = $request->get_param('search');
+            $orderby = $request->get_param('orderby');
+            $order = $request->get_param('order');
+            
+            $args = [
+                'orderby' => $orderby === 'name' ? 'title' : $orderby,
+                'order' => $order
+            ];
+            
+            if ($search) {
+                $args['s'] = $search;
+            }
+            
+            $presets = $this->preset_manager->getPresets($args);
+            
+            return new \WP_REST_Response([
+                'success' => true,
+                'data' => $presets,
+                'count' => count($presets),
+                'timestamp' => current_time('mysql')
+            ], 200);
+            
+        } catch (\Exception $e) {
+            return new \WP_REST_Response([
+                'success' => false,
+                'message' => '❌ Error fetching presets: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * 💾 Save new preset
+     */
+    public function savePreset(\WP_REST_Request $request) {
+        if (!$this->preset_manager) {
+            return new \WP_REST_Response([
+                'success' => false,
+                'message' => '❌ Preset Manager not available'
+            ], 500);
+        }
+        
+        try {
+            $name = $request->get_param('name');
+            $description = $request->get_param('description') ?: '';
+            $settings = $request->get_param('settings');
+            
+            $preset_id = $this->preset_manager->savePreset($name, $settings, $description);
+            
+            if (!$preset_id) {
+                return new \WP_REST_Response([
+                    'success' => false,
+                    'message' => '❌ Failed to save preset'
+                ], 500);
+            }
+            
+            $preset = $this->preset_manager->getPreset($preset_id);
+            
+            return new \WP_REST_Response([
+                'success' => true,
+                'message' => "✅ Preset '{$name}' saved successfully",
+                'data' => $preset,
+                'timestamp' => current_time('mysql')
+            ], 201);
+            
+        } catch (\Exception $e) {
+            return new \WP_REST_Response([
+                'success' => false,
+                'message' => '❌ Error saving preset: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * 📖 Get single preset
+     */
+    public function getPreset(\WP_REST_Request $request) {
+        if (!$this->preset_manager) {
+            return new \WP_REST_Response([
+                'success' => false,
+                'message' => '❌ Preset Manager not available'
+            ], 500);
+        }
+        
+        try {
+            $preset_id = $request->get_param('id');
+            $preset = $this->preset_manager->getPreset($preset_id);
+            
+            if (!$preset) {
+                return new \WP_REST_Response([
+                    'success' => false,
+                    'message' => '❌ Preset not found'
+                ], 404);
+            }
+            
+            return new \WP_REST_Response([
+                'success' => true,
+                'data' => $preset,
+                'timestamp' => current_time('mysql')
+            ], 200);
+            
+        } catch (\Exception $e) {
+            return new \WP_REST_Response([
+                'success' => false,
+                'message' => '❌ Error fetching preset: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * 🔄 Update preset
+     */
+    public function updatePreset(\WP_REST_Request $request) {
+        if (!$this->preset_manager) {
+            return new \WP_REST_Response([
+                'success' => false,
+                'message' => '❌ Preset Manager not available'
+            ], 500);
+        }
+        
+        try {
+            $preset_id = $request->get_param('id');
+            $name = $request->get_param('name');
+            $description = $request->get_param('description');
+            $settings = $request->get_param('settings');
+            
+            if (!$this->preset_manager->presetExists($preset_id)) {
+                return new \WP_REST_Response([
+                    'success' => false,
+                    'message' => '❌ Preset not found'
+                ], 404);
+            }
+            
+            $success = $this->preset_manager->updatePreset($preset_id, $name, $settings, $description);
+            
+            if (!$success) {
+                return new \WP_REST_Response([
+                    'success' => false,
+                    'message' => '❌ Failed to update preset'
+                ], 500);
+            }
+            
+            $preset = $this->preset_manager->getPreset($preset_id);
+            
+            return new \WP_REST_Response([
+                'success' => true,
+                'message' => '✅ Preset updated successfully',
+                'data' => $preset,
+                'timestamp' => current_time('mysql')
+            ], 200);
+            
+        } catch (\Exception $e) {
+            return new \WP_REST_Response([
+                'success' => false,
+                'message' => '❌ Error updating preset: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * 🗑️ Delete preset
+     */
+    public function deletePreset(\WP_REST_Request $request) {
+        if (!$this->preset_manager) {
+            return new \WP_REST_Response([
+                'success' => false,
+                'message' => '❌ Preset Manager not available'
+            ], 500);
+        }
+        
+        try {
+            $preset_id = $request->get_param('id');
+            
+            if (!$this->preset_manager->presetExists($preset_id)) {
+                return new \WP_REST_Response([
+                    'success' => false,
+                    'message' => '❌ Preset not found'
+                ], 404);
+            }
+            
+            $success = $this->preset_manager->deletePreset($preset_id);
+            
+            if (!$success) {
+                return new \WP_REST_Response([
+                    'success' => false,
+                    'message' => '❌ Failed to delete preset'
+                ], 500);
+            }
+            
+            return new \WP_REST_Response([
+                'success' => true,
+                'message' => '✅ Preset deleted successfully',
+                'timestamp' => current_time('mysql')
+            ], 200);
+            
+        } catch (\Exception $e) {
+            return new \WP_REST_Response([
+                'success' => false,
+                'message' => '❌ Error deleting preset: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * 🎨 Apply preset
+     */
+    public function applyPreset(\WP_REST_Request $request) {
+        if (!$this->preset_manager) {
+            return new \WP_REST_Response([
+                'success' => false,
+                'message' => '❌ Preset Manager not available'
+            ], 500);
+        }
+        
+        try {
+            $preset_id = $request->get_param('id');
+            
+            if (!$this->preset_manager->presetExists($preset_id)) {
+                return new \WP_REST_Response([
+                    'success' => false,
+                    'message' => '❌ Preset not found'
+                ], 404);
+            }
+            
+            $success = $this->preset_manager->applyPreset($preset_id);
+            
+            if (!$success) {
+                return new \WP_REST_Response([
+                    'success' => false,
+                    'message' => '❌ Failed to apply preset'
+                ], 500);
+            }
+            
+            $preset = $this->preset_manager->getPreset($preset_id);
+            
+            return new \WP_REST_Response([
+                'success' => true,
+                'message' => "✅ Preset '{$preset['name']}' applied successfully",
+                'data' => $preset,
+                'timestamp' => current_time('mysql')
+            ], 200);
+            
+        } catch (\Exception $e) {
+            return new \WP_REST_Response([
+                'success' => false,
+                'message' => '❌ Error applying preset: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * 📤 Export preset
+     */
+    public function exportPreset(\WP_REST_Request $request) {
+        if (!$this->preset_manager) {
+            return new \WP_REST_Response([
+                'success' => false,
+                'message' => '❌ Preset Manager not available'
+            ], 500);
+        }
+        
+        try {
+            $preset_id = $request->get_param('id');
+            
+            if (!$this->preset_manager->presetExists($preset_id)) {
+                return new \WP_REST_Response([
+                    'success' => false,
+                    'message' => '❌ Preset not found'
+                ], 404);
+            }
+            
+            $export_data = $this->preset_manager->exportPreset($preset_id);
+            
+            if (!$export_data) {
+                return new \WP_REST_Response([
+                    'success' => false,
+                    'message' => '❌ Failed to export preset'
+                ], 500);
+            }
+            
+            return new \WP_REST_Response([
+                'success' => true,
+                'message' => '✅ Preset exported successfully',
+                'data' => $export_data,
+                'timestamp' => current_time('mysql')
+            ], 200);
+            
+        } catch (\Exception $e) {
+            return new \WP_REST_Response([
+                'success' => false,
+                'message' => '❌ Error exporting preset: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * 📥 Import preset
+     */
+    public function importPreset(\WP_REST_Request $request) {
+        if (!$this->preset_manager) {
+            return new \WP_REST_Response([
+                'success' => false,
+                'message' => '❌ Preset Manager not available'
+            ], 500);
+        }
+        
+        try {
+            $data = $request->get_param('data');
+            $name_override = $request->get_param('name');
+            
+            $preset_id = $this->preset_manager->importPreset($data, $name_override);
+            
+            if (!$preset_id) {
+                return new \WP_REST_Response([
+                    'success' => false,
+                    'message' => '❌ Failed to import preset - invalid data format'
+                ], 400);
+            }
+            
+            $preset = $this->preset_manager->getPreset($preset_id);
+            
+            return new \WP_REST_Response([
+                'success' => true,
+                'message' => "✅ Preset imported successfully as '{$preset['name']}'",
+                'data' => $preset,
+                'timestamp' => current_time('mysql')
+            ], 201);
+            
+        } catch (\Exception $e) {
+            return new \WP_REST_Response([
+                'success' => false,
+                'message' => '❌ Error importing preset: ' . $e->getMessage()
+            ], 500);
+        }
     }
 } 
