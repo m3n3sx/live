@@ -62,6 +62,28 @@
             $(document).on("change" + namespace, "#mas-v2-import-file", this.handleImportFile);
             $(document).on("change" + namespace, "#mas-v2-live-preview", this.toggleLivePreview);
             
+            // NAPRAWKA KRYTYCZNA: Ulepszone handling checkbox z prawidłową serializacją
+            $(document).on("change" + namespace, "#mas-v2-settings-form input[type='checkbox']", function() {
+                const $checkbox = $(this);
+                const name = $checkbox.attr('name');
+                const isChecked = $checkbox.is(':checked');
+                
+                // Explicit value handling for proper serialization - NAPRAWKA CHECKBOX
+                $checkbox.val(isChecked ? '1' : '0');
+                
+                // Dodaj hidden input dla WordPress serialization compatibility  
+                let $hiddenInput = $checkbox.siblings('input[name="' + name + '_hidden"]');
+                if ($hiddenInput.length === 0) {
+                    $hiddenInput = $('<input type="hidden" name="' + name + '_hidden" value="0">');
+                    $checkbox.before($hiddenInput);
+                }
+                $hiddenInput.val(isChecked ? '1' : '0');
+                
+                console.log('🔧 CHECKBOX FIXED: Checkbox changed:', name, '=', isChecked, 'value:', $checkbox.val());
+                MAS.triggerLivePreview();
+                MAS.markAsChanged();
+            });
+            
             // NAPRAWKA: Debounce dla live preview aby uniknąć nadmiarowych requestów
             let livePreviewTimeout;
             const debouncedLivePreview = function() {
@@ -72,12 +94,80 @@
             };
             
             // Rozszerzona obsługa live preview z debounce
-            $(document).on("change input keyup" + namespace, "#mas-v2-settings-form input, #mas-v2-settings-form select, #mas-v2-settings-form textarea", debouncedLivePreview);
-            $(document).on("change" + namespace, "#mas-v2-settings-form input[type='checkbox'], #mas-v2-settings-form input[type='radio']", this.handleFormChange);
+            $(document).on("change input keyup" + namespace, "#mas-v2-settings-form input:not([type='checkbox']), #mas-v2-settings-form select, #mas-v2-settings-form textarea", debouncedLivePreview);
+            $(document).on("change" + namespace, "#mas-v2-settings-form input[type='radio']", this.handleFormChange);
             $(document).on("input" + namespace, "#mas-v2-settings-form input[type='range']", debouncedLivePreview);
             
-            // Obsługa color pickerów
-            $(document).on("wpColorPickerChange" + namespace, "#mas-v2-settings-form input.mas-v2-color", this.handleFormChange);
+            // NAPRAWKA: Ulepszona obsługa color pickerów z error handling
+            $(document).on("wpColorPickerChange" + namespace, "#mas-v2-settings-form input.mas-v2-color", function() {
+                try {
+                    MAS.handleFormChange();
+                } catch (error) {
+                    console.error('🔴 AJAX ERROR: Color picker error:', error);
+                    MAS.showNotification('Color picker error: ' + error.message, 'error');
+                }
+            });
+        },
+
+        // NAPRAWKA KRYTYCZNA: Toast notification system dla user feedback
+        showNotification: function(message, type = 'info') {
+            const toast = $(`
+                <div class="mas-notification mas-notification-${type}">
+                    <span class="mas-notification-icon">
+                        ${type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️'}
+                    </span>
+                    <span class="mas-notification-message">${message}</span>
+                    <button class="mas-notification-close">&times;</button>
+                </div>
+            `);
+            
+            // Add to body if not exists
+            if ($('.mas-notifications-container').length === 0) {
+                $('body').append('<div class="mas-notifications-container"></div>');
+            }
+            
+            $('.mas-notifications-container').append(toast);
+            toast.addClass('mas-notification-show');
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                toast.removeClass('mas-notification-show');
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+            
+            // Manual close handler
+            toast.find('.mas-notification-close').on('click', function() {
+                toast.removeClass('mas-notification-show');
+                setTimeout(() => toast.remove(), 300);
+            });
+        },
+
+        // NAPRAWKA KRYTYCZNA: Cleanup function dla memory leaks
+        cleanup: function() {
+            console.log('🧹 MEMORY CLEANUP: Cleaning up MAS resources...');
+            
+            // Clear all timeouts
+            clearTimeout(this.livePreviewTimeout);
+            clearTimeout(this.sliderTimeout);
+            clearTimeout(this.colorTimeout);
+            
+            // Remove all event listeners with namespace
+            $(document).off('.masV2Events');
+            
+            // Clear intervals
+            if (this.autoSaveInterval) {
+                clearInterval(this.autoSaveInterval);
+                this.autoSaveInterval = null;
+            }
+            
+            // Cleanup WordPress color pickers
+            $('.mas-v2-color').each(function() {
+                if ($(this).hasClass('wp-color-picker')) {
+                    $(this).wpColorPicker('destroy');
+                }
+            });
+            
+            console.log('✅ MEMORY CLEANUP: Resources cleaned successfully');
         },
 
         // Skróty klawiszowe są teraz obsługiwane globalnie w admin-global.js
@@ -106,9 +196,20 @@
             $(".mas-v2-color").each(function() {
                 const $input = $(this);
                 
-                if ($.fn.wpColorPicker) {
+                // NAPRAWKA KRYTYCZNA: Enhanced color picker integration
+                if ($.fn.wpColorPicker && !$input.hasClass('wp-color-picker')) {
                     $input.wpColorPicker({
                         change: function(event, ui) {
+                            const color = ui.color.toString();
+                            const fieldName = $input.attr('name');
+                            
+                            // NAPRAWKA: Update CSS variable immediately for instant preview
+                            if (fieldName) {
+                                const cssVar = `--mas-${fieldName.replace(/_/g, '-')}`;
+                                document.documentElement.style.setProperty(cssVar, color);
+                                console.log('🎨 COLOR PICKER: Updated CSS variable:', cssVar, '=', color);
+                            }
+                            
                             if (MAS.livePreviewEnabled) {
                                 clearTimeout(MAS.colorTimeout);
                                 MAS.colorTimeout = setTimeout(function() {
@@ -118,11 +219,27 @@
                             MAS.markAsChanged();
                         },
                         clear: function() {
+                            const fieldName = $input.attr('name');
+                            
+                            // NAPRAWKA: Reset CSS variable to default when cleared
+                            if (fieldName) {
+                                const cssVar = `--mas-${fieldName.replace(/_/g, '-')}`;
+                                document.documentElement.style.removeProperty(cssVar);
+                                console.log('🎨 COLOR PICKER: Cleared CSS variable:', cssVar);
+                            }
+                            
                             if (MAS.livePreviewEnabled) {
                                 MAS.triggerLivePreview();
                             }
                             MAS.markAsChanged();
-                        }
+                        },
+                        // NAPRAWKA: Enhanced color picker options
+                        palettes: [
+                            '#6366f1', '#ec4899', '#06b6d4', '#10b981', '#f59e0b', '#ef4444',
+                            '#8b5cf6', '#f97316', '#84cc16', '#06b6d4', '#f59e0b', '#ef4444'
+                        ],
+                        width: 255,
+                        mode: 'hsl'
                     });
                 }
             });
@@ -4974,4 +5091,18 @@
         console.log('🗑️ Bulk delete performed on', elementsToDelete.length, 'elements');
     };
 
+    // NAPRAWKA KRYTYCZNA: Cleanup resources on page unload dla memory leaks
+    $(window).on('beforeunload', function() {
+        if (window.MAS && typeof window.MAS.cleanup === 'function') {
+            window.MAS.cleanup();
+        }
+    });
+
 })(jQuery);
+
+// NAPRAWKA KRYTYCZNA: Cleanup resources on page unload dla memory leaks
+jQuery(window).on('beforeunload', function() {
+    if (window.MAS && typeof window.MAS.cleanup === 'function') {
+        window.MAS.cleanup();
+    }
+});

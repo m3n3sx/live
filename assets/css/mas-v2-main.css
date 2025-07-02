@@ -4,6 +4,322 @@
  */
 
 /* ==========================================================================
+   🔴 KRYTYCZNE NAPRAWY - PRIORYTET 1
+   ========================================================================== */
+
+/* NAPRAWKA KRYTYCZNA: Toast Notifications System */
+.mas-notifications-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 999999;
+    pointer-events: none;
+}
+
+.mas-notification {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 10px;
+    color: white;
+    font-family: var(--mas-font-family);
+    font-size: 14px;
+    font-weight: 500;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transform: translateX(400px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: auto;
+    min-width: 300px;
+    max-width: 400px;
+}
+
+.mas-notification.mas-notification-show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.mas-notification.mas-notification-success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.mas-notification.mas-notification-error {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.mas-notification.mas-notification-warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+.mas-notification-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.mas-notification-message {
+    flex: 1;
+    line-height: 1.4;
+}
+
+.mas-notification-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mas-notification-close:hover {
+    color: white;
+}
+
+/* NAPRAWKA KRYTYCZNA: Admin Bar Conflicts - Floating Elements */
+body.admin-bar .mas-global-live-edit-toggle {
+    top: calc(32px + 20px) !important;
+}
+
+body.admin-bar .mas-micro-panel {
+    top: calc(32px + 10px) !important;
+}
+
+body.admin-bar .mas-advanced-toolbar {
+    top: calc(32px + 10px) !important;
+}
+
+body.admin-bar .mas-floating-menu {
+    top: calc(32px + var(--mas-menu-margin-top, 10px)) !important;
+}
+
+/* NAPRAWKA KRYTYCZNA: Mobile Responsiveness - Core Fixes */
+@media (max-width: 782px) {
+    /* WordPress mobile admin bar adjustment */
+    body.admin-bar .mas-global-live-edit-toggle {
+        top: calc(46px + 10px) !important;
+    }
+    
+    body.admin-bar .mas-micro-panel {
+        top: calc(46px + 10px) !important;
+    }
+    
+    body.admin-bar .mas-advanced-toolbar {
+        top: calc(46px + 10px) !important;
+    }
+    
+    body.admin-bar .mas-floating-menu {
+        top: calc(46px + var(--mas-menu-margin-top, 10px)) !important;
+    }
+    
+    /* Admin wrapper mobile fixes */
+    .mas-v2-admin-wrapper {
+        padding: 10px !important;
+        margin: 0 !important;
+    }
+    
+    /* Micro panel mobile optimization */
+    .mas-micro-panel {
+        min-width: 280px !important;
+        max-width: calc(100vw - 20px) !important;
+        left: 10px !important;
+        right: 10px !important;
+        transform: translateX(0) !important;
+    }
+    
+    /* Touch targets - Apple guideline compliance */
+    .mas-context-cog {
+        min-height: 44px !important;
+        min-width: 44px !important;
+        padding: 8px !important;
+    }
+    
+    .mas-toggle-btn {
+        min-height: 44px !important;
+        padding: 12px 16px !important;
+    }
+    
+    /* Mobile typography adjustments */
+    .mas-v2-title {
+        font-size: 1.8rem !important;
+    }
+    
+    .mas-v2-subtitle {
+        font-size: 1rem !important;
+    }
+    
+    /* Mobile navigation improvements */
+    .mas-v2-nav-tabs {
+        padding: 0 10px !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
+    .mas-v2-nav-tab {
+        min-width: 120px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    /* Mobile content spacing */
+    .mas-v2-content {
+        padding: 15px !important;
+    }
+    
+    .mas-v2-settings-columns {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+    
+    /* Mobile notifications */
+    .mas-notifications-container {
+        top: 10px !important;
+        right: 10px !important;
+        left: 10px !important;
+    }
+    
+    .mas-notification {
+        min-width: auto !important;
+        max-width: none !important;
+        margin: 0 0 10px 0 !important;
+    }
+}
+
+/* NAPRAWKA KRYTYCZNA: Tablet Responsiveness */
+@media (max-width: 768px) and (min-width: 481px) {
+    .mas-v2-admin-wrapper {
+        padding: 20px;
+    }
+    
+    .mas-micro-panel {
+        min-width: 320px;
+        max-width: calc(100vw - 40px);
+    }
+    
+    .mas-v2-settings-columns {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+}
+
+/* NAPRAWKA KRYTYCZNA: Enhanced Color Picker Integration */
+.mas-v2-color.wp-color-picker {
+    width: 100% !important;
+    height: 40px !important;
+    border: 2px solid var(--mas-glass-border) !important;
+    border-radius: var(--mas-radius-md) !important;
+    background: var(--mas-glass-bg) !important;
+    transition: all 0.3s ease !important;
+}
+
+.mas-v2-color.wp-color-picker:focus {
+    border-color: var(--mas-primary) !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+}
+
+.wp-picker-container .wp-color-result {
+    height: 40px !important;
+    border: 2px solid var(--mas-glass-border) !important;
+    border-radius: var(--mas-radius-md) !important;
+    background: var(--mas-glass-bg) !important;
+    backdrop-filter: var(--mas-blur-sm) !important;
+    transition: all 0.3s ease !important;
+}
+
+.wp-picker-container .wp-color-result:hover {
+    border-color: var(--mas-primary) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2) !important;
+}
+
+/* NAPRAWKA KRYTYCZNA: Server Configuration Warnings */
+.mas-server-warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+}
+
+.mas-server-warning-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.mas-server-warning-content h4 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.mas-server-warning-content p {
+    margin: 0;
+    opacity: 0.9;
+    line-height: 1.5;
+}
+
+.mas-server-requirements-list {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 0 0;
+}
+
+.mas-server-requirements-list li {
+    padding: 4px 0;
+    font-family: var(--mas-font-mono);
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+/* NAPRAWKA KRYTYCZNA: Memory Optimization Indicators */
+.mas-memory-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: var(--mas-font-mono);
+}
+
+.mas-memory-status.good {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.mas-memory-status.warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.mas-memory-status.critical {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* ==========================================================================
    NEW DESIGN SYSTEM - Modern Variables
    ========================================================================== */
 
@@ -3221,6 +3537,319 @@ body.wp-admin ::-moz-selection {
 }
 
 /* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    body.wp-admin.mas-reduced-motion-respect,
+    body.wp-admin.mas-reduced-motion-respect * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.1s !important;
+    }
+    
+    body.wp-admin.mas-reduced-motion-respect .wrap .postbox:hover,
+    body.wp-admin.mas-reduced-motion-respect .wp-core-ui .button:hover {
+        transform: none !important;
+    }
+    
+    body.wp-admin.mas-reduced-motion-respect .mas-floating-particles {
+        display: none !important;
+    }
+    
+    body.wp-admin.mas-reduced-motion-respect .mas-glow-cursor {
+        display: none !important;
+    }
+}
+
+/* Force reduced motion when setting is enabled */
+body.wp-admin.mas-reduced-motion-respect,
+body.wp-admin.mas-reduced-motion-respect * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.1s !important;
+}
+
+body.wp-admin.mas-reduced-motion-respect .wrap .postbox:hover,
+body.wp-admin.mas-reduced-motion-respect .wp-core-ui .button:hover {
+    transform: none !important;
+}
+
+/* ==========================================================================
+   HARDWARE ACCELERATION
+   ========================================================================== */
+
+body.wp-admin.mas-hardware-accelerated .wrap .postbox,
+body.wp-admin.mas-hardware-accelerated .wrap .stuffbox,
+body.wp-admin.mas-hardware-accelerated .wp-core-ui .button,
+body.wp-admin.mas-hardware-accelerated .form-table,
+body.wp-admin.mas-hardware-accelerated .wp-list-table {
+    will-change: transform, opacity, box-shadow !important;
+    transform: translateZ(0) !important;
+    backface-visibility: hidden !important;
+    perspective: 1000px !important;
+}
+
+/* ==========================================================================
+   DEBUG MODE STYLES
+   ========================================================================== */
+
+body.wp-admin.mas-debug-mode .wrap .postbox,
+body.wp-admin.mas-debug-mode .wrap .stuffbox,
+body.wp-admin.mas-debug-mode .wp-core-ui .button {
+    position: relative !important;
+}
+
+body.wp-admin.mas-debug-mode .wrap .postbox::after,
+body.wp-admin.mas-debug-mode .wrap .stuffbox::after,
+body.wp-admin.mas-debug-mode .wp-core-ui .button::after {
+    content: '3D' !important;
+    position: absolute !important;
+    top: 5px !important;
+    right: 5px !important;
+    background: rgba(255, 0, 0, 0.8) !important;
+    color: white !important;
+    font-size: 10px !important;
+    padding: 2px 4px !important;
+    border-radius: 2px !important;
+    z-index: 1000 !important;
+    pointer-events: none !important;
+}
+
+/* ==========================================================================
+   INTENSITY CONTROL VARIABLES
+   ========================================================================== */
+
+:root {
+    --mas-3d-intensity: 1.0;
+    --mas-typography-scale: 1.0;
+}
+
+/* Apply intensity scaling to 3D transforms */
+body.wp-admin .wrap .postbox:hover,
+body.wp-admin .wrap .stuffbox:hover {
+    transform: translateY(calc(-8px * var(--mas-3d-intensity))) 
+               rotateX(calc(2deg * var(--mas-3d-intensity))) 
+               rotateY(calc(1deg * var(--mas-3d-intensity))) 
+               translateZ(calc(20px * var(--mas-3d-intensity))) !important;
+}
+
+body.wp-admin .wp-core-ui .button:hover {
+    transform: translateY(calc(-4px * var(--mas-3d-intensity))) 
+               translateZ(calc(15px * var(--mas-3d-intensity))) 
+               rotateX(calc(2deg * var(--mas-3d-intensity))) !important;
+}
+
+/* Apply typography scaling */
+body.wp-admin h1,
+body.wp-admin .wp-heading-inline {
+    font-size: calc(2.5rem * var(--mas-typography-scale)) !important;
+}
+
+body.wp-admin h2 {
+    font-size: calc(2rem * var(--mas-typography-scale)) !important;
+}
+
+body.wp-admin h3 {
+    font-size: calc(1.5rem * var(--mas-typography-scale)) !important;
+}
+
+body.wp-admin h4 {
+    font-size: calc(1.25rem * var(--mas-typography-scale)) !important;
+}
+
+body.wp-admin h5 {
+    font-size: calc(1.125rem * var(--mas-typography-scale)) !important;
+}
+
+body.wp-admin h6 {
+    font-size: calc(1rem * var(--mas-typography-scale)) !important;
+}
+
+/* ==========================================================================
+   CONDITIONAL 3D EFFECTS - Based on JavaScript Controls
+   ========================================================================== */ 
+
+/* Global 3D Effects Toggle */
+body.wp-admin:not(.mas-3d-enabled) .wrap .postbox,
+body.wp-admin:not(.mas-3d-enabled) .wrap .stuffbox,
+body.wp-admin:not(.mas-3d-enabled) .wp-core-ui .button,
+body.wp-admin:not(.mas-3d-enabled) .form-table,
+body.wp-admin:not(.mas-3d-enabled) .wp-list-table {
+    transform: none !important;
+    transition: none !important;
+    transform-style: flat !important;
+}
+
+body.wp-admin:not(.mas-3d-enabled) .wrap .postbox:hover,
+body.wp-admin:not(.mas-3d-enabled) .wrap .stuffbox:hover,
+body.wp-admin:not(.mas-3d-enabled) .wp-core-ui .button:hover,
+body.wp-admin:not(.mas-3d-enabled) .form-table:hover,
+body.wp-admin:not(.mas-3d-enabled) .wp-list-table:hover {
+    transform: none !important;
+    box-shadow: var(--mas-glass-shadow) !important;
+}
+
+/* Glassmorphism Toggle */
+body.wp-admin:not(.mas-glassmorphism-enabled) .wrap .postbox,
+body.wp-admin:not(.mas-glassmorphism-enabled) .wrap .stuffbox,
+body.wp-admin:not(.mas-glassmorphism-enabled) .wp-core-ui .button,
+body.wp-admin:not(.mas-glassmorphism-enabled) .form-table,
+body.wp-admin:not(.mas-glassmorphism-enabled) .wp-list-table,
+body.wp-admin:not(.mas-glassmorphism-enabled) .notice {
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid #ddd !important;
+}
+
+body.wp-admin:not(.mas-animated-bg-enabled) {
+    background: #f1f1f1 !important;
+    animation: none !important;
+}
+
+body.wp-admin:not(.mas-animated-bg-enabled)::before {
+    display: none !important;
+}
+
+/* Mouse Parallax Toggle */
+body.wp-admin:not(.mas-parallax-enabled) .wrap .postbox,
+body.wp-admin:not(.mas-parallax-enabled) .wrap .stuffbox,
+body.wp-admin:not(.mas-parallax-enabled) .wp-core-ui .button {
+    /* No mouse parallax effects */
+}
+
+/* Card Hover 3D Toggle */
+body.wp-admin:not(.mas-card-3d-enabled) .wrap .postbox:hover,
+body.wp-admin:not(.mas-card-3d-enabled) .wrap .stuffbox:hover,
+body.wp-admin:not(.mas-card-3d-enabled) .form-table:hover,
+body.wp-admin:not(.mas-card-3d-enabled) .wp-list-table:hover {
+    transform: translateY(-2px) !important;
+    /* Simplified hover - no rotation */
+}
+
+/* Button 3D Toggle */
+body.wp-admin:not(.mas-button-3d-enabled) .wp-core-ui .button:hover,
+body.wp-admin:not(.mas-button-3d-enabled) .wp-core-ui .button-primary:hover,
+body.wp-admin:not(.mas-button-3d-enabled) .wp-core-ui .button-secondary:hover {
+    transform: translateY(-1px) !important;
+    /* Simplified button hover */
+}
+
+/* Card Flip Toggle */
+body.wp-admin:not(.mas-card-flip-enabled) #dashboard-widgets .postbox {
+    /* No flip capability */
+}
+
+/* Gradient Headings Toggle */
+body.wp-admin:not(.mas-gradient-headings-enabled) h1,
+body.wp-admin:not(.mas-gradient-headings-enabled) .wp-heading-inline {
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    -webkit-text-fill-color: initial !important;
+    background-clip: initial !important;
+    color: #23282d !important;
+}
+
+/* Text Shimmer Toggle */
+body.wp-admin:not(.mas-text-shimmer-enabled) h1:hover,
+body.wp-admin:not(.mas-text-shimmer-enabled) h2:hover,
+body.wp-admin:not(.mas-text-shimmer-enabled) h3:hover {
+    animation: none !important;
+}
+
+/* Text Reveal Toggle */
+body.wp-admin:not(.mas-text-reveal-enabled) .mas-text-reveal {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+/* Floating Particles Toggle */
+body.wp-admin:not(.mas-particles-enabled) .mas-floating-particles {
+    display: none !important;
+}
+
+/* Custom Cursor Toggle */
+body.wp-admin:not(.mas-custom-cursor-enabled) .mas-glow-cursor {
+    display: none !important;
+}
+
+/* 3D Tooltips Toggle */
+body.wp-admin:not(.mas-3d-tooltips-enabled) .mas-floating-tooltip {
+    background: rgba(0, 0, 0, 0.8) !important;
+    backdrop-filter: none !important;
+    border: none !important;
+    border-radius: 4px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Parallax Scrolling Toggle */
+body.wp-admin:not(.mas-parallax-scroll-enabled) {
+    /* No parallax effects */
+}
+
+/* ==========================================================================
+   PERFORMANCE MODE ADJUSTMENTS
+   ========================================================================== */ 
+
+/* High Performance Mode - All effects enabled */
+body.wp-admin.mas-3d-high .wrap .postbox:hover,
+body.wp-admin.mas-3d-high .wrap .stuffbox:hover {
+    transform: translateY(-10px) rotateX(3deg) rotateY(2deg) translateZ(20px) !important;
+}
+
+/* Balanced Performance Mode - Reduced effects */
+body.wp-admin.mas-3d-balanced .wrap .postbox:hover,
+body.wp-admin.mas-3d-balanced .wrap .stuffbox:hover {
+    transform: translateY(-6px) rotateX(1deg) rotateY(1deg) translateZ(10px) !important;
+}
+
+/* Low Performance Mode - Minimal effects */
+body.wp-admin.mas-3d-low .wrap .postbox:hover,
+body.wp-admin.mas-3d-low .wrap .stuffbox:hover {
+    transform: translateY(-3px) !important;
+}
+
+body.wp-admin.mas-3d-low .wp-core-ui .button:hover {
+    transform: translateY(-2px) !important;
+}
+
+body.wp-admin.mas-3d-low .mas-floating-particles {
+    display: none !important;
+}
+
+body.wp-admin.mas-3d-low .mas-glow-cursor {
+    display: none !important;
+} 
+
+/* ==========================================================================
+   MOBILE OPTIMIZATION
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    body.wp-admin.mas-mobile-optimized .wrap .postbox:hover,
+    body.wp-admin.mas-mobile-optimized .wrap .stuffbox:hover,
+    body.wp-admin.mas-mobile-optimized .form-table:hover,
+    body.wp-admin.mas-mobile-optimized .wp-list-table:hover {
+        transform: translateY(-2px) !important;
+        /* Reduced 3D effects on mobile */
+    }
+    
+    body.wp-admin.mas-mobile-optimized .wp-core-ui .button:hover {
+        transform: translateY(-1px) !important;
+    }
+    
+    body.wp-admin.mas-mobile-optimized .mas-floating-particles {
+        display: none !important;
+    }
+    
+    body.wp-admin.mas-mobile-optimized .mas-glow-cursor {
+        display: none !important;
+    }
+}
+
+/* ==========================================================================
+   REDUCED MOTION RESPECT
+   ========================================================================== */
+
 @media (prefers-reduced-motion: reduce) {
     body.wp-admin.mas-reduced-motion-respect,
     body.wp-admin.mas-reduced-motion-respect * {
