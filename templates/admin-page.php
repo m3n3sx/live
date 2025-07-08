@@ -839,10 +839,7 @@ $plugin_url = MAS_V2_PLUGIN_URL;
                         <label for="dark_mode_enabled">Tryb ciemny</label>
                     </div>
                     
-                    <div class="mas-v2-checkbox">
-                        <input type="checkbox" name="auto_dark_mode" id="auto_dark_mode" <?php checked($settings['auto_dark_mode']); ?>>
-                        <label for="auto_dark_mode">Automatyczny tryb ciemny</label>
-                    </div>
+
                     
                     <div class="mas-v2-checkbox">
                         <input type="checkbox" name="high_contrast_mode" id="high_contrast_mode" <?php checked($settings['high_contrast_mode']); ?>>

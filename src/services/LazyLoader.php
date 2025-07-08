@@ -45,7 +45,7 @@ class LazyLoader {
         $this->criticalAssets = [
             'mas-core-css' => [
                 'type' => 'style',
-                'src' => 'assets/css/mas-v2-main.css',
+                'src' => 'assets/css/woow-main.css',
                 'priority' => self::PRIORITY_CRITICAL,
                 'contexts' => [self::CONTEXT_DESKTOP, self::CONTEXT_MOBILE],
                 'conditions' => ['enable_plugin' => true],

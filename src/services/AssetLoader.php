@@ -49,8 +49,16 @@ class AssetLoader {
         // STEP 1: Load main static CSS file (100% cacheable)
         wp_enqueue_style(
             'mas-v2-main',
-            $this->plugin_url . 'assets/css/mas-v2-main.css',
+            $this->plugin_url . 'assets/css/woow-main.css',
             ['dashicons'],
+            $this->plugin_version
+        );
+        
+        // STEP 1.5: Load WOOW! Semantic Theme Architecture (v3.0.0-beta.1)
+        wp_enqueue_style(
+            'woow-semantic-themes',
+            $this->plugin_url . 'assets/css/woow-semantic-themes.css',
+            ['mas-v2-main'],
             $this->plugin_version
         );
         
@@ -64,16 +72,25 @@ class AssetLoader {
         // Load interface utilities CSS
         wp_enqueue_style(
             'mas-v2-utilities',
-            $this->plugin_url . 'assets/css/mas-utilities.css',
+            $this->plugin_url . 'assets/css/woow-utilities.css',
             ['mas-v2-main'],
             $this->plugin_version
         );
         
-        // STEP 3: Load V3 Data-Driven JavaScript
+        // STEP 3: Load WOOW Admin JavaScript (contains MAS object)
+        wp_enqueue_script(
+            'woow-admin',
+            $this->plugin_url . 'assets/js/woow-admin.js',
+            ['jquery', 'wp-color-picker'],
+            $this->plugin_version,
+            true
+        );
+        
+        // Load V3 Data-Driven JavaScript
         wp_enqueue_script(
             'mas-v2-admin',
             $this->plugin_url . 'assets/js/admin-modern-v3.js',
-            ['jquery', 'wp-color-picker'],
+            ['jquery', 'wp-color-picker', 'woow-admin'],
             $this->plugin_version,
             true
         );
@@ -92,6 +109,15 @@ class AssetLoader {
             $this->plugin_url . 'assets/css/live-edit-mode.css',
             ['mas-v2-main'],
             $this->plugin_version
+        );
+        
+        // MAS Live Edit Bridge - connects MAS object with Live Edit Mode
+        wp_enqueue_script(
+            'mas-v2-live-edit-bridge',
+            $this->plugin_url . 'assets/js/mas-live-edit-bridge.js',
+            ['woow-admin', 'mas-v2-admin', 'mas-v2-live-edit'],
+            $this->plugin_version,
+            true
         );
         
         // Localize script for Live Edit Mode
@@ -129,11 +155,11 @@ class AssetLoader {
             'apiUrl' => rest_url('modern-admin-styler/v2/presets'),
             'nonce' => wp_create_nonce('wp_rest'),
             'strings' => [
-                'saveSuccess' => __('Preset saved successfully!', 'modern-admin-styler-v2'),
-                'applySuccess' => __('Preset applied successfully!', 'modern-admin-styler-v2'),
-                'deleteConfirm' => __('Are you sure you want to delete this preset?', 'modern-admin-styler-v2'),
-                'exportSuccess' => __('Preset exported successfully!', 'modern-admin-styler-v2'),
-                'importSuccess' => __('Preset imported successfully!', 'modern-admin-styler-v2'),
+                'saveSuccess' => __('Preset saved successfully!', 'woow-admin-styler'),
+                'applySuccess' => __('Preset applied successfully!', 'woow-admin-styler'),
+                'deleteConfirm' => __('Are you sure you want to delete this preset?', 'woow-admin-styler'),
+                'exportSuccess' => __('Preset exported successfully!', 'woow-admin-styler'),
+                'importSuccess' => __('Preset imported successfully!', 'woow-admin-styler'),
             ]
         ]);
         
@@ -170,8 +196,16 @@ class AssetLoader {
         // STEP 1: Load main static CSS file (100% cacheable)
         wp_enqueue_style(
             'mas-v2-main',
-            $this->plugin_url . 'assets/css/mas-v2-main.css',
+            $this->plugin_url . 'assets/css/woow-main.css',
             ['dashicons'],
+            $this->plugin_version
+        );
+        
+        // STEP 1.5: Load WOOW! Semantic Theme Architecture (v3.0.0-beta.1)
+        wp_enqueue_style(
+            'woow-semantic-themes',
+            $this->plugin_url . 'assets/css/woow-semantic-themes.css',
+            ['mas-v2-main'],
             $this->plugin_version
         );
         
@@ -182,11 +216,20 @@ class AssetLoader {
             wp_add_inline_style('mas-v2-main', $dynamic_css);
         }
         
-        // STEP 3: Load global JavaScript
+        // STEP 3: Load WOOW Admin JavaScript (contains MAS object)
+        wp_enqueue_script(
+            'woow-admin-global',
+            $this->plugin_url . 'assets/js/woow-admin.js',
+            ['jquery'],
+            $this->plugin_version,
+            true
+        );
+        
+        // Load global JavaScript
         wp_enqueue_script(
             'mas-v2-global',
             $this->plugin_url . 'assets/js/admin-global.js',
-            ['jquery'],
+            ['jquery', 'woow-admin-global'],
             $this->plugin_version,
             true
         );
@@ -207,11 +250,30 @@ class AssetLoader {
             $this->plugin_version
         );
         
+        // MAS Live Edit Bridge - global availability
+        wp_enqueue_script(
+            'mas-v2-live-edit-bridge-global',
+            $this->plugin_url . 'assets/js/mas-live-edit-bridge.js',
+            ['woow-admin-global', 'mas-v2-global', 'mas-v2-live-edit-global'],
+            $this->plugin_version,
+            true
+        );
+        
         // Toast Notifications System - global availability
         wp_enqueue_script(
             'mas-v2-toast-notifications-global',
             $this->plugin_url . 'assets/js/toast-notifications.js',
             [],
+            $this->plugin_version,
+            true
+        );
+        
+        // 🔧 WOOW! Compatibility Layer (v3.0.0-beta.1) - Global availability
+        // Ensures 100% compatibility between mas-* and woow-* variables
+        wp_enqueue_script(
+            'woow-compatibility-layer-global',
+            $this->plugin_url . 'assets/js/woow-compatibility-layer.js',
+            ['jquery'],
             $this->plugin_version,
             true
         );
@@ -253,14 +315,12 @@ class AssetLoader {
     public function addEarlyLoadingProtection() {
         ?>
         <style>
-        /* Enterprise Loading Protection - Prevents FOUC and animation glitches */
         .mas-loading,
         .mas-loading * {
             transition: none !important;
             animation: none !important;
         }
         
-        /* Performance optimization for reduced motion users */
         @media (prefers-reduced-motion: reduce) {
             * {
                 animation-duration: 0.01ms !important;
@@ -270,7 +330,6 @@ class AssetLoader {
         }
         </style>
         <script>
-        /* Enterprise Loading Manager */
         (function() {
             'use strict';
             

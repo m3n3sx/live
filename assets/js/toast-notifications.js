@@ -52,7 +52,6 @@ class MASToastNotifications {
         // Udostępnij globalnie
         window.MASToast = this;
         
-        console.log('🔔 MAS Toast Notifications System initialized');
     }
     
     /**

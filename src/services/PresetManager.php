@@ -39,14 +39,14 @@ class PresetManager {
      */
     public function registerPresetPostType() {
         $labels = [
-            'name'                  => __('Style Presets', 'modern-admin-styler-v2'),
-            'singular_name'         => __('Style Preset', 'modern-admin-styler-v2'),
-            'menu_name'            => __('Style Presets', 'modern-admin-styler-v2'),
+            'name'                  => __('Style Presets', 'woow-admin-styler'),
+            'singular_name'         => __('Style Preset', 'woow-admin-styler'),
+            'menu_name'            => __('Style Presets', 'woow-admin-styler'),
         ];
         
         $args = [
             'labels'              => $labels,
-            'description'         => __('Style configuration presets for Modern Admin Styler V2', 'modern-admin-styler-v2'),
+            'description'         => __('Style configuration presets for Modern Admin Styler V2', 'woow-admin-styler'),
             'public'              => false,
             'publicly_queryable'  => false,
             'show_ui'             => false, // Hidden from standard admin

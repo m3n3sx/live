@@ -311,7 +311,6 @@ $settings = get_option('mas_v2_settings', []);
 </div>
 
 <style>
-/* Phase 6 Specific Styles */
 .phase6-container {
     padding: 2rem;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

@@ -13,8 +13,17 @@ namespace ModernAdminStyler\Services;
 
 class SecurityService {
     
-    // 🛡️ Konfiguracja sanitacji dla każdego pola
-    private const FIELD_SANITIZERS = [
+    /**
+     * 🛡️ Konfiguracja sanitacji dla każdego pola
+     * REFACTOR: Now uses central schema from main plugin class
+     */
+    private function getFieldSanitizers() {
+        // Get central schema
+        $plugin_instance = \ModernAdminStylerV2::getInstance();
+        $central_schema = $plugin_instance->getOptionsSchema();
+        
+        // Add security-specific sanitization rules
+        $security_rules = [
         // 🎨 KOLORY
         'admin_bar_text_color' => ['type' => 'color', 'default' => '#ffffff'],
         'admin_bar_background' => ['type' => 'color', 'default' => '#23282d'],
@@ -72,10 +81,17 @@ class SecurityService {
         'custom_js' => ['type' => 'javascript', 'max_length' => 20000, 'default' => ''],
         'custom_admin_footer' => ['type' => 'html', 'max_length' => 1000, 'default' => ''],
         
-        // 🔧 SPECJALNE
-        'import_settings' => ['type' => 'json', 'default' => ''],
-        'backup_settings' => ['type' => 'readonly', 'default' => ''],
-    ];
+            // 🔧 SPECJALNE (security-specific)
+            'custom_css' => ['type' => 'css', 'max_length' => 50000, 'default' => ''],
+            'custom_js' => ['type' => 'javascript', 'max_length' => 20000, 'default' => ''],
+            'custom_admin_footer' => ['type' => 'html', 'max_length' => 1000, 'default' => ''],
+            'import_settings' => ['type' => 'json', 'default' => ''],
+            'backup_settings' => ['type' => 'readonly', 'default' => ''],
+        ];
+        
+        // Merge central schema with security rules
+        return array_merge($central_schema, $security_rules);
+    }
     
     // 🚨 Niebezpieczne wzorce w CSS/JS
     private const DANGEROUS_PATTERNS = [
@@ -110,7 +126,7 @@ class SecurityService {
         $sanitized = [];
         $errors = [];
         
-        foreach (self::FIELD_SANITIZERS as $field => $config) {
+        foreach ($this->getFieldSanitizers() as $field => $config) {
             try {
                 $value = $input[$field] ?? $config['default'];
                 $sanitized[$field] = $this->sanitizeField($field, $value, $config);

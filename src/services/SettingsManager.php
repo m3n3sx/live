@@ -16,9 +16,12 @@ class SettingsManager {
     
     /**
      * 📥 Pobiera ustawienia z bazy danych
+     * REFACTOR: Now uses central schema from main plugin class
      */
     public function getSettings() {
-        $defaults = $this->getDefaultSettings();
+        // Get defaults from central schema
+        $plugin_instance = \ModernAdminStylerV2::getInstance();
+        $defaults = $plugin_instance->getDefaultSettings();
         $saved_settings = get_option(self::OPTION_NAME, []);
         
         // Merge z domyślnymi ustawieniami

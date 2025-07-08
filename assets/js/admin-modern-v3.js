@@ -1,6 +1,11 @@
 /**
  * Modern Admin Styler V2 - Data-Driven Live Preview System
  * 
+
+// ========================================================================
+// WOOW! SEMANTIC CSS VARIABLES SYSTEM
+// Controllers synchronized with --woow-{category}-{role} architecture
+// ========================================================================
  * FAZA 3+: Intelligent Live Preview Architecture
  * Sterowany atrybutami data-* zamiast hardcoded if statements
  * 
@@ -82,7 +87,6 @@
          */
         bindEvents: function() {
             if (!this.cache.form) {
-                console.warn('MAS Live Preview: Form not found');
                 return;
             }
             
@@ -113,10 +117,6 @@
         logSystemInfo: function() {
             if (window.masV2?.debug) {
                 console.group('🎨 MAS Live Preview System Initialized');
-                console.log('Available preview types:', Object.keys(this.previewTypes));
-                console.log('Form fields with live preview:', this.getPreviewFields().length);
-                console.log('Cache initialized:', this.cache);
-                console.log('Live Edit Mode:', window.masLiveEditMode ? 'Available' : 'Not loaded');
                 console.groupEnd();
             }
         },
@@ -131,7 +131,6 @@
                     this.syncFromLiveEdit(data);
                 });
                 
-                console.log('🔗 Integrated with Live Edit Mode');
             }
         },
         
@@ -158,7 +157,6 @@
                 const fieldValue = this.getFieldValue(field);
                 
                 if (!previewType || !this.previewTypes[previewType]) {
-                    console.warn(`Unknown preview type: ${previewType}`);
                     return;
                 }
                 
@@ -177,7 +175,6 @@
                 });
                 
             } catch (error) {
-                console.error('MAS Live Preview Error:', error);
             }
         },
         
@@ -191,7 +188,6 @@
                 return this[handler](field, value);
             }
             
-            console.error(`Handler not found: ${handler}`);
             return false;
         },
         
@@ -204,7 +200,6 @@
             const target = field.dataset.target || 'root'; // root, body, form
             
             if (!varName) {
-                console.warn('CSS variable name not specified');
                 return false;
             }
             
@@ -227,7 +222,6 @@
             targetElement.style.setProperty(varName, formattedValue);
             
             if (window.masV2?.debug) {
-                console.log(`CSS Variable: ${varName} = ${formattedValue}`);
             }
             
             return true;
@@ -241,7 +235,6 @@
             const mode = field.dataset.classMode || 'toggle'; // toggle, add, remove
             
             if (!className) {
-                console.warn('Body class name not specified');
                 return false;
             }
             
@@ -259,7 +252,6 @@
             }
             
             if (window.masV2?.debug) {
-                console.log(`Body Class: ${className} (${mode}) = ${value}`);
             }
             
             return true;
@@ -274,7 +266,6 @@
             const unit = field.dataset.unit || '';
             
             if (!selector || !property) {
-                console.warn('Element selector or property not specified');
                 return false;
             }
             
@@ -286,7 +277,6 @@
             });
             
             if (window.masV2?.debug) {
-                console.log(`Element Style: ${selector} { ${property}: ${formattedValue} }`);
             }
             
             return true;
@@ -313,7 +303,6 @@
             }
             
             if (window.masV2?.debug) {
-                console.log(`Custom CSS injected: ${value.length} characters`);
             }
             
             return true;
@@ -341,7 +330,6 @@
             });
             
             if (window.masV2?.debug) {
-                console.log(`Headings Scale: ${scale} (base: ${baseSize}px)`);
             }
             
             return true;
@@ -468,7 +456,6 @@
         
         // Kompatybilność wsteczna
         window.triggerLivePreview = function(formData) {
-            console.warn('triggerLivePreview is deprecated. Use MASLivePreview.refreshAllPreviews()');
             MASLivePreview.refreshAllPreviews();
         };
     });

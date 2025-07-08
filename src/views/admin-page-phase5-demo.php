@@ -232,21 +232,21 @@ $cssStats = $cssGenerator->getStats();
                     <div class="mas-v2-card-content">
                         <div class="mas-v2-color-variables">
                             <div class="mas-v2-color-var">
-                                <div class="mas-v2-color-preview" style="background: var(--mas-primary, #007cba);"></div>
+                                <div class="mas-v2-color-preview" style="background: var(--woow-accent-primary, #007cba);"></div>
                                 <div class="mas-v2-color-info">
                                     <strong>--mas-primary</strong>
                                     <span><?php echo $settings['primary_color'] ?? '#007cba'; ?></span>
                                 </div>
                             </div>
                             <div class="mas-v2-color-var">
-                                <div class="mas-v2-color-preview" style="background: var(--mas-secondary, #50575e);"></div>
+                                <div class="mas-v2-color-preview" style="background: var(--woow-accent-secondary, #50575e);"></div>
                                 <div class="mas-v2-color-info">
                                     <strong>--mas-secondary</strong>
                                     <span><?php echo $settings['secondary_color'] ?? '#50575e'; ?></span>
                                 </div>
                             </div>
                             <div class="mas-v2-color-var">
-                                <div class="mas-v2-color-preview" style="background: var(--mas-accent, #00a0d2);"></div>
+                                <div class="mas-v2-color-preview" style="background: var(--woow-accent-primary, #00a0d2);"></div>
                                 <div class="mas-v2-color-info">
                                     <strong>--mas-accent</strong>
                                     <span><?php echo $settings['accent_color'] ?? '#00a0d2'; ?></span>

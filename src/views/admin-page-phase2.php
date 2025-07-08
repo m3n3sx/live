@@ -24,20 +24,20 @@ $settings_url = admin_url('admin.php?page=modern-admin-styler-settings');
 
 <div class="wrap">
     <h1 class="wp-heading-inline">
-        <?php _e('Modern Admin Styler V2', 'modern-admin-styler-v2'); ?>
-        <span class="title-count theme-count"><?php _e('Phase 2', 'modern-admin-styler-v2'); ?></span>
+        <?php _e('Modern Admin Styler V2', 'woow-admin-styler'); ?>
+        <span class="title-count theme-count"><?php _e('Phase 2', 'woow-admin-styler'); ?></span>
     </h1>
     
     <a href="<?php echo esc_url($customizer_url); ?>" class="page-title-action">
-        <?php _e('Customize Appearance', 'modern-admin-styler-v2'); ?>
+        <?php _e('Customize Appearance', 'woow-admin-styler'); ?>
     </a>
     
     <hr class="wp-header-end">
     
     <!-- Phase 2 Introduction Notice -->
     <?php echo ComponentAdapter::notice(
-        '<strong>' . __('Phase 2: WordPress Visual Language Adaptation', 'modern-admin-styler-v2') . '</strong><br>' .
-        __('This page demonstrates the complete transformation to native WordPress components. All custom UI elements have been replaced with standard WordPress components (.postbox, .button, .notice) combined with minimal utility CSS.', 'modern-admin-styler-v2'),
+        '<strong>' . __('Phase 2: WordPress Visual Language Adaptation', 'woow-admin-styler') . '</strong><br>' .
+        __('This page demonstrates the complete transformation to native WordPress components. All custom UI elements have been replaced with standard WordPress components (.postbox, .button, .notice) combined with minimal utility CSS.', 'woow-admin-styler'),
         'info',
         ['dismissible' => true, 'classes' => 'mas-mb-4']
     ); ?>
@@ -52,54 +52,54 @@ $settings_url = admin_url('admin.php?page=modern-admin-styler-settings');
             <?php
             $quick_actions_content = '
                 <div class="mas-flex mas-flex-wrap mas-gap-3 mas-mb-4">
-                    ' . ComponentAdapter::button(__('Visual Customizer', 'modern-admin-styler-v2'), 'primary', [
+                    ' . ComponentAdapter::button(__('Visual Customizer', 'woow-admin-styler'), 'primary', [
                         'icon' => 'admin-customizer',
                         'attributes' => ['onclick' => 'window.open("' . esc_js($customizer_url) . '", "_blank")']
                     ]) . '
-                    ' . ComponentAdapter::button(__('Functional Settings', 'modern-admin-styler-v2'), 'secondary', [
+                    ' . ComponentAdapter::button(__('Functional Settings', 'woow-admin-styler'), 'secondary', [
                         'icon' => 'admin-settings',
                         'attributes' => ['onclick' => 'window.location.href="' . esc_js($settings_url) . '"']
                     ]) . '
-                    ' . ComponentAdapter::button(__('Clear Cache', 'modern-admin-styler-v2'), 'secondary', [
+                    ' . ComponentAdapter::button(__('Clear Cache', 'woow-admin-styler'), 'secondary', [
                         'icon' => 'update',
                         'id' => 'clear-cache-btn'
                     ]) . '
-                    ' . ComponentAdapter::button(__('Export Settings', 'modern-admin-styler-v2'), 'secondary', [
+                    ' . ComponentAdapter::button(__('Export Settings', 'woow-admin-styler'), 'secondary', [
                         'icon' => 'download',
                         'id' => 'export-settings-btn'
                     ]) . '
                 </div>
-                <p class="description">' . __('Quick access to main plugin functions. Visual options are managed through WordPress Customizer, functional options through Settings API.', 'modern-admin-styler-v2') . '</p>
+                <p class="description">' . __('Quick access to main plugin functions. Visual options are managed through WordPress Customizer, functional options through Settings API.', 'woow-admin-styler') . '</p>
             ';
             
             echo ComponentAdapter::metabox(
-                __('Quick Actions', 'modern-admin-styler-v2'),
+                __('Quick Actions', 'woow-admin-styler'),
                 $quick_actions_content,
-                ['description' => __('Main plugin controls using native WordPress components', 'modern-admin-styler-v2')]
+                ['description' => __('Main plugin controls using native WordPress components', 'woow-admin-styler')]
             );
             ?>
             
             <!-- Current Configuration -->
             <?php
             $config_rows = [
-                [__('Plugin Status', 'modern-admin-styler-v2'), $settings['enable_plugin'] ? '<span class="dashicons dashicons-yes-alt" style="color: #00a32a;"></span> ' . __('Enabled', 'modern-admin-styler-v2') : '<span class="dashicons dashicons-dismiss" style="color: #d63638;"></span> ' . __('Disabled', 'modern-admin-styler-v2')],
-                [__('Color Scheme', 'modern-admin-styler-v2'), ucfirst($settings['color_scheme'] ?? 'default')],
-                [__('Admin Bar', 'modern-admin-styler-v2'), $settings['admin_bar_floating'] ? __('Floating', 'modern-admin-styler-v2') : __('Fixed', 'modern-admin-styler-v2')],
-                [__('Side Menu', 'modern-admin-styler-v2'), $settings['side_menu_floating'] ? __('Floating', 'modern-admin-styler-v2') : __('Fixed', 'modern-admin-styler-v2')],
-                [__('Glassmorphism', 'modern-admin-styler-v2'), $settings['enable_glassmorphism'] ? __('Enabled', 'modern-admin-styler-v2') : __('Disabled', 'modern-admin-styler-v2')],
-                [__('Animations', 'modern-admin-styler-v2'), $settings['enable_animations'] ? __('Enabled', 'modern-admin-styler-v2') : __('Disabled', 'modern-admin-styler-v2')]
+                [__('Plugin Status', 'woow-admin-styler'), $settings['enable_plugin'] ? '<span class="dashicons dashicons-yes-alt" style="color: #00a32a;"></span> ' . __('Enabled', 'woow-admin-styler') : '<span class="dashicons dashicons-dismiss" style="color: #d63638;"></span> ' . __('Disabled', 'woow-admin-styler')],
+                [__('Color Scheme', 'woow-admin-styler'), ucfirst($settings['color_scheme'] ?? 'default')],
+                [__('Admin Bar', 'woow-admin-styler'), $settings['admin_bar_floating'] ? __('Floating', 'woow-admin-styler') : __('Fixed', 'woow-admin-styler')],
+                [__('Side Menu', 'woow-admin-styler'), $settings['side_menu_floating'] ? __('Floating', 'woow-admin-styler') : __('Fixed', 'woow-admin-styler')],
+                [__('Glassmorphism', 'woow-admin-styler'), $settings['enable_glassmorphism'] ? __('Enabled', 'woow-admin-styler') : __('Disabled', 'woow-admin-styler')],
+                [__('Animations', 'woow-admin-styler'), $settings['enable_animations'] ? __('Enabled', 'woow-admin-styler') : __('Disabled', 'woow-admin-styler')]
             ];
             
             $config_content = ComponentAdapter::table(
-                [__('Setting', 'modern-admin-styler-v2'), __('Current Value', 'modern-admin-styler-v2')],
+                [__('Setting', 'woow-admin-styler'), __('Current Value', 'woow-admin-styler')],
                 $config_rows,
                 ['id' => 'current-config-table']
             );
             
             echo ComponentAdapter::metabox(
-                __('Current Configuration', 'modern-admin-styler-v2'),
+                __('Current Configuration', 'woow-admin-styler'),
                 $config_content,
-                ['description' => __('Overview of current plugin settings', 'modern-admin-styler-v2')]
+                ['description' => __('Overview of current plugin settings', 'woow-admin-styler')]
             );
             ?>
             
@@ -108,33 +108,33 @@ $settings_url = admin_url('admin.php?page=modern-admin-styler-settings');
             $features_content = '
                 <div class="mas-grid mas-grid-cols-1 mas-md:grid-cols-2 mas-gap-4">
                     <div class="mas-wp-card mas-p-4">
-                        <h4 class="mas-mt-0 mas-mb-2">' . __('Native Components', 'modern-admin-styler-v2') . '</h4>
+                        <h4 class="mas-mt-0 mas-mb-2">' . __('Native Components', 'woow-admin-styler') . '</h4>
                         <ul class="mas-mb-0">
-                            <li><span class="dashicons dashicons-yes"></span> ' . __('WordPress .postbox metaboxes', 'modern-admin-styler-v2') . '</li>
-                            <li><span class="dashicons dashicons-yes"></span> ' . __('Native .button classes', 'modern-admin-styler-v2') . '</li>
-                            <li><span class="dashicons dashicons-yes"></span> ' . __('Standard .notice components', 'modern-admin-styler-v2') . '</li>
-                            <li><span class="dashicons dashicons-yes"></span> ' . __('WordPress form fields', 'modern-admin-styler-v2') . '</li>
-                            <li><span class="dashicons dashicons-yes"></span> ' . __('Native .wp-list-table', 'modern-admin-styler-v2') . '</li>
+                            <li><span class="dashicons dashicons-yes"></span> ' . __('WordPress .postbox metaboxes', 'woow-admin-styler') . '</li>
+                            <li><span class="dashicons dashicons-yes"></span> ' . __('Native .button classes', 'woow-admin-styler') . '</li>
+                            <li><span class="dashicons dashicons-yes"></span> ' . __('Standard .notice components', 'woow-admin-styler') . '</li>
+                            <li><span class="dashicons dashicons-yes"></span> ' . __('WordPress form fields', 'woow-admin-styler') . '</li>
+                            <li><span class="dashicons dashicons-yes"></span> ' . __('Native .wp-list-table', 'woow-admin-styler') . '</li>
                         </ul>
                     </div>
                     
                     <div class="mas-wp-card mas-p-4">
-                        <h4 class="mas-mt-0 mas-mb-2">' . __('Minimal CSS', 'modern-admin-styler-v2') . '</h4>
+                        <h4 class="mas-mt-0 mas-mb-2">' . __('Minimal CSS', 'woow-admin-styler') . '</h4>
                         <ul class="mas-mb-0">
-                            <li><span class="dashicons dashicons-yes"></span> ' . __('Prefixed utilities (mas-)', 'modern-admin-styler-v2') . '</li>
-                            <li><span class="dashicons dashicons-yes"></span> ' . __('Only missing WordPress classes', 'modern-admin-styler-v2') . '</li>
-                            <li><span class="dashicons dashicons-yes"></span> ' . __('Responsive utilities', 'modern-admin-styler-v2') . '</li>
-                            <li><span class="dashicons dashicons-yes"></span> ' . __('WordPress color variables', 'modern-admin-styler-v2') . '</li>
-                            <li><span class="dashicons dashicons-yes"></span> ' . __('Dark mode support', 'modern-admin-styler-v2') . '</li>
+                            <li><span class="dashicons dashicons-yes"></span> ' . __('Prefixed utilities (mas-)', 'woow-admin-styler') . '</li>
+                            <li><span class="dashicons dashicons-yes"></span> ' . __('Only missing WordPress classes', 'woow-admin-styler') . '</li>
+                            <li><span class="dashicons dashicons-yes"></span> ' . __('Responsive utilities', 'woow-admin-styler') . '</li>
+                            <li><span class="dashicons dashicons-yes"></span> ' . __('WordPress color variables', 'woow-admin-styler') . '</li>
+                            <li><span class="dashicons dashicons-yes"></span> ' . __('Dark mode support', 'woow-admin-styler') . '</li>
                         </ul>
                     </div>
                 </div>
             ';
             
             echo ComponentAdapter::metabox(
-                __('Phase 2 Achievements', 'modern-admin-styler-v2'),
+                __('Phase 2 Achievements', 'woow-admin-styler'),
                 $features_content,
-                ['description' => __('Complete WordPress visual language adaptation', 'modern-admin-styler-v2')]
+                ['description' => __('Complete WordPress visual language adaptation', 'woow-admin-styler')]
             );
             ?>
             
@@ -147,36 +147,36 @@ $settings_url = admin_url('admin.php?page=modern-admin-styler-settings');
             <?php
             $demo_content = '
                 <div class="mas-flex mas-flex-col mas-gap-3">
-                    <h4 class="mas-mt-0">' . __('Button Styles', 'modern-admin-styler-v2') . '</h4>
+                    <h4 class="mas-mt-0">' . __('Button Styles', 'woow-admin-styler') . '</h4>
                     <div class="mas-flex mas-flex-wrap mas-gap-2">
-                        ' . ComponentAdapter::button(__('Primary', 'modern-admin-styler-v2'), 'primary', ['size' => 'small']) . '
-                        ' . ComponentAdapter::button(__('Secondary', 'modern-admin-styler-v2'), 'secondary', ['size' => 'small']) . '
-                        ' . ComponentAdapter::button(__('Link', 'modern-admin-styler-v2'), 'link', ['size' => 'small']) . '
+                        ' . ComponentAdapter::button(__('Primary', 'woow-admin-styler'), 'primary', ['size' => 'small']) . '
+                        ' . ComponentAdapter::button(__('Secondary', 'woow-admin-styler'), 'secondary', ['size' => 'small']) . '
+                        ' . ComponentAdapter::button(__('Link', 'woow-admin-styler'), 'link', ['size' => 'small']) . '
                     </div>
                     
-                    <h4 class="mas-mb-2">' . __('Notice Types', 'modern-admin-styler-v2') . '</h4>
-                    ' . ComponentAdapter::notice(__('Success message', 'modern-admin-styler-v2'), 'success', ['inline' => true]) . '
-                    ' . ComponentAdapter::notice(__('Warning message', 'modern-admin-styler-v2'), 'warning', ['inline' => true]) . '
-                    ' . ComponentAdapter::notice(__('Error message', 'modern-admin-styler-v2'), 'error', ['inline' => true]) . '
+                    <h4 class="mas-mb-2">' . __('Notice Types', 'woow-admin-styler') . '</h4>
+                    ' . ComponentAdapter::notice(__('Success message', 'woow-admin-styler'), 'success', ['inline' => true]) . '
+                    ' . ComponentAdapter::notice(__('Warning message', 'woow-admin-styler'), 'warning', ['inline' => true]) . '
+                    ' . ComponentAdapter::notice(__('Error message', 'woow-admin-styler'), 'error', ['inline' => true]) . '
                     
-                    <h4 class="mas-mb-2">' . __('Form Fields', 'modern-admin-styler-v2') . '</h4>
-                    ' . ComponentAdapter::field('text', 'demo_text', 'Sample text', ['label' => __('Text Field', 'modern-admin-styler-v2'), 'placeholder' => __('Enter text...', 'modern-admin-styler-v2')]) . '
+                    <h4 class="mas-mb-2">' . __('Form Fields', 'woow-admin-styler') . '</h4>
+                    ' . ComponentAdapter::field('text', 'demo_text', 'Sample text', ['label' => __('Text Field', 'woow-admin-styler'), 'placeholder' => __('Enter text...', 'woow-admin-styler')]) . '
                     ' . ComponentAdapter::field('select', 'demo_select', 'option2', [
-                        'label' => __('Select Field', 'modern-admin-styler-v2'),
+                        'label' => __('Select Field', 'woow-admin-styler'),
                         'options' => [
-                            'option1' => __('Option 1', 'modern-admin-styler-v2'),
-                            'option2' => __('Option 2', 'modern-admin-styler-v2'),
-                            'option3' => __('Option 3', 'modern-admin-styler-v2')
+                            'option1' => __('Option 1', 'woow-admin-styler'),
+                            'option2' => __('Option 2', 'woow-admin-styler'),
+                            'option3' => __('Option 3', 'woow-admin-styler')
                         ]
                     ]) . '
-                    ' . ComponentAdapter::field('checkbox', 'demo_checkbox', true, ['label' => __('Checkbox Field', 'modern-admin-styler-v2')]) . '
+                    ' . ComponentAdapter::field('checkbox', 'demo_checkbox', true, ['label' => __('Checkbox Field', 'woow-admin-styler')]) . '
                 </div>
             ';
             
             echo ComponentAdapter::metabox(
-                __('Component Demo', 'modern-admin-styler-v2'),
+                __('Component Demo', 'woow-admin-styler'),
                 $demo_content,
-                ['description' => __('Native WordPress components in action', 'modern-admin-styler-v2')]
+                ['description' => __('Native WordPress components in action', 'woow-admin-styler')]
             );
             ?>
             
@@ -184,34 +184,34 @@ $settings_url = admin_url('admin.php?page=modern-admin-styler-settings');
             <?php
             $architecture_content = '
                 <div class="mas-text-sm">
-                    <h4 class="mas-mt-0 mas-mb-3">' . __('Technical Implementation', 'modern-admin-styler-v2') . '</h4>
+                    <h4 class="mas-mt-0 mas-mb-3">' . __('Technical Implementation', 'woow-admin-styler') . '</h4>
                     
                     <div class="mas-mb-4">
-                        <strong>' . __('ComponentAdapter Service', 'modern-admin-styler-v2') . '</strong>
-                        <p class="description mas-mt-1">' . __('Transforms custom components into native WordPress equivalents using filter hooks.', 'modern-admin-styler-v2') . '</p>
+                        <strong>' . __('ComponentAdapter Service', 'woow-admin-styler') . '</strong>
+                        <p class="description mas-mt-1">' . __('Transforms custom components into native WordPress equivalents using filter hooks.', 'woow-admin-styler') . '</p>
                     </div>
                     
                     <div class="mas-mb-4">
-                        <strong>' . __('MAS Utilities CSS', 'modern-admin-styler-v2') . '</strong>
-                        <p class="description mas-mt-1">' . __('Minimal utility classes with mas- prefix. Only includes what WordPress lacks.', 'modern-admin-styler-v2') . '</p>
+                        <strong>' . __('MAS Utilities CSS', 'woow-admin-styler') . '</strong>
+                        <p class="description mas-mt-1">' . __('Minimal utility classes with mas- prefix. Only includes what WordPress lacks.', 'woow-admin-styler') . '</p>
                     </div>
                     
                     <div class="mas-mb-4">
-                        <strong>' . __('100% WordPress Native', 'modern-admin-styler-v2') . '</strong>
-                        <p class="description mas-mt-1">' . __('Uses .postbox, .button, .notice, .wp-list-table and other standard WordPress classes.', 'modern-admin-styler-v2') . '</p>
+                        <strong>' . __('100% WordPress Native', 'woow-admin-styler') . '</strong>
+                        <p class="description mas-mt-1">' . __('Uses .postbox, .button, .notice, .wp-list-table and other standard WordPress classes.', 'woow-admin-styler') . '</p>
                     </div>
                     
                     <div class="mas-btn-group mas-mt-4">
-                        ' . ComponentAdapter::button(__('View Code', 'modern-admin-styler-v2'), 'link', ['size' => 'small', 'attributes' => ['onclick' => 'toggleCodeView()']]) . '
-                        ' . ComponentAdapter::button(__('Inspect CSS', 'modern-admin-styler-v2'), 'link', ['size' => 'small', 'attributes' => ['onclick' => 'inspectCSS()']]) . '
+                        ' . ComponentAdapter::button(__('View Code', 'woow-admin-styler'), 'link', ['size' => 'small', 'attributes' => ['onclick' => 'toggleCodeView()']]) . '
+                        ' . ComponentAdapter::button(__('Inspect CSS', 'woow-admin-styler'), 'link', ['size' => 'small', 'attributes' => ['onclick' => 'inspectCSS()']]) . '
                     </div>
                 </div>
             ';
             
             echo ComponentAdapter::metabox(
-                __('Architecture', 'modern-admin-styler-v2'),
+                __('Architecture', 'woow-admin-styler'),
                 $architecture_content,
-                ['description' => __('Phase 2 technical details', 'modern-admin-styler-v2')]
+                ['description' => __('Phase 2 technical details', 'woow-admin-styler')]
             );
             ?>
             
@@ -220,14 +220,14 @@ $settings_url = admin_url('admin.php?page=modern-admin-styler-settings');
             $next_phase_content = '
                 <div class="mas-text-center mas-py-4">
                     <span class="dashicons dashicons-admin-plugins" style="font-size: 48px; color: #0073aa; opacity: 0.7;"></span>
-                    <h4 class="mas-mt-2 mas-mb-3">' . __('Phase 3 Preview', 'modern-admin-styler-v2') . '</h4>
-                    <p class="description mas-mb-4">' . __('Next: Ecosystem Integration with hooks, filters, and Gutenberg blocks for maximum extensibility.', 'modern-admin-styler-v2') . '</p>
-                    ' . ComponentAdapter::button(__('Coming Soon', 'modern-admin-styler-v2'), 'secondary', ['disabled' => true, 'classes' => 'mas-opacity-50']) . '
+                    <h4 class="mas-mt-2 mas-mb-3">' . __('Phase 3 Preview', 'woow-admin-styler') . '</h4>
+                    <p class="description mas-mb-4">' . __('Next: Ecosystem Integration with hooks, filters, and Gutenberg blocks for maximum extensibility.', 'woow-admin-styler') . '</p>
+                    ' . ComponentAdapter::button(__('Coming Soon', 'woow-admin-styler'), 'secondary', ['disabled' => true, 'classes' => 'mas-opacity-50']) . '
                 </div>
             ';
             
             echo ComponentAdapter::metabox(
-                __('What\'s Next?', 'modern-admin-styler-v2'),
+                __('What\'s Next?', 'woow-admin-styler'),
                 $next_phase_content
             );
             ?>
@@ -241,7 +241,7 @@ $settings_url = admin_url('admin.php?page=modern-admin-styler-settings');
         <?php
         $code_content = '
             <div class="mas-bg-gray-100 mas-p-4 mas-rounded mas-overflow-x-auto">
-                <h4 class="mas-mt-0">' . __('Component Usage Example', 'modern-admin-styler-v2') . '</h4>
+                <h4 class="mas-mt-0">' . __('Component Usage Example', 'woow-admin-styler') . '</h4>
                 <pre><code>// Native WordPress metabox
 echo ComponentAdapter::metabox(
     __("Title", "textdomain"),
@@ -274,7 +274,7 @@ echo ComponentAdapter::field(
         ';
         
         echo ComponentAdapter::metabox(
-            __('Code Examples', 'modern-admin-styler-v2'),
+            __('Code Examples', 'woow-admin-styler'),
             $code_content
         );
         ?>
@@ -289,7 +289,7 @@ jQuery(document).ready(function($) {
     // Clear Cache functionality
     $('#clear-cache-btn').on('click', function() {
         var button = $(this);
-        button.prop('disabled', true).text('<?php _e('Clearing...', 'modern-admin-styler-v2'); ?>');
+        button.prop('disabled', true).text('<?php _e('Clearing...', 'woow-admin-styler'); ?>');
         
         $.post(ajaxurl, {
             action: 'mas_v2_clear_cache',
@@ -297,13 +297,13 @@ jQuery(document).ready(function($) {
         })
         .done(function(response) {
             if (response.success) {
-                button.after('<div class="notice notice-success inline mas-ml-2"><p><?php _e('Cache cleared successfully!', 'modern-admin-styler-v2'); ?></p></div>');
+                button.after('<div class="notice notice-success inline mas-ml-2"><p><?php _e('Cache cleared successfully!', 'woow-admin-styler'); ?></p></div>');
             } else {
-                button.after('<div class="notice notice-error inline mas-ml-2"><p><?php _e('Error clearing cache.', 'modern-admin-styler-v2'); ?></p></div>');
+                button.after('<div class="notice notice-error inline mas-ml-2"><p><?php _e('Error clearing cache.', 'woow-admin-styler'); ?></p></div>');
             }
         })
         .always(function() {
-            button.prop('disabled', false).text('<?php _e('Clear Cache', 'modern-admin-styler-v2'); ?>');
+            button.prop('disabled', false).text('<?php _e('Clear Cache', 'woow-admin-styler'); ?>');
             setTimeout(function() {
                 $('.notice.inline').fadeOut();
             }, 3000);
@@ -321,7 +321,7 @@ jQuery(document).ready(function($) {
         downloadAnchorNode.click();
         downloadAnchorNode.remove();
         
-        $(this).after('<div class="notice notice-success inline mas-ml-2"><p><?php _e('Settings exported!', 'modern-admin-styler-v2'); ?></p></div>');
+        $(this).after('<div class="notice notice-success inline mas-ml-2"><p><?php _e('Settings exported!', 'woow-admin-styler'); ?></p></div>');
         setTimeout(function() {
             $('.notice.inline').fadeOut();
         }, 3000);
@@ -344,14 +344,13 @@ function inspectCSS() {
     if (typeof window.DevToolsAPI !== 'undefined') {
         window.DevToolsAPI.inspectElement(document.querySelector('.mas-utilities'));
     } else {
-        alert('<?php _e('Please use browser developer tools to inspect CSS classes starting with "mas-"', 'modern-admin-styler-v2'); ?>');
+        alert('<?php _e('Please use browser developer tools to inspect CSS classes starting with "mas-"', 'woow-admin-styler'); ?>');
     }
 }
 </script>
 
 <!-- CSS for additional styling -->
 <style>
-/* Phase 2 specific enhancements */
 .mas-form-label {
     display: block;
     font-weight: 600;
@@ -368,7 +367,6 @@ function inspectCSS() {
     margin-left: 8px;
 }
 
-/* Button group enhancements */
 .mas-btn-group {
     display: inline-flex;
     vertical-align: middle;
@@ -390,7 +388,6 @@ function inspectCSS() {
     margin-right: 0;
 }
 
-/* Code block styling */
 pre {
     background: #f6f7f7;
     border: 1px solid #c3c4c7;
@@ -408,7 +405,6 @@ code {
     font-family: inherit;
 }
 
-/* WordPress metabox enhancements */
 .postbox .inside > *:first-child {
     margin-top: 0;
 }
@@ -417,7 +413,6 @@ code {
     margin-bottom: 0;
 }
 
-/* Responsive improvements */
 @media (max-width: 768px) {
     .mas-btn-group {
         flex-direction: column;

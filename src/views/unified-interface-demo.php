@@ -262,7 +262,6 @@ $settings = get_option('mas_v2_settings', []);
 </div>
 
 <style>
-/* Unified Demo Styles */
 .unified-demo-container {
     padding: 2rem;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -305,7 +304,6 @@ $settings = get_option('mas_v2_settings', []);
     margin-top: 2rem;
 }
 
-/* Simulated Admin Interface */
 .simulated-admin {
     background: #f1f1f1;
     border-radius: 8px;
@@ -374,7 +372,6 @@ $settings = get_option('mas_v2_settings', []);
     color: #555;
 }
 
-/* Live Edit Controls */
 .demo-controls {
     background: rgba(255,255,255,0.1);
     border-radius: 8px;
@@ -410,7 +407,6 @@ $settings = get_option('mas_v2_settings', []);
     margin-right: 0.5rem;
 }
 
-/* Comparison Section */
 .comparison-section {
     background: rgba(255,255,255,0.1);
     border-radius: 16px;
@@ -491,7 +487,6 @@ $settings = get_option('mas_v2_settings', []);
     border: 1px solid rgba(81, 207, 102, 0.4);
 }
 
-/* Benefits Section */
 .benefits-section {
     background: rgba(255,255,255,0.1);
     border-radius: 16px;
@@ -533,7 +528,6 @@ $settings = get_option('mas_v2_settings', []);
     line-height: 1.6;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .demo-workspace {
         grid-template-columns: 1fr;
@@ -557,7 +551,6 @@ $settings = get_option('mas_v2_settings', []);
     }
 }
 
-/* Dynamic Classes for Demo */
 .demo-floating-menu .demo-admin-menu {
     margin: 10px;
     border-radius: 8px;
@@ -607,7 +600,7 @@ jQuery(document).ready(function($) {
         const scheme = $(this).val();
         const $admin = $('#demo-admin-area');
         
-        $admin.removeClass('demo-theme-light demo-theme-dark demo-theme-auto');
+        $admin.removeClass('demo-theme-light demo-theme-dark');
         $admin.addClass('demo-theme-' + scheme);
         
         console.log('🎨 Color scheme changed to:', scheme);

@@ -22,7 +22,6 @@ if (!current_user_can('manage_options')) {
 
 <div class="wrap live-edit-demo">
     <style>
-        /* Demo page specific styles */
         .live-edit-demo {
             max-width: 1400px;
             margin: 0 auto;

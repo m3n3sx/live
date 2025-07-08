@@ -59,9 +59,9 @@
   // --- Powiązania Ustawień (Bindings) ---
 
   // Pasek Admina
-  bindCssVar('mas_v2_settings[admin_bar_text_color]', '--mas-admin-bar-text-color');
-  bindCssVar('mas_v2_settings[admin_bar_bg_color]', '--mas-admin-bar-background');
-  bindCssVar('mas_v2_settings[admin_bar_height]', '--mas-admin-bar-height', 'px');
+  bindCssVar('mas_v2_settings[admin_bar_text_color]', '--woow-surface-bar-text');
+  bindCssVar('mas_v2_settings[admin_bar_bg_color]', '--woow-surface-bar');
+  bindCssVar('mas_v2_settings[admin_bar_height]', '--woow-surface-bar-height', 'px');
   bindBodyClass('mas_v2_settings[admin_bar_floating]', 'mas-v2-admin-bar-floating');
 
   // Menu Boczne
@@ -74,6 +74,5 @@
   bindBodyClass('mas_v2_settings[glassmorphism_enabled]', 'mas-v2-glassmorphism-enabled');
   bindBodyClass('mas_v2_settings[animations_enabled]', 'mas-v2-animations-enabled');
 
-  console.log('🎯 Modern Admin Styler V2 - Customizer Live Preview Refactored Loaded');
 
 })(jQuery);

@@ -291,7 +291,6 @@ document.querySelectorAll('[data-live-preview]').forEach(input => {
     border-radius: 6px;
 }
 
-/* Dark mode demo */
 body.mas-demo-dark-mode {
     background: #1a1a1a !important;
     color: #e0e0e0 !important;
@@ -303,7 +302,6 @@ body.mas-demo-dark-mode .mas-demo-section {
     color: #e0e0e0 !important;
 }
 
-/* Animations demo */
 body.mas-demo-animations .mas-demo-preview {
     animation: mas-demo-pulse 2s infinite;
 }

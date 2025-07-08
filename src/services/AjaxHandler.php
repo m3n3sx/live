@@ -23,12 +23,12 @@ class AjaxHandler {
      */
     private function verifyAjaxSecurity() {
         if (!wp_verify_nonce($_POST['nonce'] ?? '', 'mas_v2_nonce')) {
-            wp_send_json_error(['message' => __('Błąd bezpieczeństwa', 'modern-admin-styler-v2')]);
+            wp_send_json_error(['message' => __('Błąd bezpieczeństwa', 'woow-admin-styler')]);
             return false;
         }
         
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => __('Brak uprawnień', 'modern-admin-styler-v2')]);
+            wp_send_json_error(['message' => __('Brak uprawnień', 'woow-admin-styler')]);
             return false;
         }
         
@@ -60,11 +60,11 @@ class AjaxHandler {
             
             if ($is_success) {
                 wp_send_json_success([
-                    'message' => __('Ustawienia zostały zapisane pomyślnie!', 'modern-admin-styler-v2'),
+                    'message' => __('Ustawienia zostały zapisane pomyślnie!', 'woow-admin-styler'),
                     'settings' => $settings
                 ]);
             } else {
-                wp_send_json_error(['message' => __('Wystąpił błąd podczas zapisu do bazy danych.', 'modern-admin-styler-v2')]);
+                wp_send_json_error(['message' => __('Wystąpił błąd podczas zapisu do bazy danych.', 'woow-admin-styler')]);
             }
             
         } catch (Exception $e) {
@@ -86,7 +86,7 @@ class AjaxHandler {
             $this->settings_manager->saveSettings($defaults);
             
             wp_send_json_success([
-                'message' => __('Ustawienia zostały przywrócone do domyślnych!', 'modern-admin-styler-v2')
+                'message' => __('Ustawienia zostały przywrócone do domyślnych!', 'woow-admin-styler')
             ]);
         } catch (Exception $e) {
             wp_send_json_error(['message' => $e->getMessage()]);
@@ -130,14 +130,14 @@ class AjaxHandler {
             $import_data = json_decode(stripslashes($_POST['data']), true);
             
             if (!$import_data || !isset($import_data['settings'])) {
-                throw new Exception(__('Nieprawidłowy format pliku', 'modern-admin-styler-v2'));
+                throw new Exception(__('Nieprawidłowy format pliku', 'woow-admin-styler'));
             }
             
             $settings = $this->settings_manager->sanitizeSettings($import_data['settings']);
             $this->settings_manager->saveSettings($settings);
             
             wp_send_json_success([
-                'message' => __('Ustawienia zostały zaimportowane pomyślnie!', 'modern-admin-styler-v2'),
+                'message' => __('Ustawienia zostały zaimportowane pomyślnie!', 'woow-admin-styler'),
                 'settings' => $settings
             ]);
             
@@ -189,7 +189,7 @@ class AjaxHandler {
             $cache_manager = $factory->get('cache_manager');
             $cache_manager->flush();
             
-            wp_send_json_success(['message' => __('Cache został wyczyszczony pomyślnie!', 'modern-admin-styler-v2')]);
+            wp_send_json_success(['message' => __('Cache został wyczyszczony pomyślnie!', 'woow-admin-styler')]);
         } catch (Exception $e) {
             wp_send_json_error(['message' => $e->getMessage()]);
         }
@@ -265,8 +265,8 @@ class AjaxHandler {
                     ],
                     'security_stats' => $security_manager->getSecurityStats(),
                     'recommendations' => [
-                        __('Wszystkie mechanizmy bezpieczeństwa są aktywne', 'modern-admin-styler-v2'),
-                        __('System używa chunking aby uniknąć problemów z pamięcią', 'modern-admin-styler-v2')
+                        __('Wszystkie mechanizmy bezpieczeństwa są aktywne', 'woow-admin-styler'),
+                        __('System używa chunking aby uniknąć problemów z pamięcią', 'woow-admin-styler')
                     ],
                     'security_score' => 98,
                     'memory_usage' => [
@@ -323,7 +323,7 @@ class AjaxHandler {
             $css = $css_generator->generate($settings);
             
             wp_send_json_success([
-                'message' => __('CSS został zregenerowany pomyślnie!', 'modern-admin-styler-v2'),
+                'message' => __('CSS został zregenerowany pomyślnie!', 'woow-admin-styler'),
                 'css_length' => strlen($css),
                 'timestamp' => current_time('mysql')
             ]);

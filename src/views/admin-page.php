@@ -45,10 +45,10 @@ if ($current_page !== 'mas-v2-settings') {
                     </div>
                     <div class="mas-v2-user-info">
                         <div class="mas-v2-greeting">
-                            <?php printf(esc_html__('Hello %s! 🎯', 'modern-admin-styler-v2'), esc_html($user_name)); ?>
+                            <?php printf(esc_html__('Hello %s! 🎯', 'woow-admin-styler'), esc_html($user_name)); ?>
                         </div>
                         <h1 class="mas-v2-title">
-                            🚀 <?php esc_html_e('MODERN ADMIN STYLER CONTROL CENTER', 'modern-admin-styler-v2'); ?>
+                            🚀 <?php esc_html_e('MODERN ADMIN STYLER CONTROL CENTER', 'woow-admin-styler'); ?>
                         </h1>
                     </div>
                 </div>
@@ -59,26 +59,32 @@ if ($current_page !== 'mas-v2-settings') {
                 <div class="mas-v2-edit-mode-toggle">
                     <label for="mas-v2-edit-mode-switch" class="mas-v2-edit-mode-label">
                         <span class="dashicons dashicons-edit mas-v2-edit-icon"></span>
-                        <span class="mas-v2-edit-text"><?php esc_html_e('Live Edit Mode', 'modern-admin-styler-v2'); ?></span>
+                        <span class="mas-v2-edit-text"><?php esc_html_e('Live Edit Mode', 'woow-admin-styler'); ?></span>
                         <span class="mas-v2-edit-badge">V3</span>
                     </label>
-                    <input type="checkbox" id="mas-v2-edit-mode-switch" 
-                           data-live-preview="body-class" 
-                           data-body-class="mas-edit-mode-active">
-                    <span class="mas-v2-edit-help-text">🎯 <?php esc_html_e('Enable to edit all visual elements directly in context', 'modern-admin-styler-v2'); ?></span>
+                    
+                    <!-- Dodajemy kompletną strukturę slidera -->
+                    <label class="mas-v2-switch">
+                        <input type="checkbox" id="mas-v2-edit-mode-switch" 
+                               data-live-preview="body-class" 
+                               data-body-class="mas-edit-mode-active">
+                        <span class="mas-v2-slider"></span>
+                    </label>
+                    
+                    <span class="mas-v2-edit-help-text">🎯 <?php esc_html_e('Enable to edit all visual elements directly in context', 'woow-admin-styler'); ?></span>
                 </div>
             </div>
             
             <div class="mas-v2-header-actions">
                 <div class="mas-v2-actions-vertical">
                     <button type="button" class="mas-v2-btn mas-v2-btn-secondary" id="mas-v2-import-btn">
-                        📥 <?php esc_html_e('Import', 'modern-admin-styler-v2'); ?>
+                        📥 <?php esc_html_e('Import', 'woow-admin-styler'); ?>
                     </button>
                     <button type="button" class="mas-v2-btn mas-v2-btn-secondary" id="mas-v2-export-btn">
-                        📤 <?php esc_html_e('Export', 'modern-admin-styler-v2'); ?>
+                        📤 <?php esc_html_e('Export', 'woow-admin-styler'); ?>
                     </button>
                     <button type="submit" form="mas-v2-settings-form" id="mas-v2-save-btn" class="mas-v2-btn mas-v2-btn-primary">
-                        💾 <?php esc_html_e('Save Settings', 'modern-admin-styler-v2'); ?>
+                        💾 <?php esc_html_e('Save Settings', 'woow-admin-styler'); ?>
                     </button>
                 </div>
             </div>
@@ -96,7 +102,7 @@ if ($current_page !== 'mas-v2-settings') {
             <!-- Live Edit Mode Toggle -->
             <div class="mas-v2-live-edit-toggle" style="margin-bottom: 2rem;">
                 <label class="mas-v2-switch" style="position: relative; display: inline-block; width: 80px; height: 40px;">
-                    <input type="checkbox" id="mas-v2-edit-mode-switch" style="opacity: 0; width: 0; height: 0;">
+                    <input type="checkbox" id="mas-v2-edit-mode-switch-hero" style="opacity: 0; width: 0; height: 0;">
                     <span class="mas-v2-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.2); transition: .3s; border-radius: 40px; backdrop-filter: blur(10px);"></span>
                 </label>
                 <span style="color: white; margin-left: 1rem; font-weight: 500;">🎨 Live Edit Mode</span>
@@ -146,7 +152,7 @@ if ($current_page !== 'mas-v2-settings') {
             <div class="mas-v2-launchpad-cta" style="margin-top: 2rem;">
                 <button type="button" 
                         class="mas-v2-btn mas-v2-btn-hero" 
-                        onclick="document.getElementById('mas-v2-edit-mode-switch').click()"
+                        onclick="document.getElementById('mas-v2-edit-mode-switch-hero').click()"
                         style="font-size: 1.2rem; padding: 1rem 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 50px; color: white; cursor: pointer; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4); transition: all 0.3s ease; margin-right: 1rem;">
                     🎨 Activate Live Edit Mode
                 </button>
@@ -168,7 +174,7 @@ if ($current_page !== 'mas-v2-settings') {
                 <div class="mas-v2-metric-trend positive">ACTIVE</div>
             </div>
             <div class="mas-v2-metric-value">43</div>
-            <div class="mas-v2-metric-label"><?php esc_html_e('Visual Options Available', 'modern-admin-styler-v2'); ?></div>
+            <div class="mas-v2-metric-label"><?php esc_html_e('Visual Options Available', 'woow-admin-styler'); ?></div>
         </div>
 
         <div class="mas-v2-metric-card pink">
@@ -177,7 +183,7 @@ if ($current_page !== 'mas-v2-settings') {
                 <div class="mas-v2-metric-trend positive">V3</div>
             </div>
             <div class="mas-v2-metric-value">100%</div>
-            <div class="mas-v2-metric-label"><?php esc_html_e('Live Preview Coverage', 'modern-admin-styler-v2'); ?></div>
+            <div class="mas-v2-metric-label"><?php esc_html_e('Live Preview Coverage', 'woow-admin-styler'); ?></div>
         </div>
 
         <div class="mas-v2-metric-card orange">
@@ -186,7 +192,7 @@ if ($current_page !== 'mas-v2-settings') {
                 <div class="mas-v2-metric-trend positive">NEW</div>
             </div>
             <div class="mas-v2-metric-value">1</div>
-            <div class="mas-v2-metric-label"><?php esc_html_e('Unified Interface', 'modern-admin-styler-v2'); ?></div>
+            <div class="mas-v2-metric-label"><?php esc_html_e('Unified Interface', 'woow-admin-styler'); ?></div>
         </div>
 
         <div class="mas-v2-metric-card green">
@@ -195,7 +201,7 @@ if ($current_page !== 'mas-v2-settings') {
                 <div class="mas-v2-metric-trend positive">CLEAN</div>
             </div>
             <div class="mas-v2-metric-value">0</div>
-            <div class="mas-v2-metric-label"><?php esc_html_e('User Confusion', 'modern-admin-styler-v2'); ?></div>
+            <div class="mas-v2-metric-label"><?php esc_html_e('User Confusion', 'woow-admin-styler'); ?></div>
         </div>
     </div>
     
@@ -443,7 +449,6 @@ if ($current_page !== 'mas-v2-settings') {
 </div>
 
 <style>
-/* Hero Launchpad Specific Styles */
 .mas-v2-hub-page .mas-v2-launchpad {
     box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     position: relative;
@@ -471,7 +476,6 @@ if ($current_page !== 'mas-v2-settings') {
     background: rgba(255,255,255,0.15) !important;
 }
 
-/* Tab Navigation */
 .mas-v2-nav {
     display: flex;
     gap: 1rem;
@@ -508,7 +512,6 @@ if ($current_page !== 'mas-v2-settings') {
     display: block;
 }
 
-/* Data Management Styles */
 .mas-v2-data-section {
     padding: 1rem;
     background: rgba(255,255,255,0.05);
@@ -527,7 +530,6 @@ if ($current_page !== 'mas-v2-settings') {
     font-size: 0.9rem;
 }
 
-/* Diagnostic Grid */
 .mas-v2-diagnostic-item {
     padding: 1rem;
     background: rgba(255,255,255,0.05);
@@ -569,6 +571,21 @@ jQuery(document).ready(function($) {
         const isActive = $(this).is(':checked');
         $('#mas-live-edit-status').text(isActive ? 'ACTIVE' : 'Ready')
             .removeClass('active ready').addClass(isActive ? 'active' : 'ready');
+        
+        // 🎯 Synchronizuj z hero toggle
+        $('#mas-v2-edit-mode-switch-hero').prop('checked', isActive);
+        
+        // 🎯 Ustawia klasy body dla obu systemów Live Edit Mode
+        document.body.classList.toggle('mas-edit-mode-active', isActive);
+        document.body.classList.toggle('mas-live-edit-active', isActive);
+        
+        console.log('🎨 Live Edit Mode:', isActive ? 'ACTIVATED' : 'DEACTIVATED');
+    });
+    
+    // Hero toggle synchronization
+    $('#mas-v2-edit-mode-switch-hero').on('change', function() {
+        const isActive = $(this).is(':checked');
+        $('#mas-v2-edit-mode-switch').prop('checked', isActive).trigger('change');
     });
     
     // Plugin status update

@@ -41,7 +41,7 @@ class ComponentAdapter {
     public function enqueueUtilitiesCSS() {
         wp_enqueue_style(
             'mas-v2-utilities',
-            MAS_V2_PLUGIN_URL . 'assets/css/mas-utilities.css',
+            MAS_V2_PLUGIN_URL . 'assets/css/woow-utilities.css',
             [],
             MAS_V2_VERSION
         );
@@ -373,7 +373,7 @@ class ComponentAdapter {
                 <?php else: ?>
                     <tr>
                         <td colspan="<?php echo count($headers); ?>" class="mas-text-center mas-py-4">
-                            <?php _e('No data available', 'modern-admin-styler-v2'); ?>
+                            <?php _e('No data available', 'woow-admin-styler'); ?>
                         </td>
                     </tr>
                 <?php endif; ?>

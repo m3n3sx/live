@@ -421,7 +421,6 @@ add_filter('mas_v2_component_output', function($output, $type, $args) {
 </div>
 
 <style>
-/* Modal Styles */
 .mas-modal {
     position: fixed;
     z-index: 100000;

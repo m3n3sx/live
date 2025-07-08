@@ -28,7 +28,6 @@ class PresetManager {
         this.initTooltips();
         this.addKeyboardShortcuts();
         
-        console.log('🎨 Preset Manager initialized');
     }
     
     /**
@@ -179,7 +178,6 @@ class PresetManager {
             }
             
         } catch (error) {
-            console.error('Error loading presets:', error);
             if (window.masToast) {
                 window.masToast.show('error', 'Failed to load presets: ' + error.message, 5000);
             }
@@ -208,7 +206,6 @@ class PresetManager {
         
         // Update counter
         const countText = this.presets.length === 1 ? '1 preset' : `${this.presets.length} presets`;
-        console.log(`🎨 Loaded ${countText}`);
     }
     
     /**
@@ -269,7 +266,6 @@ class PresetManager {
             }
             
         } catch (error) {
-            console.error('Error saving preset:', error);
             if (window.masToast) {
                 window.masToast.show('error', 'Failed to save preset: ' + error.message, 5000);
             }
@@ -313,7 +309,6 @@ class PresetManager {
             }
             
         } catch (error) {
-            console.error('Error applying preset:', error);
             if (window.masToast) {
                 window.masToast.show('error', 'Failed to apply preset: ' + error.message, 5000);
             }
@@ -366,7 +361,6 @@ class PresetManager {
             }
             
         } catch (error) {
-            console.error('Error exporting preset:', error);
             if (window.masToast) {
                 window.masToast.show('error', 'Failed to export preset: ' + error.message, 5000);
             }
@@ -437,7 +431,6 @@ class PresetManager {
             }
             
         } catch (error) {
-            console.error('Error importing preset:', error);
             if (window.masToast) {
                 window.masToast.show('error', 'Failed to import preset: ' + error.message, 5000);
             }
@@ -494,7 +487,6 @@ class PresetManager {
             }
             
         } catch (error) {
-            console.error('Error deleting preset:', error);
             if (window.masToast) {
                 window.masToast.show('error', 'Failed to delete preset: ' + error.message, 5000);
             }
@@ -737,7 +729,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.querySelector('.mas-v2-preset-manager')) {
         window.presetManager = new PresetManager();
         
-        console.log('🎨 Modern Admin Styler V2 - Preset Manager loaded');
     }
 });
 

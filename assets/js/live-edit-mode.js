@@ -1,6 +1,11 @@
 /**
  * 🎯 Live Edit Mode - Enterprise Implementation
  * 
+
+// ========================================================================
+// WOOW! SEMANTIC CSS VARIABLES SYSTEM
+// Controllers synchronized with --woow-{category}-{role} architecture
+// ========================================================================
  * Implements the comprehensive option mapping plan with contextual micro-panels
  * Based on the strategic blueprint of 107+ options across 8 categories
  * 
@@ -48,7 +53,7 @@ class LiveEditMode {
                         id: 'admin_bar_background',
                         label: 'Background Color',
                         type: 'color',
-                        cssVar: '--mas-admin-bar-bg',
+                        cssVar: '--woow-surface-bar',
                         fallback: '#23282d',
                         section: 'Appearance'
                     },
@@ -56,7 +61,7 @@ class LiveEditMode {
                         id: 'admin_bar_text_color',
                         label: 'Text Color',
                         type: 'color',
-                        cssVar: '--mas-admin-bar-text',
+                        cssVar: '--woow-surface-bar-text',
                         fallback: '#ffffff',
                         section: 'Appearance'
                     },
@@ -64,7 +69,7 @@ class LiveEditMode {
                         id: 'admin_bar_hover_color',
                         label: 'Hover Color',
                         type: 'color',
-                        cssVar: '--mas-admin-bar-hover',
+                        cssVar: '--woow-surface-bar-hover',
                         fallback: '#00a0d2',
                         section: 'Appearance'
                     },
@@ -72,7 +77,7 @@ class LiveEditMode {
                         id: 'admin_bar_height',
                         label: 'Height',
                         type: 'slider',
-                        cssVar: '--mas-admin-bar-height',
+                        cssVar: '--woow-surface-bar-height',
                         unit: 'px',
                         min: 24,
                         max: 60,
@@ -83,7 +88,7 @@ class LiveEditMode {
                         id: 'admin_bar_font_size',
                         label: 'Font Size',
                         type: 'slider',
-                        cssVar: '--mas-admin-bar-font-size',
+                        cssVar: '--woow-surface-bar-font-size',
                         unit: 'px',
                         min: 10,
                         max: 18,
@@ -95,8 +100,8 @@ class LiveEditMode {
                         id: 'admin_bar_floating',
                         label: 'Floating Mode',
                         type: 'toggle',
-                        bodyClass: 'mas-v2-admin-bar-floating',
-                        cssVar: '--mas-admin-bar-floating',
+                        bodyClass: 'woow-admin-bar-floating',
+                        cssVar: '--woow-surface-bar-floating',
                         fallback: false,
                         section: 'Layout'
                     },
@@ -104,8 +109,8 @@ class LiveEditMode {
                         id: 'admin_bar_glassmorphism',
                         label: 'Glass Effect',
                         type: 'toggle',
-                        bodyClass: 'mas-admin-bar-glass',
-                        cssVar: '--mas-admin-bar-glass',
+                        bodyClass: 'woow-admin-bar-glass',
+                        cssVar: '--woow-surface-bar-glass',
                         fallback: false,
                         section: 'Effects'
                     },
@@ -113,7 +118,7 @@ class LiveEditMode {
                         id: 'admin_bar_border_radius',
                         label: 'Border Radius',
                         type: 'slider',
-                        cssVar: '--mas-admin-bar-radius',
+                        cssVar: '--woow-radius-bar',
                         unit: 'px',
                         min: 0,
                         max: 25,
@@ -124,7 +129,7 @@ class LiveEditMode {
                         id: 'admin_bar_margin_top',
                         label: 'Margin Top',
                         type: 'slider',
-                        cssVar: '--mas-admin-bar-margin-top',
+                        cssVar: '--woow-space-bar-top',
                         unit: 'px',
                         min: 0,
                         max: 50,
@@ -135,7 +140,7 @@ class LiveEditMode {
                         id: 'admin_bar_margin_left',
                         label: 'Margin Left',
                         type: 'slider',
-                        cssVar: '--mas-admin-bar-margin-left',
+                        cssVar: '--woow-space-bar-left',
                         unit: 'px',
                         min: 0,
                         max: 50,
@@ -146,7 +151,7 @@ class LiveEditMode {
                         id: 'admin_bar_margin_right',
                         label: 'Margin Right',
                         type: 'slider',
-                        cssVar: '--mas-admin-bar-margin-right',
+                        cssVar: '--woow-space-bar-right',
                         unit: 'px',
                         min: 0,
                         max: 50,
@@ -158,7 +163,7 @@ class LiveEditMode {
                         id: 'hide_wp_logo',
                         label: 'Hide WordPress Logo',
                         type: 'toggle',
-                        cssVar: '--mas-hide-wp-logo',
+                        cssVar: '--woow-hide-wp-logo',
                         targetSelector: '#wp-admin-bar-wp-logo',
                         fallback: false,
                         section: 'Visibility'
@@ -167,7 +172,7 @@ class LiveEditMode {
                         id: 'hide_howdy',
                         label: 'Hide "Howdy" Text',
                         type: 'toggle',
-                        cssVar: '--mas-hide-howdy',
+                        cssVar: '--woow-hide-howdy',
                         targetSelector: '#wp-admin-bar-my-account .display-name',
                         fallback: false,
                         section: 'Visibility'
@@ -176,7 +181,7 @@ class LiveEditMode {
                         id: 'hide_update_notices',
                         label: 'Hide Update Notices',
                         type: 'toggle',
-                        cssVar: '--mas-hide-updates',
+                        cssVar: '--woow-hide-updates',
                         targetSelector: '#wp-admin-bar-updates',
                         fallback: false,
                         section: 'Visibility'
@@ -195,7 +200,7 @@ class LiveEditMode {
                         id: 'menu_background',
                         label: 'Background Color',
                         type: 'color',
-                        cssVar: '--mas-menu-background',
+                        cssVar: '--woow-surface-menu',
                         fallback: '#23282d',
                         section: 'Appearance'
                     },
@@ -203,7 +208,7 @@ class LiveEditMode {
                         id: 'menu_text_color',
                         label: 'Text Color',
                         type: 'color',
-                        cssVar: '--mas-menu-text-color',
+                        cssVar: '--woow-surface-menu-text',
                         fallback: '#ffffff',
                         section: 'Appearance'
                     },
@@ -211,7 +216,7 @@ class LiveEditMode {
                         id: 'menu_hover_color',
                         label: 'Hover Color',
                         type: 'color',
-                        cssVar: '--mas-menu-hover-color',
+                        cssVar: '--woow-surface-menu-hover',
                         fallback: '#00a0d2',
                         section: 'Appearance'
                     },
@@ -219,7 +224,7 @@ class LiveEditMode {
                         id: 'menu_active_background',
                         label: 'Active Item Background',
                         type: 'color',
-                        cssVar: '--mas-menu-active-bg',
+                        cssVar: '--woow-surface-menu-active',
                         fallback: '#0073aa',
                         section: 'Appearance'
                     },
@@ -227,7 +232,7 @@ class LiveEditMode {
                         id: 'menu_width',
                         label: 'Menu Width',
                         type: 'slider',
-                        cssVar: '--mas-menu-width',
+                        cssVar: '--woow-surface-menu-width',
                         unit: 'px',
                         min: 120,
                         max: 300,
@@ -238,7 +243,7 @@ class LiveEditMode {
                         id: 'menu_item_height',
                         label: 'Item Height',
                         type: 'slider',
-                        cssVar: '--mas-menu-item-height',
+                        cssVar: '--woow-surface-menu-item-height',
                         unit: 'px',
                         min: 28,
                         max: 50,
@@ -250,8 +255,8 @@ class LiveEditMode {
                         id: 'menu_floating',
                         label: 'Floating Mode',
                         type: 'toggle',
-                        bodyClass: 'mas-v2-menu-floating',
-                        cssVar: '--mas-menu-floating',
+                        bodyClass: 'woow-menu-floating',
+                        cssVar: '--woow-surface-menu-floating',
                         fallback: false,
                         section: 'Layout'
                     },
@@ -260,7 +265,7 @@ class LiveEditMode {
                         label: 'Glass Effect',
                         type: 'toggle',
                         bodyClass: 'mas-menu-glass',
-                        cssVar: '--mas-menu-glass',
+                        cssVar: '--woow-surface-menu-glass',
                         fallback: false,
                         section: 'Effects'
                     },
@@ -268,7 +273,7 @@ class LiveEditMode {
                         id: 'menu_border_radius_all',
                         label: 'Border Radius',
                         type: 'slider',
-                        cssVar: '--mas-menu-radius',
+                        cssVar: '--woow-radius-menu',
                         unit: 'px',
                         min: 0,
                         max: 25,
@@ -280,7 +285,7 @@ class LiveEditMode {
                         id: 'menu_hover_animation',
                         label: 'Hover Animation',
                         type: 'select',
-                        cssVar: '--mas-menu-hover-anim',
+                        cssVar: '--woow-surface-menu-hover-anim',
                         options: {
                             'none': 'None',
                             'slide': 'Slide',
@@ -294,7 +299,7 @@ class LiveEditMode {
                         id: 'menu_hover_duration',
                         label: 'Hover Duration',
                         type: 'slider',
-                        cssVar: '--mas-menu-hover-duration',
+                        cssVar: '--woow-surface-menu-hover-duration',
                         unit: 'ms',
                         min: 100,
                         max: 800,
@@ -315,7 +320,7 @@ class LiveEditMode {
                         id: 'content_background',
                         label: 'Background Color',
                         type: 'color',
-                        cssVar: '--mas-content-background',
+                        cssVar: '--woow-bg-primary',
                         fallback: '#f1f1f1',
                         section: 'Appearance'
                     },
@@ -323,7 +328,7 @@ class LiveEditMode {
                         id: 'content_card_background',
                         label: 'Card Background',
                         type: 'color',
-                        cssVar: '--mas-card-background',
+                        cssVar: '--woow-bg-card',
                         fallback: '#ffffff',
                         section: 'Appearance'
                     },
@@ -331,7 +336,7 @@ class LiveEditMode {
                         id: 'content_text_color',
                         label: 'Text Color',
                         type: 'color',
-                        cssVar: '--mas-content-text',
+                        cssVar: '--woow-text-primary',
                         fallback: '#333333',
                         section: 'Typography'
                     },
@@ -339,7 +344,7 @@ class LiveEditMode {
                         id: 'content_link_color',
                         label: 'Link Color',
                         type: 'color',
-                        cssVar: '--mas-content-link',
+                        cssVar: '--woow-text-link',
                         fallback: '#0073aa',
                         section: 'Typography'
                     },
@@ -348,7 +353,7 @@ class LiveEditMode {
                         id: 'button_primary_background',
                         label: 'Primary Button Background',
                         type: 'color',
-                        cssVar: '--mas-btn-primary-bg',
+                        cssVar: '--woow-accent-primary',
                         fallback: '#0073aa',
                         section: 'Forms'
                     },
@@ -356,7 +361,7 @@ class LiveEditMode {
                         id: 'button_primary_text_color',
                         label: 'Primary Button Text',
                         type: 'color',
-                        cssVar: '--mas-btn-primary-text',
+                        cssVar: '--woow-text-primary',
                         fallback: '#ffffff',
                         section: 'Forms'
                     },
@@ -364,7 +369,7 @@ class LiveEditMode {
                         id: 'button_border_radius',
                         label: 'Button Border Radius',
                         type: 'slider',
-                        cssVar: '--mas-btn-radius',
+                        cssVar: '--woow-radius-button',
                         unit: 'px',
                         min: 0,
                         max: 25,
@@ -377,7 +382,7 @@ class LiveEditMode {
                         label: 'Rounded Corners',
                         type: 'toggle',
                         bodyClass: 'mas-content-rounded',
-                        cssVar: '--mas-content-rounded',
+                        cssVar: '--woow-content-rounded',
                         fallback: false,
                         section: 'Effects'
                     },
@@ -386,7 +391,7 @@ class LiveEditMode {
                         label: 'Card Shadows',
                         type: 'toggle',
                         bodyClass: 'mas-content-shadows',
-                        cssVar: '--mas-content-shadows',
+                        cssVar: '--woow-content-shadows',
                         fallback: false,
                         section: 'Effects'
                     },
@@ -395,7 +400,7 @@ class LiveEditMode {
                         label: 'Hover Effects',
                         type: 'toggle',
                         bodyClass: 'mas-content-hover',
-                        cssVar: '--mas-content-hover',
+                        cssVar: '--woow-content-hover',
                         fallback: false,
                         section: 'Effects'
                     }
@@ -414,7 +419,7 @@ class LiveEditMode {
                         id: 'google_font_primary',
                         label: 'Primary Font',
                         type: 'font-picker',
-                        cssVar: '--mas-font-primary',
+                        cssVar: '--woow-font-primary',
                         fallback: 'system-ui',
                         section: 'Fonts'
                     },
@@ -422,7 +427,7 @@ class LiveEditMode {
                         id: 'google_font_headings',
                         label: 'Heading Font',
                         type: 'font-picker',
-                        cssVar: '--mas-font-headings',
+                        cssVar: '--woow-font-heading',
                         fallback: 'system-ui',
                         section: 'Fonts'
                     },
@@ -431,7 +436,7 @@ class LiveEditMode {
                         label: 'Load Google Fonts',
                         type: 'toggle',
                         bodyClass: 'mas-google-fonts-enabled',
-                        cssVar: '--mas-load-google-fonts',
+                        cssVar: '--woow-load-google-fonts',
                         fallback: false,
                         section: 'Fonts'
                     },
@@ -440,7 +445,7 @@ class LiveEditMode {
                         id: 'heading_font_size',
                         label: 'Heading Size (H1)',
                         type: 'slider',
-                        cssVar: '--mas-heading-size',
+                        cssVar: '--woow-font-heading-size',
                         unit: 'px',
                         min: 20,
                         max: 48,
@@ -451,7 +456,7 @@ class LiveEditMode {
                         id: 'body_font_size',
                         label: 'Body Font Size',
                         type: 'slider',
-                        cssVar: '--mas-body-size',
+                        cssVar: '--woow-font-body-size',
                         unit: 'px',
                         min: 12,
                         max: 18,
@@ -462,7 +467,7 @@ class LiveEditMode {
                         id: 'line_height',
                         label: 'Line Height',
                         type: 'slider',
-                        cssVar: '--mas-line-height',
+                        cssVar: '--woow-font-line-height',
                         unit: '',
                         min: 1.2,
                         max: 2.0,
@@ -485,7 +490,7 @@ class LiveEditMode {
                         id: 'animation_speed',
                         label: 'Animation Speed',
                         type: 'slider',
-                        cssVar: '--mas-animation-speed',
+                        cssVar: '--woow-animation-speed',
                         unit: 'ms',
                         min: 100,
                         max: 1000,
@@ -497,7 +502,7 @@ class LiveEditMode {
                         label: 'Fade In Effects',
                         type: 'toggle',
                         bodyClass: 'mas-fade-in',
-                        cssVar: '--mas-fade-in',
+                        cssVar: '--woow-fade-in',
                         fallback: false,
                         section: 'Animations'
                     },
@@ -506,7 +511,7 @@ class LiveEditMode {
                         label: 'Slide Animations',
                         type: 'toggle',
                         bodyClass: 'mas-slide-anim',
-                        cssVar: '--mas-slide-anim',
+                        cssVar: '--woow-slide-anim',
                         fallback: false,
                         section: 'Animations'
                     },
@@ -515,7 +520,7 @@ class LiveEditMode {
                         label: 'Scale on Hover',
                         type: 'toggle',
                         bodyClass: 'mas-scale-hover',
-                        cssVar: '--mas-scale-hover',
+                        cssVar: '--woow-scale-hover',
                         fallback: false,
                         section: 'Interactions'
                     },
@@ -524,8 +529,8 @@ class LiveEditMode {
                         id: 'glassmorphism_effects',
                         label: 'Glassmorphism',
                         type: 'toggle',
-                        bodyClass: 'mas-glassmorphism',
-                        cssVar: '--mas-glassmorphism',
+                        bodyClass: 'woow-glassmorphism',
+                        cssVar: '--woow-glassmorphism',
                         fallback: false,
                         section: 'Advanced'
                     },
@@ -534,7 +539,7 @@ class LiveEditMode {
                         label: 'Gradient Backgrounds',
                         type: 'toggle',
                         bodyClass: 'mas-gradients',
-                        cssVar: '--mas-gradients',
+                        cssVar: '--woow-gradients',
                         fallback: false,
                         section: 'Advanced'
                     },
@@ -543,7 +548,7 @@ class LiveEditMode {
                         label: 'Smooth Scrolling',
                         type: 'toggle',
                         bodyClass: 'mas-smooth-scroll',
-                        cssVar: '--mas-smooth-scroll',
+                        cssVar: '--woow-smooth-scroll',
                         fallback: false,
                         section: 'Advanced'
                     }
@@ -562,7 +567,7 @@ class LiveEditMode {
                         id: 'color_scheme',
                         label: 'Color Scheme',
                         type: 'select',
-                        cssVar: '--mas-color-scheme',
+                        cssVar: '--woow-color-scheme',
                         options: {
                             'auto': 'Auto',
                             'light': 'Light',
@@ -575,7 +580,7 @@ class LiveEditMode {
                         id: 'color_palette',
                         label: 'Color Palette',
                         type: 'select',
-                        cssVar: '--mas-color-palette',
+                        cssVar: '--woow-color-palette',
                         options: {
                             'modern-blue': 'Modern Blue',
                             'professional': 'Professional',
@@ -589,7 +594,7 @@ class LiveEditMode {
                         id: 'accent_color',
                         label: 'Accent Color',
                         type: 'color',
-                        cssVar: '--mas-accent-color',
+                        cssVar: '--woow-accent-primary',
                         fallback: '#0073aa',
                         section: 'Appearance'
                     },
@@ -599,7 +604,7 @@ class LiveEditMode {
                         label: 'Compact Mode',
                         type: 'toggle',
                         bodyClass: 'mas-compact',
-                        cssVar: '--mas-compact-mode',
+                        cssVar: '--woow-compact-mode',
                         fallback: false,
                         section: 'Layout'
                     },
@@ -607,7 +612,7 @@ class LiveEditMode {
                         id: 'global_border_radius',
                         label: 'Global Border Radius',
                         type: 'slider',
-                        cssVar: '--mas-border-radius',
+                        cssVar: '--woow-radius-global',
                         unit: 'px',
                         min: 0,
                         max: 20,
@@ -619,7 +624,7 @@ class LiveEditMode {
                         label: 'Enable Animations',
                         type: 'toggle',
                         bodyClass: 'mas-animated',
-                        cssVar: '--mas-animations-enabled',
+                        cssVar: '--woow-animations-enabled',
                         fallback: true,
                         section: 'Performance'
                     }
@@ -632,6 +637,45 @@ class LiveEditMode {
      * 🎛️ Create and show Live Edit Mode toggle button
      */
     createToggleButton() {
+        console.log('🔍 WOOW! Live Edit: Creating toggle button...');
+        
+        // Check if toggle already exists in HTML
+        const existingToggle = document.getElementById('mas-v2-edit-mode-switch');
+        const existingHeroToggle = document.getElementById('mas-v2-edit-mode-switch-hero');
+        
+        console.log('🔍 WOOW! Live Edit: Checking existing toggles:', {
+            existingToggle: !!existingToggle,
+            existingHeroToggle: !!existingHeroToggle
+        });
+        
+        if (existingToggle) {
+            console.log('✅ WOOW! Live Edit: Using existing HTML toggle');
+            // Use existing toggle from HTML
+            existingToggle.addEventListener('change', () => {
+                this.isActive = existingToggle.checked;
+                this.handleToggleChange();
+            });
+            
+            // Sync hero toggle if it exists
+            if (existingHeroToggle) {
+                existingHeroToggle.addEventListener('change', () => {
+                    existingToggle.checked = existingHeroToggle.checked;
+                    existingToggle.dispatchEvent(new Event('change'));
+                });
+            }
+            
+            return; // Don't create duplicate button
+        }
+        
+        // Fallback: Create floating toggle if HTML toggle doesn't exist
+        console.log('🔄 WOOW! Live Edit: Creating floating toggle button');
+        
+        // Check if floating toggle already exists
+        if (document.querySelector('.mas-live-edit-toggle')) {
+            console.log('⚠️ WOOW! Live Edit: Floating toggle already exists, skipping');
+            return;
+        }
+        
         const button = document.createElement('div');
         button.className = 'mas-live-edit-toggle';
         button.innerHTML = `
@@ -640,6 +684,8 @@ class LiveEditMode {
         `;
         button.addEventListener('click', () => this.toggle());
         document.body.appendChild(button);
+        
+        console.log('✅ WOOW! Live Edit: Floating toggle button created and added to body');
     }
 
     /**
@@ -647,28 +693,61 @@ class LiveEditMode {
      */
     toggle() {
         this.isActive = !this.isActive;
+        console.log('🔄 WOOW! Live Edit: Toggle clicked, new state:', this.isActive);
+        this.handleToggleChange();
+    }
+    
+    /**
+     * 🔄 Handle toggle state change (used by both click and checkbox change)
+     */
+    handleToggleChange() {
+        console.log('🔄 WOOW! Live Edit: Handling toggle change, active:', this.isActive);
+        
+        // ✅ NAPRAWKA SYNCHRONIZACJI: Używaj kompatybilnych klas CSS
         document.body.classList.toggle('mas-live-edit-active', this.isActive);
+        document.body.classList.toggle('mas-edit-mode-active', this.isActive); // Dla kompatybilności z MAS
+        document.body.classList.toggle('woow-live-edit-enabled', this.isActive); // Dla nowego systemu
         
         if (this.isActive) {
+            console.log('✅ WOOW! Live Edit: Activating edit mode...');
             this.activateEditMode();
         } else {
+            console.log('❌ WOOW! Live Edit: Deactivating edit mode...');
             this.deactivateEditMode();
         }
     }
 
     /**
-     * ✨ Activate Live Edit Mode - Add edit triggers to all elements
+     * ✨ Activate Live Edit Mode - Use MAS system for compatibility
      */
     activateEditMode() {
-        const configs = this.getOptionConfigurations();
+        console.log('🔄 WOOW! Live Edit: Activating edit mode...');
         
-        Object.values(configs).forEach(config => {
-            if (config.position === 'global') {
-                this.createGlobalEditTrigger(config);
-            } else {
-                this.createElementEditTrigger(config);
+        // ✅ NAPRAWKA INTEGRACJI: Użyj systemu MAS zamiast własnego
+        if (window.MAS && typeof window.MAS.initializeEditableElements === 'function') {
+            console.log('✅ WOOW! Live Edit: Using MAS system for edit elements');
+            
+            // Upewnij się, że elementy są przygotowane
+            if (typeof window.MAS.prepareEditableElements === 'function') {
+                window.MAS.prepareEditableElements();
             }
-        });
+            
+            window.MAS.initializeEditableElements();
+        } else {
+            // Fallback: użyj własnego systemu
+            console.log('🔄 WOOW! Live Edit: Using fallback system');
+            const configs = this.getOptionConfigurations();
+            console.log('🔄 WOOW! Live Edit: Option configurations loaded:', configs);
+            
+            Object.values(configs).forEach(config => {
+                console.log('🔄 WOOW! Live Edit: Processing config:', config);
+                if (config.position === 'global') {
+                    this.createGlobalEditTrigger(config);
+                } else {
+                    this.createElementEditTrigger(config);
+                }
+            });
+        }
 
         this.showActivationToast();
     }
@@ -718,10 +797,19 @@ class LiveEditMode {
      * 🚫 Deactivate Live Edit Mode
      */
     deactivateEditMode() {
-        // Remove all edit triggers
-        document.querySelectorAll('.mas-edit-trigger, .mas-global-edit-trigger').forEach(el => el.remove());
+        console.log('❌ WOOW! Live Edit: Deactivating edit mode...');
         
-        // Close all panels
+        // ✅ NAPRAWKA INTEGRACJI: Użyj systemu MAS dla cleanup
+        if (window.MAS && typeof window.MAS.cleanupEditableElements === 'function') {
+            console.log('✅ WOOW! Live Edit: Using MAS system for cleanup');
+            window.MAS.cleanupEditableElements();
+        } else {
+            // Fallback: własny cleanup
+            console.log('🔄 WOOW! Live Edit: Using fallback cleanup');
+            document.querySelectorAll('.mas-edit-trigger, .mas-global-edit-trigger').forEach(el => el.remove());
+        }
+        
+        // Close all panels (własne)
         this.activePanels.forEach(panel => panel.close());
         this.activePanels.clear();
     }
@@ -730,12 +818,26 @@ class LiveEditMode {
      * 📱 Open contextual micro-panel for editing
      */
     openMicroPanel(element, config) {
-        // Close other panels
-        this.activePanels.forEach(panel => panel.close());
-        this.activePanels.clear();
+        console.log('🔄 WOOW! Live Edit: Opening micro panel for:', element);
+        console.log('🔄 WOOW! Live Edit: Config:', config);
+        
+        // ✅ NAPRAWKA INTEGRACJI: Użyj systemu MAS dla mikropaneli
+        if (window.MAS && typeof window.MAS.openMicroPanel === 'function') {
+            console.log('✅ WOOW! Live Edit: Using MAS system for micro panel');
+            window.MAS.openMicroPanel(element);
+        } else {
+            console.log('🔄 WOOW! Live Edit: Using fallback micro panel system');
+            console.log('🔄 WOOW! Live Edit: Creating MicroPanel with config:', config);
+            
+            // Close other panels
+            this.activePanels.forEach(panel => panel.close());
+            this.activePanels.clear();
 
-        const panel = new MicroPanel(element, config, this);
-        this.activePanels.set(config.category, panel);
+            const panel = new MicroPanel(element, config, this);
+            this.activePanels.set(config.category, panel);
+            
+            console.log('✅ WOOW! Live Edit: MicroPanel created and added to activePanels');
+        }
     }
 
     /**
@@ -749,7 +851,6 @@ class LiveEditMode {
             try {
                 this.settingsCache = new Map(Object.entries(JSON.parse(saved)));
             } catch (e) {
-                console.warn('Failed to load saved settings:', e);
             }
         }
     }
@@ -871,6 +972,12 @@ class LiveEditMode {
  */
 class MicroPanel {
     constructor(element, config, liveEditMode) {
+        console.log('🎛️ WOOW! MicroPanel: Constructor called', {
+            element: element,
+            config: config,
+            liveEditMode: liveEditMode
+        });
+        
         this.element = element;
         this.config = config;
         this.liveEditMode = liveEditMode;
@@ -879,6 +986,8 @@ class MicroPanel {
     }
 
     create() {
+        console.log('🎛️ WOOW! MicroPanel: Creating panel for', this.config.title);
+        
         this.panel = document.createElement('div');
         this.panel.className = 'mas-micro-panel';
         this.panel.dataset.category = this.config.category;
@@ -896,6 +1005,8 @@ class MicroPanel {
             <div class="mas-panel-content">
         `;
 
+        console.log('🎛️ WOOW! MicroPanel: Processing options', this.config.options);
+
         // Group options by section
         const sections = {};
         this.config.options.forEach(option => {
@@ -903,6 +1014,8 @@ class MicroPanel {
             if (!sections[section]) sections[section] = [];
             sections[section].push(option);
         });
+
+        console.log('🎛️ WOOW! MicroPanel: Sections grouped', sections);
 
         // Render sections
         Object.entries(sections).forEach(([sectionName, options]) => {
@@ -920,14 +1033,18 @@ class MicroPanel {
         content += '</div>';
         this.panel.innerHTML = content;
         
+        console.log('🎛️ WOOW! MicroPanel: Panel HTML created, adding to DOM');
+        
         document.body.appendChild(this.panel);
         this.position();
         this.setupEventListeners();
         this.loadCurrentValues();
+        
+        console.log('✅ WOOW! MicroPanel: Panel fully created and positioned');
     }
 
     /**
-     * 🎛️ Create individual control based on type
+     * ��️ Create individual control based on type
      */
     createControl(option) {
         const currentValue = this.getCurrentValue(option);
@@ -1020,18 +1137,23 @@ class MicroPanel {
      * 🔍 Get current value for option
      */
     getCurrentValue(option) {
+        console.log(`🔍 WOOW! Debug: Getting current value for ${option.id}`, option);
+        
         // Try CSS variable first
         if (option.cssVar) {
             const cssValue = getComputedStyle(document.documentElement)
                 .getPropertyValue(option.cssVar).trim();
+            console.log(`🔍 WOOW! Debug: CSS Variable ${option.cssVar} = "${cssValue}"`);
             if (cssValue) return cssValue;
         }
         
         // Try saved settings
         const savedValue = this.liveEditMode.settingsCache.get(option.id);
+        console.log(`🔍 WOOW! Debug: Saved value for ${option.id} = "${savedValue}"`);
         if (savedValue !== undefined) return savedValue;
         
         // Return fallback
+        console.log(`🔍 WOOW! Debug: Using fallback for ${option.id} = "${option.fallback}"`);
         return option.fallback;
     }
 
@@ -1039,11 +1161,16 @@ class MicroPanel {
      * 🔍 Get current toggle value
      */
     getCurrentToggleValue(option) {
+        console.log(`🔍 WOOW! Debug: Getting toggle value for ${option.id}`, option);
+        
         if (option.bodyClass) {
-            return document.body.classList.contains(option.bodyClass);
+            const hasClass = document.body.classList.contains(option.bodyClass);
+            console.log(`🔍 WOOW! Debug: Body class ${option.bodyClass} present: ${hasClass}`);
+            return hasClass;
         }
         
         const savedValue = this.liveEditMode.settingsCache.get(option.id);
+        console.log(`🔍 WOOW! Debug: Saved toggle value for ${option.id} = "${savedValue}"`);
         return savedValue === 'true' || savedValue === true;
     }
 
@@ -1094,6 +1221,15 @@ class MicroPanel {
         const target = e.target;
         const optionId = target.dataset.optionId;
         
+        console.log(`🎛️ WOOW! Debug: Control changed for ${optionId}`, {
+            value: target.value,
+            checked: target.checked,
+            type: target.type,
+            cssVar: target.dataset.cssVar,
+            bodyClass: target.dataset.bodyClass,
+            unit: target.dataset.unit
+        });
+        
         if (!optionId) return;
 
         let value = target.value;
@@ -1105,6 +1241,7 @@ class MicroPanel {
             // Update body class
             if (target.dataset.bodyClass) {
                 document.body.classList.toggle(target.dataset.bodyClass, target.checked);
+                console.log(`🎛️ WOOW! Debug: Toggled body class ${target.dataset.bodyClass} = ${target.checked}`);
             }
             
             // Update target element visibility
@@ -1112,17 +1249,47 @@ class MicroPanel {
                 const targetEl = document.querySelector(target.dataset.targetSelector);
                 if (targetEl) {
                     targetEl.style.display = target.checked ? 'none' : '';
+                    console.log(`🎛️ WOOW! Debug: Toggled element visibility ${target.dataset.targetSelector} = ${target.checked ? 'hidden' : 'visible'}`);
                 }
             }
         }
         
-        // Update CSS variable
-        if (target.dataset.cssVar) {
+        // ✅ NAPRAWKA INTEGRACJI: Użyj SettingsManager zamiast bezpośredniego ustawiania CSS
+        if (window.SettingsManager && target.dataset.cssVar) {
             const unit = target.dataset.unit || '';
-            document.documentElement.style.setProperty(
-                target.dataset.cssVar, 
-                value + unit
-            );
+            const options = {
+                cssVar: target.dataset.cssVar
+            };
+            
+            if (unit) {
+                options.unit = unit;
+            }
+            
+            if (target.dataset.bodyClass) {
+                options.bodyClass = target.dataset.bodyClass;
+            }
+            
+            // Użyj SettingsManager do aplikowania zmian
+            console.log(`🎛️ WOOW! Debug: Using SettingsManager.update(${optionId}, ${value}, options)`, options);
+            window.SettingsManager.update(optionId, value, options);
+            console.log(`🎛️ WOOW! LiveEdit: Updated ${optionId} = ${value}${unit} via SettingsManager`);
+            
+            // Sprawdź czy CSS variable został faktycznie ustawiony
+            setTimeout(() => {
+                const appliedValue = getComputedStyle(document.documentElement).getPropertyValue(target.dataset.cssVar);
+                console.log(`🔍 WOOW! Debug: Applied CSS Variable ${target.dataset.cssVar} = "${appliedValue.trim()}"`);
+            }, 100);
+            
+        } else {
+            // Fallback: bezpośrednie ustawienie CSS variable
+            if (target.dataset.cssVar) {
+                const unit = target.dataset.unit || '';
+                document.documentElement.style.setProperty(
+                    target.dataset.cssVar, 
+                    value + unit
+                );
+                console.log(`🎛️ WOOW! LiveEdit: Updated ${target.dataset.cssVar} = ${value}${unit} (fallback)`);
+            }
         }
         
         // Update value display for sliders
@@ -1135,28 +1302,36 @@ class MicroPanel {
 
         // Save the setting
         this.liveEditMode.saveSetting(optionId, value);
-        
-        // Debug log
-        console.log(`🎛️ Live Edit: ${optionId} = ${value}`);
     }
 
     /**
      * 🔄 Load current values into controls
      */
     loadCurrentValues() {
+        console.log(`🔄 WOOW! Debug: Loading current values for ${this.config.title}`, this.config.options);
+        
         this.config.options.forEach(option => {
             const control = this.panel.querySelector(`[data-option-id="${option.id}"]`);
-            if (!control) return;
+            if (!control) {
+                console.warn(`🔄 WOOW! Debug: Control not found for ${option.id}`);
+                return;
+            }
 
             const input = control.querySelector('input, select');
-            if (!input) return;
+            if (!input) {
+                console.warn(`🔄 WOOW! Debug: Input not found for ${option.id}`);
+                return;
+            }
 
             const currentValue = this.getCurrentValue(option);
+            console.log(`🔄 WOOW! Debug: Setting ${option.id} input value to "${currentValue}"`);
             
             if (input.type === 'checkbox') {
                 input.checked = this.getCurrentToggleValue(option);
+                console.log(`🔄 WOOW! Debug: Set checkbox ${option.id} to ${input.checked}`);
             } else {
                 input.value = currentValue;
+                console.log(`🔄 WOOW! Debug: Set input ${option.id} to "${currentValue}"`);
             }
         });
     }
@@ -1174,20 +1349,37 @@ class MicroPanel {
 
 // 🚀 Initialize Live Edit Mode when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    // Only initialize in admin area
-    if (document.body.classList.contains('wp-admin')) {
+    // Only initialize in admin area - NAPRAWIONA WARUNEK
+    if (window.location.pathname.includes('/wp-admin/') || document.body.classList.contains('wp-admin')) {
+        console.log('✅ WOOW! Live Edit Mode: Initializing...');
+        
         // Create global instance
         window.liveEditInstance = new LiveEditMode();
         
         // Legacy compatibility
         window.masLiveEditMode = window.liveEditInstance;
         
-        console.log('🎯 Live Edit Mode initialized globally', {
+        console.log('✅ WOOW! Live Edit Mode: Successfully initialized', {
             globalMode: window.liveEditInstance.globalMode,
-            location: window.location.pathname
+            location: window.location.pathname,
+            toggleExists: !!document.querySelector('.mas-live-edit-toggle')
         });
+    } else {
+        console.log('❌ WOOW! Live Edit Mode: Not in admin area, skipping initialization');
     }
 });
+
+// 🔄 BACKUP INICJALIZACJA: Na wypadek gdyby główna nie zadziałała
+setTimeout(() => {
+    if (!window.liveEditInstance && (window.location.pathname.includes('/wp-admin/') || document.body.classList.contains('wp-admin'))) {
+        console.log('🔄 WOOW! Live Edit Mode: Backup initialization triggered');
+        
+        window.liveEditInstance = new LiveEditMode();
+        window.masLiveEditMode = window.liveEditInstance;
+        
+        console.log('✅ WOOW! Live Edit Mode: Backup initialization successful');
+    }
+}, 1000);
 
 /**
  * 🎯 IMPLEMENTATION COMPLETE

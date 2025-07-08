@@ -1,0 +1,467 @@
+/**
+ * ========================================================================
+ *  🎨 WOOW! ADMIN STYLER: SEMANTIC THEME ARCHITECTURE (v3.0.0-beta.1)
+ * ========================================================================
+ * NOWA ARCHITEKTURA: Role-based, semantic variable names
+ * INSPIRACJA: Bootstrap 5.3+ design tokens + Material Design system
+ * 
+ * SEMANTIC NAMING CONVENTION:
+ * --woow-{category}-{role}-{variant?}-{state?}
+ * 
+ * CATEGORIES:
+ * - bg: backgrounds and surfaces
+ * - text: typography and content
+ * - border: borders and dividers  
+ * - accent: highlights and actions
+ * - surface: UI component backgrounds
+ * - space: spacing and layout
+ * - shadow: elevation and depth
+ * ========================================================================
+ */
+
+/*
+ * ========================================================================
+ * 🌟 SEMANTIC PALETTE 1: LIGHT THEME (Default)
+ * ========================================================================
+ * Base design tokens for light theme with complete semantic coverage
+ */
+:root,
+[data-theme="light"],
+html:not([data-theme]),
+body:not([class*="woow-theme-"]) {
+    
+    /* === 🎨 BACKGROUND SYSTEM === */
+    --woow-bg-primary: #ffffff;            /* Main background */
+    --woow-bg-secondary: #f8fafc;          /* Secondary background */
+    --woow-bg-tertiary: #e2e8f0;          /* Tertiary background */
+    --woow-bg-inverse: #1e293b;           /* Dark mode background */
+    --woow-bg-overlay: rgba(0, 0, 0, 0.5); /* Modal overlays */
+    
+    /* === 📝 TEXT SYSTEM === */
+    --woow-text-primary: #1e293b;         /* Primary text */
+    --woow-text-secondary: #64748b;       /* Secondary text */
+    --woow-text-muted: #94a3b8;          /* Muted text */
+    --woow-text-inverse: #ffffff;         /* Text on dark backgrounds */
+    --woow-text-link: #6366f1;           /* Link colors */
+    --woow-text-link-hover: #4f46e5;      /* Link hover states */
+    --woow-text-accent: #0f172a;          /* Accent text for emphasis */
+    
+    /* === 🔲 BORDER SYSTEM === */
+    --woow-border-primary: #e2e8f0;       /* Standard borders */
+    --woow-border-secondary: #cbd5e1;     /* Stronger borders */
+    --woow-border-accent: #6366f1;        /* Accent borders */
+    --woow-border-focus: #6366f1;         /* Focus rings */
+    
+    /* === ⚡ ACCENT SYSTEM === */
+    --woow-accent-primary: #6366f1;        /* Primary brand color */
+    --woow-accent-primary-hover: #4f46e5;  /* Primary hover state */
+    --woow-accent-secondary: #ec4899;      /* Secondary accent */
+    --woow-accent-success: #10b981;        /* Success states */
+    --woow-accent-warning: #f59e0b;        /* Warning states */
+    --woow-accent-error: #ef4444;          /* Error states */
+    --woow-accent-text: #ffffff;           /* Text on accent backgrounds */
+    
+    /* === 🏠 SURFACE SYSTEM === */
+    --woow-surface-menu: #2c3338;         /* Admin sidebar menu */
+    --woow-surface-menu-text: #f0f0f1;    /* Menu text */
+    --woow-surface-menu-hover: #1e2528;   /* Menu hover states */
+    --woow-surface-bar: #2c3338;          /* Admin toolbar */
+    --woow-surface-bar-text: #f0f0f1;     /* Toolbar text */
+    --woow-surface-bar-hover: #1e2528;    /* Toolbar hover */
+    --woow-surface-elevated: #ffffff;     /* Cards, modals */
+    --woow-surface-sunken: #f1f5f9;      /* Input fields */
+    
+    /* === 📏 SPACE SYSTEM === */
+    --woow-space-xs: 4px;                /* Extra small spacing */
+    --woow-space-sm: 8px;                /* Small spacing */
+    --woow-space-md: 16px;               /* Medium spacing */
+    --woow-space-lg: 24px;               /* Large spacing */
+    --woow-space-xl: 32px;               /* Extra large spacing */
+    --woow-space-bar-top: 10px;          /* Admin bar top margin */
+    --woow-space-bar-left: 10px;         /* Admin bar left margin */
+    --woow-space-bar-right: 10px;        /* Admin bar right margin */
+    
+    /* === 🌫️ SHADOW & ELEVATION SYSTEM === */
+    --woow-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --woow-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+    --woow-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --woow-shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+    
+    /* === 🎭 GLASSMORPHISM SYSTEM === */
+    --woow-glass-bg: rgba(255, 255, 255, 0.08);
+    --woow-glass-border: rgba(255, 255, 255, 0.2);
+    --woow-glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    --woow-glass-backdrop: blur(16px);
+
+    /* === 🎛️ LIVE EDIT MODE CONTROL VARIABLES === */
+    --woow-surface-bar-height: 32px;      /* Admin bar height */
+    --woow-surface-bar-font-size: 13px;   /* Admin bar font size */
+    --woow-surface-bar-padding: 8px;      /* Admin bar padding */
+    --woow-surface-bar-blur: 10px;        /* Admin bar blur effect */
+    
+    --woow-surface-menu-width: 160px;     /* Admin menu width */
+    --woow-surface-menu-item-padding: 8px; /* Menu item padding */
+    --woow-surface-menu-font-size: 14px;  /* Menu font size */
+    --woow-surface-menu-font-weight: 400; /* Menu font weight */
+    --woow-surface-menu-letter-spacing: 0px; /* Menu letter spacing */
+    
+    /* === 🎨 GRADIENT SYSTEM === */
+    --woow-gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --woow-gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --woow-gradient-accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    
+    /* === 🔄 TRANSITION SYSTEM === */
+    --woow-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --woow-transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --woow-transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* === 📐 RADIUS SYSTEM === */
+    --woow-radius-none: 0;
+    --woow-radius-sm: 4px;               /* Small radius */
+    --woow-radius-md: 8px;               /* Medium radius */
+    --woow-radius-lg: 12px;              /* Large radius */
+    --woow-radius-xl: 16px;              /* Extra large radius */
+    --woow-radius-2xl: 1rem;
+    --woow-radius-full: 9999px;
+    --woow-radius-menu-all: 0px;         /* Menu border radius */
+    --woow-radius-content: 0px;          /* Content area radius */
+    --woow-radius-button: 4px;           /* Button radius */
+    --woow-radius-global: 8px;           /* Global radius */
+    
+    /* === 📖 TYPOGRAPHY SYSTEM === */
+    --woow-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --woow-font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, monospace;
+    --woow-font-size-xs: 12px;
+    --woow-font-size-sm: 14px;
+    --woow-font-size-md: 16px;
+    --woow-font-size-lg: 18px;
+    --woow-font-size-xl: 20px;
+    --woow-font-size-2xl: 24px;
+    --woow-font-size-3xl: 1.875rem;
+    --woow-font-size-4xl: 2.25rem;
+}
+
+/*
+ * ========================================================================
+ * 🌙 SEMANTIC PALETTE 2: DARK THEME (Single Source of Truth)
+ * ========================================================================
+ * REFACTOR: Dark theme variables defined once for explicit dark mode
+ */
+[data-theme="dark"] {
+    
+    /* === 🎨 BACKGROUND SYSTEM DARK === */
+    --woow-bg-primary: #1e1e1e;           /* Main page background */
+    --woow-bg-secondary: #2d2d2d;         /* Cards, meta boxes, panels */
+    --woow-bg-tertiary: #3f3f3f;          /* Form fields, inputs, selects */
+    --woow-bg-inverse: #f0f0f1;           /* Light backgrounds on dark theme */
+    --woow-bg-overlay: rgba(0, 0, 0, 0.3); /* Overlays and modals */
+    
+    /* === 📝 TEXT SYSTEM DARK === */
+    --woow-text-primary: #e0e0e0;         /* Main content text */
+    --woow-text-secondary: #a0a0a0;       /* Supporting text, labels */
+    --woow-text-tertiary: #808080;        /* Muted text, placeholders */
+    --woow-text-inverse: #1a202c;         /* Text on light backgrounds */
+    --woow-text-link: #2295ff;            /* Links and interactive text */
+    --woow-text-link-hover: #60a5fa;      /* Link hover states */
+    --woow-text-accent: #f7fafc;          /* Accent text for emphasis */
+    
+    /* === 🔲 BORDER SYSTEM DARK === */
+    --woow-border-primary: #4a4a4a;       /* Main borders and dividers */
+    --woow-border-secondary: #3a3a3a;     /* Subtle borders */
+    --woow-border-focus: #2295ff;         /* Focus indicators */
+    --woow-border-accent: #2295ff;        /* Action borders */
+    
+    /* === ⚡ ACCENT SYSTEM DARK === */
+    --woow-accent-primary: #2295ff;       /* Primary actions, CTAs */
+    --woow-accent-primary-hover: #60a5fa; /* Primary hover */
+    --woow-accent-secondary: #a0a0a0;     /* Secondary actions */
+    --woow-accent-success: #10b981;       /* Success states */
+    --woow-accent-warning: #f59e0b;       /* Warning states */
+    --woow-accent-error: #ef4444;         /* Error states */
+    --woow-accent-text: #ffffff;          /* Text on accent backgrounds */
+    
+    /* === 🏠 SURFACE SYSTEM DARK === */
+    --woow-surface-menu: #232323;         /* Admin sidebar menu */
+    --woow-surface-menu-text: #e0e0e0;    /* Menu text */
+    --woow-surface-menu-hover: #3a3a3a;   /* Menu hover states */
+    --woow-surface-bar: #232323;          /* Admin toolbar */
+    --woow-surface-bar-text: #e0e0e0;     /* Toolbar text */
+    --woow-surface-bar-hover: #3a3a3a;    /* Toolbar hover */
+    --woow-surface-elevated: #2d2d2d;     /* Cards with elevation */
+    --woow-surface-sunken: #1a1a1a;       /* Inset surfaces */
+    
+    /* === 🌫️ SHADOW & ELEVATION SYSTEM DARK === */
+    --woow-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --woow-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+    --woow-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
+    --woow-shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.4);
+    --woow-shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    --woow-shadow-focus: 0 0 0 3px rgba(34, 149, 255, 0.2);
+    
+    /* === 🎭 GLASSMORPHISM SYSTEM DARK === */
+    --woow-glass-bg: rgba(0, 0, 0, 0.08);
+    --woow-glass-border: rgba(255, 255, 255, 0.1);
+    --woow-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    --woow-glass-backdrop: blur(16px);
+
+    /* === 🎛️ LIVE EDIT MODE CONTROL VARIABLES DARK === */
+    --woow-surface-bar-height: 32px;      /* Admin bar height */
+    --woow-surface-bar-font-size: 13px;   /* Admin bar font size */
+    --woow-surface-bar-padding: 8px;      /* Admin bar padding */
+    --woow-surface-bar-blur: 10px;        /* Admin bar blur effect */
+    
+    --woow-surface-menu-width: 160px;     /* Admin menu width */
+    --woow-surface-menu-item-padding: 8px; /* Menu item padding */
+    --woow-surface-menu-font-size: 14px;  /* Menu font size */
+    --woow-surface-menu-font-weight: 400; /* Menu font weight */
+    --woow-surface-menu-letter-spacing: 0px; /* Menu letter spacing */
+    
+    /* === 🎨 GRADIENT SYSTEM DARK === */
+    --woow-gradient-primary: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    --woow-gradient-secondary: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+    --woow-gradient-accent: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+/*
+ * ========================================================================
+ * 🌓 AUTO THEME REMOVED
+ * ========================================================================
+ * REMOVED: Auto theme functionality has been disabled.
+ * Users can now only toggle between light and dark themes manually.
+ */
+
+/*
+ * ========================================================================
+ * 🎯 WORDPRESS INTEGRATION: Semantic Variables Applied
+ * ========================================================================
+ * Apply semantic design tokens to WordPress admin components
+ */
+
+/* === MAIN LAYOUT === */
+body.wp-admin,
+body.wp-admin #wpwrap,
+body.wp-admin #wpcontent,
+body.wp-admin #wpbody,
+body.wp-admin #wpbody-content,
+body.wp-admin .wrap {
+    background-color: var(--woow-bg-primary) !important;
+    color: var(--woow-text-primary) !important;
+}
+
+/* === CARDS & PANELS === */
+.postbox,
+.wrap .postbox,
+.meta-box-sortables .postbox {
+    background-color: var(--woow-bg-secondary) !important;
+    border-color: var(--woow-border-primary) !important;
+    color: var(--woow-text-primary) !important;
+    box-shadow: var(--woow-shadow-sm) !important;
+}
+
+/* === TABLES === */
+.wp-list-table,
+.wp-list-table th,
+.wp-list-table td {
+    background-color: var(--woow-bg-secondary) !important;
+    border-color: var(--woow-border-secondary) !important;
+    color: var(--woow-text-primary) !important;
+}
+
+.wp-list-table th {
+    background-color: var(--woow-surface-sunken) !important;
+    color: var(--woow-text-secondary) !important;
+}
+
+/* === BUTTONS === */
+.wp-core-ui .button-primary {
+    background-color: var(--woow-accent-primary) !important;
+    border-color: var(--woow-accent-primary) !important;
+    color: var(--woow-accent-text) !important;
+}
+
+.wp-core-ui .button-primary:hover,
+.wp-core-ui .button-primary:focus {
+    background-color: var(--woow-accent-primary-hover) !important;
+    border-color: var(--woow-accent-primary-hover) !important;
+}
+
+.wp-core-ui .button {
+    background-color: var(--woow-bg-tertiary) !important;
+    border-color: var(--woow-border-primary) !important;
+    color: var(--woow-text-primary) !important;
+}
+
+/* === LINKS === */
+a:not(.button) {
+    color: var(--woow-text-link) !important;
+}
+
+a:not(.button):hover,
+a:not(.button):focus {
+    color: var(--woow-text-link-hover) !important;
+}
+
+/* === FORMS === */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="url"],
+input[type="search"],
+textarea,
+select {
+    background-color: var(--woow-bg-tertiary) !important;
+    border-color: var(--woow-border-primary) !important;
+    color: var(--woow-text-primary) !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--woow-border-focus) !important;
+    box-shadow: var(--woow-shadow-focus) !important;
+}
+
+/* === ADMIN MENU === */
+#adminmenu,
+#adminmenu .wp-submenu {
+    background-color: var(--woow-surface-menu) !important;
+}
+
+#adminmenu a,
+#adminmenu .wp-submenu a {
+    color: var(--woow-surface-menu-text) !important;
+}
+
+#adminmenu li.wp-has-current-submenu a.wp-has-current-submenu,
+#adminmenu li.current a.menu-top,
+#adminmenu .wp-submenu .wp-submenu-head,
+#adminmenu .wp-submenu a:hover {
+    background-color: var(--woow-surface-menu-hover) !important;
+    color: var(--woow-surface-menu-text) !important;
+}
+
+/* === ADMIN BAR === */
+body.wp-admin #wpadminbar {
+    background-color: var(--woow-surface-bar) !important;
+}
+
+/* Higher specificity fallback for WordPress themes that override */
+html body.wp-admin #wpadminbar {
+    background: var(--woow-surface-bar) !important;
+}
+
+/* Ultra-high specificity for stubborn WordPress themes */
+html body.wp-admin.wp-core-ui #wpadminbar {
+    background-color: var(--woow-surface-bar) !important;
+    background: var(--woow-surface-bar) !important;
+}
+
+/* 🎯 CRITICAL FIX: Override dark theme !important for live edit mode */
+html[style*="--woow-surface-bar"] body.wp-admin #wpadminbar,
+html body.wp-admin.mas-live-edit-active #wpadminbar,
+html body.wp-admin[style*="--woow-surface-bar"] #wpadminbar {
+    background-color: var(--woow-surface-bar) !important;
+    background: var(--woow-surface-bar) !important;
+}
+
+/* 🔥 NUCLEAR OPTION: Override dark theme CSS variables for live edit */
+html[data-theme="dark"] body.wp-admin #wpadminbar,
+html[data-theme="dark"].wp-admin #wpadminbar,
+body[data-theme="dark"].wp-admin #wpadminbar {
+    --woow-surface-bar: var(--woow-live-edit-surface-bar, var(--woow-surface-bar));
+}
+
+/* When live edit sets the color, this variable takes precedence */
+html[style*="--woow-surface-bar"] {
+    --woow-live-edit-surface-bar: var(--woow-surface-bar);
+}
+
+/* 🎯 DIRECT OVERRIDE: Higher specificity than [data-theme="dark"] */
+html[style*="--woow-surface-bar"][data-theme="dark"] {
+    --woow-surface-bar: var(--woow-surface-bar);
+}
+
+/* 🔥 ULTIMATE OVERRIDE: Force admin bar colors with maximum specificity */
+html[style*="--woow-surface-bar"] body.wp-admin #wpadminbar,
+html[style*="--woow-surface-bar"] #wpadminbar,
+body.wp-admin[style*="--woow-surface-bar"] #wpadminbar,
+html body.wp-admin #wpadminbar[style*="background"],
+html body.wp-admin #wpadminbar {
+    background-color: var(--woow-surface-bar) !important;
+    background: var(--woow-surface-bar) !important;
+}
+
+/* 🎯 FORCE OVERRIDE: Even more specific than WordPress core */
+html body.wp-admin #wpadminbar:not(.hidden) {
+    background-color: var(--woow-surface-bar) !important;
+    background: var(--woow-surface-bar) !important;
+}
+
+body.wp-admin #wpadminbar .ab-item,
+body.wp-admin #wpadminbar a.ab-item,
+body.wp-admin #wpadminbar > #wp-toolbar span.ab-label,
+body.wp-admin #wpadminbar > #wp-toolbar span.noticon {
+    color: var(--woow-surface-bar-text) !important;
+}
+
+body.wp-admin #wpadminbar .ab-top-menu > li:hover > .ab-item,
+body.wp-admin #wpadminbar .ab-top-menu > li.hover > .ab-item {
+    background-color: var(--woow-surface-bar-hover) !important;
+    color: var(--woow-surface-bar-text) !important;
+}
+
+/* === THEME TOGGLE BUTTON === */
+.woow-theme-toggle {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 48px !important;
+    height: 48px !important;
+    border: 2px solid var(--woow-glass-border) !important;
+    border-radius: var(--woow-radius-full) !important;
+    background: var(--woow-glass-bg) !important;
+    backdrop-filter: var(--woow-glass-backdrop) !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 20px !important;
+    transition: var(--woow-transition-normal) !important;
+    z-index: 99999 !important;
+    box-shadow: var(--woow-glass-shadow) !important;
+}
+
+.woow-theme-toggle:hover {
+    transform: scale(1.1) !important;
+    box-shadow: var(--woow-shadow-xl) !important;
+}
+
+/* === LEGACY COMPATIBILITY === */
+.mas-theme-toggle {
+    /* Map old class to new semantic system */
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 48px !important;
+    height: 48px !important;
+    border: 2px solid var(--woow-glass-border) !important;
+    border-radius: var(--woow-radius-full) !important;
+    background: var(--woow-glass-bg) !important;
+    backdrop-filter: var(--woow-glass-backdrop) !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 20px !important;
+    transition: var(--woow-transition-normal) !important;
+    z-index: 99999 !important;
+    box-shadow: var(--woow-glass-shadow) !important;
+}
+
+.mas-theme-toggle:hover {
+    transform: scale(1.1) !important;
+    box-shadow: var(--woow-shadow-xl) !important;
+}
+
+
+

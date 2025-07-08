@@ -55,8 +55,8 @@ class GutenbergManager {
     public function registerBlocks() {
         // Blok: Admin Style Preview
         $this->registerBlock('mas-admin-preview', [
-            'title' => __('Admin Style Preview', 'modern-admin-styler-v2'),
-            'description' => __('Preview how admin interface looks with current MAS settings', 'modern-admin-styler-v2'),
+            'title' => __('Admin Style Preview', 'woow-admin-styler'),
+            'description' => __('Preview how admin interface looks with current MAS settings', 'woow-admin-styler'),
             'category' => 'mas-blocks',
             'icon' => 'admin-appearance',
             'keywords' => ['admin', 'preview', 'style'],
@@ -75,8 +75,8 @@ class GutenbergManager {
         
         // Blok: Color Scheme Selector
         $this->registerBlock('mas-color-scheme', [
-            'title' => __('Color Scheme Selector', 'modern-admin-styler-v2'),
-            'description' => __('Allow users to switch between color schemes', 'modern-admin-styler-v2'),
+            'title' => __('Color Scheme Selector', 'woow-admin-styler'),
+            'description' => __('Allow users to switch between color schemes', 'woow-admin-styler'),
             'category' => 'mas-blocks',
             'icon' => 'art',
             'keywords' => ['color', 'scheme', 'theme'],
@@ -99,8 +99,8 @@ class GutenbergManager {
         
         // Blok: Settings Dashboard
         $this->registerBlock('mas-settings-dashboard', [
-            'title' => __('MAS Settings Dashboard', 'modern-admin-styler-v2'),
-            'description' => __('Quick access to MAS settings and controls', 'modern-admin-styler-v2'),
+            'title' => __('MAS Settings Dashboard', 'woow-admin-styler'),
+            'description' => __('Quick access to MAS settings and controls', 'woow-admin-styler'),
             'category' => 'mas-blocks',
             'icon' => 'admin-settings',
             'keywords' => ['settings', 'dashboard', 'admin'],
@@ -119,8 +119,8 @@ class GutenbergManager {
         
         // Blok: Performance Metrics
         $this->registerBlock('mas-performance-metrics', [
-            'title' => __('MAS Performance Metrics', 'modern-admin-styler-v2'),
-            'description' => __('Display performance metrics and optimization tips', 'modern-admin-styler-v2'),
+            'title' => __('MAS Performance Metrics', 'woow-admin-styler'),
+            'description' => __('Display performance metrics and optimization tips', 'woow-admin-styler'),
             'category' => 'mas-blocks',
             'icon' => 'performance',
             'keywords' => ['performance', 'metrics', 'optimization'],
@@ -139,8 +139,8 @@ class GutenbergManager {
         
         // Blok: CSS Variable Inspector
         $this->registerBlock('mas-css-inspector', [
-            'title' => __('CSS Variable Inspector', 'modern-admin-styler-v2'),
-            'description' => __('Inspect and modify CSS variables in real-time', 'modern-admin-styler-v2'),
+            'title' => __('CSS Variable Inspector', 'woow-admin-styler'),
+            'description' => __('Inspect and modify CSS variables in real-time', 'woow-admin-styler'),
             'category' => 'mas-blocks',
             'icon' => 'editor-code',
             'keywords' => ['css', 'variables', 'inspector'],
@@ -179,7 +179,7 @@ class GutenbergManager {
     public function addBlockCategories($categories, $post) {
         array_unshift($categories, [
             'slug' => 'mas-blocks',
-            'title' => __('Modern Admin Styler', 'modern-admin-styler-v2'),
+            'title' => __('Modern Admin Styler', 'woow-admin-styler'),
             'icon' => 'admin-appearance'
         ]);
         
@@ -214,11 +214,11 @@ class GutenbergManager {
             'settings' => $this->settings_manager->getSettings(),
             'blocks' => $this->getBlocksConfig(),
             'i18n' => [
-                'adminPreview' => __('Admin Preview', 'modern-admin-styler-v2'),
-                'colorScheme' => __('Color Scheme', 'modern-admin-styler-v2'),
-                'settings' => __('Settings', 'modern-admin-styler-v2'),
-                'performance' => __('Performance', 'modern-admin-styler-v2'),
-                'cssInspector' => __('CSS Inspector', 'modern-admin-styler-v2')
+                'adminPreview' => __('Admin Preview', 'woow-admin-styler'),
+                'colorScheme' => __('Color Scheme', 'woow-admin-styler'),
+                'settings' => __('Settings', 'woow-admin-styler'),
+                'performance' => __('Performance', 'woow-admin-styler'),
+                'cssInspector' => __('CSS Inspector', 'woow-admin-styler')
             ]
         ]);
     }
@@ -291,11 +291,11 @@ class GutenbergManager {
             
             <?php if ($show_settings): ?>
                 <div class="mas-preview-settings">
-                    <h4><?php _e('Current Settings', 'modern-admin-styler-v2'); ?></h4>
+                    <h4><?php _e('Current Settings', 'woow-admin-styler'); ?></h4>
                     <ul>
-                        <li><?php _e('Color Scheme:', 'modern-admin-styler-v2'); ?> <?php echo esc_html($settings['color_scheme'] ?? 'default'); ?></li>
-                        <li><?php _e('Admin Bar Height:', 'modern-admin-styler-v2'); ?> <?php echo esc_html($settings['admin_bar_height'] ?? 32); ?>px</li>
-                        <li><?php _e('Menu Width:', 'modern-admin-styler-v2'); ?> <?php echo esc_html($settings['menu_width'] ?? 160); ?>px</li>
+                        <li><?php _e('Color Scheme:', 'woow-admin-styler'); ?> <?php echo esc_html($settings['color_scheme'] ?? 'default'); ?></li>
+                        <li><?php _e('Admin Bar Height:', 'woow-admin-styler'); ?> <?php echo esc_html($settings['admin_bar_height'] ?? 32); ?>px</li>
+                        <li><?php _e('Menu Width:', 'woow-admin-styler'); ?> <?php echo esc_html($settings['menu_width'] ?? 160); ?>px</li>
                     </ul>
                 </div>
             <?php endif; ?>
@@ -316,7 +316,7 @@ class GutenbergManager {
         ob_start();
         ?>
         <div class="mas-block-color-scheme" data-layout="<?php echo esc_attr($layout); ?>">
-            <h3><?php _e('Choose Color Scheme', 'modern-admin-styler-v2'); ?></h3>
+            <h3><?php _e('Choose Color Scheme', 'woow-admin-styler'); ?></h3>
             
             <div class="mas-scheme-selector">
                 <?php foreach ($allowed_schemes as $scheme): ?>
@@ -373,7 +373,7 @@ class GutenbergManager {
         ob_start();
         ?>
         <div class="mas-block-settings-dashboard <?php echo $compact_mode ? 'compact' : ''; ?>">
-            <h3><?php _e('MAS Settings Dashboard', 'modern-admin-styler-v2'); ?></h3>
+            <h3><?php _e('MAS Settings Dashboard', 'woow-admin-styler'); ?></h3>
             
             <div class="mas-dashboard-sections">
                 <?php foreach ($sections as $section): ?>
@@ -384,32 +384,32 @@ class GutenbergManager {
                             <div class="mas-setting-item">
                                 <label>
                                     <input type="checkbox" <?php checked($settings['enable_plugin'] ?? false); ?>>
-                                    <?php _e('Enable Plugin', 'modern-admin-styler-v2'); ?>
+                                    <?php _e('Enable Plugin', 'woow-admin-styler'); ?>
                                 </label>
                             </div>
                             <div class="mas-setting-item">
                                 <label>
                                     <input type="checkbox" <?php checked($settings['enable_animations'] ?? true); ?>>
-                                    <?php _e('Enable Animations', 'modern-admin-styler-v2'); ?>
+                                    <?php _e('Enable Animations', 'woow-admin-styler'); ?>
                                 </label>
                             </div>
                         <?php elseif ($section === 'colors'): ?>
                             <div class="mas-setting-item">
-                                <label><?php _e('Primary Color:', 'modern-admin-styler-v2'); ?></label>
+                                <label><?php _e('Primary Color:', 'woow-admin-styler'); ?></label>
                                 <input type="color" value="<?php echo esc_attr($settings['primary_color'] ?? '#0073aa'); ?>">
                             </div>
                             <div class="mas-setting-item">
-                                <label><?php _e('Secondary Color:', 'modern-admin-styler-v2'); ?></label>
+                                <label><?php _e('Secondary Color:', 'woow-admin-styler'); ?></label>
                                 <input type="color" value="<?php echo esc_attr($settings['secondary_color'] ?? '#005a87'); ?>">
                             </div>
                         <?php elseif ($section === 'layout'): ?>
                             <div class="mas-setting-item">
-                                <label><?php _e('Admin Bar Height:', 'modern-admin-styler-v2'); ?></label>
+                                <label><?php _e('Admin Bar Height:', 'woow-admin-styler'); ?></label>
                                 <input type="range" min="28" max="50" value="<?php echo esc_attr($settings['admin_bar_height'] ?? 32); ?>">
                                 <span class="value"><?php echo esc_html($settings['admin_bar_height'] ?? 32); ?>px</span>
                             </div>
                             <div class="mas-setting-item">
-                                <label><?php _e('Menu Width:', 'modern-admin-styler-v2'); ?></label>
+                                <label><?php _e('Menu Width:', 'woow-admin-styler'); ?></label>
                                 <input type="range" min="140" max="200" value="<?php echo esc_attr($settings['menu_width'] ?? 160); ?>">
                                 <span class="value"><?php echo esc_html($settings['menu_width'] ?? 160); ?>px</span>
                             </div>
@@ -420,10 +420,10 @@ class GutenbergManager {
             
             <div class="mas-dashboard-actions">
                 <button class="button button-primary" onclick="masSaveDashboardSettings()">
-                    <?php _e('Save Changes', 'modern-admin-styler-v2'); ?>
+                    <?php _e('Save Changes', 'woow-admin-styler'); ?>
                 </button>
                 <a href="<?php echo admin_url('admin.php?page=mas-v2-general'); ?>" class="button">
-                    <?php _e('Full Settings', 'modern-admin-styler-v2'); ?>
+                    <?php _e('Full Settings', 'woow-admin-styler'); ?>
                 </a>
             </div>
         </div>
@@ -447,20 +447,20 @@ class GutenbergManager {
         ob_start();
         ?>
         <div class="mas-block-performance-metrics">
-            <h3><?php _e('Performance Metrics', 'modern-admin-styler-v2'); ?></h3>
+            <h3><?php _e('Performance Metrics', 'woow-admin-styler'); ?></h3>
             
             <div class="mas-metrics-grid">
                 <?php foreach ($metrics_to_show as $metric): ?>
                     <div class="mas-metric-item" data-metric="<?php echo esc_attr($metric); ?>">
                         <?php if ($metric === 'load-time'): ?>
                             <div class="mas-metric-value"><?php echo esc_html($metrics['load_time'] ?? 'N/A'); ?>ms</div>
-                            <div class="mas-metric-label"><?php _e('Load Time', 'modern-admin-styler-v2'); ?></div>
+                            <div class="mas-metric-label"><?php _e('Load Time', 'woow-admin-styler'); ?></div>
                         <?php elseif ($metric === 'css-size'): ?>
                             <div class="mas-metric-value"><?php echo esc_html($metrics['css_size'] ?? 'N/A'); ?>KB</div>
-                            <div class="mas-metric-label"><?php _e('CSS Size', 'modern-admin-styler-v2'); ?></div>
+                            <div class="mas-metric-label"><?php _e('CSS Size', 'woow-admin-styler'); ?></div>
                         <?php elseif ($metric === 'cache-hits'): ?>
                             <div class="mas-metric-value"><?php echo esc_html($metrics['cache_hits'] ?? 'N/A'); ?>%</div>
-                            <div class="mas-metric-label"><?php _e('Cache Hits', 'modern-admin-styler-v2'); ?></div>
+                            <div class="mas-metric-label"><?php _e('Cache Hits', 'woow-admin-styler'); ?></div>
                         <?php endif; ?>
                     </div>
                 <?php endforeach; ?>
@@ -486,7 +486,7 @@ class GutenbergManager {
         ob_start();
         ?>
         <div class="mas-block-css-inspector">
-            <h3><?php _e('CSS Variable Inspector', 'modern-admin-styler-v2'); ?></h3>
+            <h3><?php _e('CSS Variable Inspector', 'woow-admin-styler'); ?></h3>
             
             <div class="mas-inspector-tabs">
                 <?php foreach ($variable_groups as $group): ?>
@@ -506,7 +506,7 @@ class GutenbergManager {
             
             <?php if ($show_live_preview): ?>
                 <div class="mas-live-preview">
-                    <h4><?php _e('Live Preview', 'modern-admin-styler-v2'); ?></h4>
+                    <h4><?php _e('Live Preview', 'woow-admin-styler'); ?></h4>
                     <div class="mas-preview-area" id="mas-css-preview">
                         <!-- Live preview content -->
                     </div>
@@ -578,31 +578,29 @@ class GutenbergManager {
      */
     public function addGutenbergStyles($css, $settings) {
         $gutenberg_css = "
-            /* Gutenberg Editor Enhancements */
             .block-editor-page .edit-post-visual-editor {
-                background: var(--mas-background, #f0f0f1);
+                background: var(--woow-bg-primary, #f0f0f1);
             }
             
             .block-editor-block-list__layout {
-                font-family: var(--mas-font-family, inherit);
+                font-family: var(--woow-font-family, inherit);
             }
             
             .wp-block {
                 max-width: none;
             }
             
-            /* MAS Blocks Styling */
             .mas-block-admin-preview {
-                border: 1px solid var(--mas-border, #c3c4c7);
+                border: 1px solid var(--woow-border-primary, #c3c4c7);
                 border-radius: 4px;
                 padding: 1rem;
                 margin: 1rem 0;
-                background: var(--mas-surface, #ffffff);
+                background: var(--woow-bg-secondary, #ffffff);
             }
             
             .mas-block-color-scheme {
                 padding: 1rem;
-                border: 1px solid var(--mas-border, #c3c4c7);
+                border: 1px solid var(--woow-border-primary, #c3c4c7);
                 border-radius: 4px;
             }
             
@@ -624,8 +622,8 @@ class GutenbergManager {
             }
             
             .mas-scheme-option.active {
-                border-color: var(--mas-primary, #0073aa);
-                background: var(--mas-surface, #ffffff);
+                border-color: var(--woow-accent-primary, #0073aa);
+                background: var(--woow-bg-secondary, #ffffff);
             }
             
             .mas-scheme-preview {

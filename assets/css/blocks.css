@@ -184,14 +184,7 @@
     background: #2d2d2d;
 }
 
-/* Auto scheme colors */
-.mas-scheme-auto .mas-preview-bar {
-    background: linear-gradient(90deg, #23282d 50%, #1e1e1e 50%);
-}
-
-.mas-scheme-auto .mas-preview-content {
-    background: linear-gradient(90deg, #f0f0f1 50%, #2d2d2d 50%);
-}
+/* Auto scheme removed - only light/dark modes available */
 
 /* === SETTINGS DASHBOARD BLOCK === */
 .mas-block-settings-dashboard h3 {

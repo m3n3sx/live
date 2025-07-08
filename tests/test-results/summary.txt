@@ -1,7 +1,0 @@
-MAS V2 Test Summary
-==================
-Passed: 0
-Failed: 0
-Skipped: 0
-Duration: 794.836ms
-Generated: 2025-06-26T16:03:04.657Z

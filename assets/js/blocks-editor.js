@@ -44,8 +44,8 @@
      * Blok: Admin Style Preview
      */
     registerBlockType('mas-v2/mas-admin-preview', {
-        title: i18n.adminPreview || __('Admin Style Preview', 'modern-admin-styler-v2'),
-        description: __('Preview how admin interface looks with current MAS settings', 'modern-admin-styler-v2'),
+        title: i18n.adminPreview || __('Admin Style Preview', 'woow-admin-styler'),
+        description: __('Preview how admin interface looks with current MAS settings', 'woow-admin-styler'),
         category: 'mas-blocks',
         icon: 'admin-appearance',
         keywords: ['admin', 'preview', 'style'],
@@ -70,16 +70,16 @@
                 // Inspector Controls (sidebar)
                 el(InspectorControls, {},
                     el(PanelBody, {
-                        title: __('Preview Settings', 'modern-admin-styler-v2'),
+                        title: __('Preview Settings', 'woow-admin-styler'),
                         initialOpen: true
                     },
                         el(SelectControl, {
-                            label: __('Preview Type', 'modern-admin-styler-v2'),
+                            label: __('Preview Type', 'woow-admin-styler'),
                             value: previewType,
                             options: [
-                                { label: __('Admin Bar', 'modern-admin-styler-v2'), value: 'admin-bar' },
-                                { label: __('Side Menu', 'modern-admin-styler-v2'), value: 'menu' },
-                                { label: __('Full Interface', 'modern-admin-styler-v2'), value: 'full' }
+                                { label: __('Admin Bar', 'woow-admin-styler'), value: 'admin-bar' },
+                                { label: __('Side Menu', 'woow-admin-styler'), value: 'menu' },
+                                { label: __('Full Interface', 'woow-admin-styler'), value: 'full' }
                             ],
                             onChange: function(value) {
                                 setAttributes({ previewType: value });
@@ -87,7 +87,7 @@
                         }),
                         
                         el(ToggleControl, {
-                            label: __('Show Current Settings', 'modern-admin-styler-v2'),
+                            label: __('Show Current Settings', 'woow-admin-styler'),
                             checked: showSettings,
                             onChange: function(value) {
                                 setAttributes({ showSettings: value });
@@ -100,7 +100,7 @@
                 el('div', blockProps,
                     el(Card, {},
                         el(CardHeader, {},
-                            el('h3', {}, __('Admin Preview', 'modern-admin-styler-v2') + ' - ' + previewType)
+                            el('h3', {}, __('Admin Preview', 'woow-admin-styler') + ' - ' + previewType)
                         ),
                         el(CardBody, {},
                             // Admin Bar Preview
@@ -116,7 +116,7 @@
                                     borderRadius: '3px',
                                     marginBottom: '10px'
                                 }
-                            }, __('WordPress Admin Bar Preview', 'modern-admin-styler-v2')),
+                            }, __('WordPress Admin Bar Preview', 'woow-admin-styler')),
                             
                             // Menu Preview
                             previewType === 'menu' && el('div', {
@@ -131,10 +131,10 @@
                                 }
                             },
                                 el('ul', { style: { listStyle: 'none', margin: 0, padding: 0 } },
-                                    el('li', { style: { padding: '5px 0' } }, __('Dashboard', 'modern-admin-styler-v2')),
-                                    el('li', { style: { padding: '5px 0' } }, __('Posts', 'modern-admin-styler-v2')),
-                                    el('li', { style: { padding: '5px 0' } }, __('Media', 'modern-admin-styler-v2')),
-                                    el('li', { style: { padding: '5px 0' } }, __('Pages', 'modern-admin-styler-v2'))
+                                    el('li', { style: { padding: '5px 0' } }, __('Dashboard', 'woow-admin-styler')),
+                                    el('li', { style: { padding: '5px 0' } }, __('Posts', 'woow-admin-styler')),
+                                    el('li', { style: { padding: '5px 0' } }, __('Media', 'woow-admin-styler')),
+                                    el('li', { style: { padding: '5px 0' } }, __('Pages', 'woow-admin-styler'))
                                 )
                             ),
                             
@@ -148,11 +148,11 @@
                                     fontSize: '12px'
                                 }
                             },
-                                el('h4', { style: { margin: '0 0 10px 0' } }, __('Current Settings', 'modern-admin-styler-v2')),
+                                el('h4', { style: { margin: '0 0 10px 0' } }, __('Current Settings', 'woow-admin-styler')),
                                 el('ul', { style: { margin: 0, paddingLeft: '20px' } },
-                                    el('li', {}, __('Color Scheme:', 'modern-admin-styler-v2') + ' ' + (settings.color_scheme || 'default')),
-                                    el('li', {}, __('Admin Bar Height:', 'modern-admin-styler-v2') + ' ' + (settings.admin_bar_height || 32) + 'px'),
-                                    el('li', {}, __('Menu Width:', 'modern-admin-styler-v2') + ' ' + (settings.menu_width || 160) + 'px')
+                                    el('li', {}, __('Color Scheme:', 'woow-admin-styler') + ' ' + (settings.color_scheme || 'default')),
+                                    el('li', {}, __('Admin Bar Height:', 'woow-admin-styler') + ' ' + (settings.admin_bar_height || 32) + 'px'),
+                                    el('li', {}, __('Menu Width:', 'woow-admin-styler') + ' ' + (settings.menu_width || 160) + 'px')
                                 )
                             )
                         )
@@ -171,8 +171,8 @@
      * Blok: Color Scheme Selector
      */
     registerBlockType('mas-v2/mas-color-scheme', {
-        title: i18n.colorScheme || __('Color Scheme Selector', 'modern-admin-styler-v2'),
-        description: __('Allow users to switch between color schemes', 'modern-admin-styler-v2'),
+        title: i18n.colorScheme || __('Color Scheme Selector', 'woow-admin-styler'),
+        description: __('Allow users to switch between color schemes', 'woow-admin-styler'),
         category: 'mas-blocks',
         icon: 'art',
         keywords: ['color', 'scheme', 'theme'],
@@ -201,13 +201,13 @@
                 // Inspector Controls
                 el(InspectorControls, {},
                     el(PanelBody, {
-                        title: __('Scheme Settings', 'modern-admin-styler-v2'),
+                        title: __('Scheme Settings', 'woow-admin-styler'),
                         initialOpen: true
                     },
-                        el('h4', {}, __('Allowed Schemes', 'modern-admin-styler-v2')),
+                        el('h4', {}, __('Allowed Schemes', 'woow-admin-styler')),
                         
                         el(CheckboxControl, {
-                            label: __('Light', 'modern-admin-styler-v2'),
+                            label: __('Light', 'woow-admin-styler'),
                             checked: allowedSchemes.includes('light'),
                             onChange: function(checked) {
                                 const newSchemes = checked 
@@ -218,7 +218,7 @@
                         }),
                         
                         el(CheckboxControl, {
-                            label: __('Dark', 'modern-admin-styler-v2'),
+                            label: __('Dark', 'woow-admin-styler'),
                             checked: allowedSchemes.includes('dark'),
                             onChange: function(checked) {
                                 const newSchemes = checked 
@@ -229,7 +229,7 @@
                         }),
                         
                         el(CheckboxControl, {
-                            label: __('Auto', 'modern-admin-styler-v2'),
+                            label: __('Auto', 'woow-admin-styler'),
                             checked: allowedSchemes.includes('auto'),
                             onChange: function(checked) {
                                 const newSchemes = checked 
@@ -240,7 +240,7 @@
                         }),
                         
                         el(ToggleControl, {
-                            label: __('Show Preview', 'modern-admin-styler-v2'),
+                            label: __('Show Preview', 'woow-admin-styler'),
                             checked: showPreview,
                             onChange: function(value) {
                                 setAttributes({ showPreview: value });
@@ -248,12 +248,12 @@
                         }),
                         
                         el(SelectControl, {
-                            label: __('Layout', 'modern-admin-styler-v2'),
+                            label: __('Layout', 'woow-admin-styler'),
                             value: layout,
                             options: [
-                                { label: __('Horizontal', 'modern-admin-styler-v2'), value: 'horizontal' },
-                                { label: __('Vertical', 'modern-admin-styler-v2'), value: 'vertical' },
-                                { label: __('Grid', 'modern-admin-styler-v2'), value: 'grid' }
+                                { label: __('Horizontal', 'woow-admin-styler'), value: 'horizontal' },
+                                { label: __('Vertical', 'woow-admin-styler'), value: 'vertical' },
+                                { label: __('Grid', 'woow-admin-styler'), value: 'grid' }
                             ],
                             onChange: function(value) {
                                 setAttributes({ layout: value });
@@ -266,7 +266,7 @@
                 el('div', blockProps,
                     el(Card, {},
                         el(CardHeader, {},
-                            el('h3', {}, __('Color Scheme Selector', 'modern-admin-styler-v2'))
+                            el('h3', {}, __('Color Scheme Selector', 'woow-admin-styler'))
                         ),
                         el(CardBody, {},
                             el('div', {
@@ -335,8 +335,8 @@
      * Blok: Settings Dashboard
      */
     registerBlockType('mas-v2/mas-settings-dashboard', {
-        title: i18n.settings || __('MAS Settings Dashboard', 'modern-admin-styler-v2'),
-        description: __('Quick access to MAS settings and controls', 'modern-admin-styler-v2'),
+        title: i18n.settings || __('MAS Settings Dashboard', 'woow-admin-styler'),
+        description: __('Quick access to MAS settings and controls', 'woow-admin-styler'),
         category: 'mas-blocks',
         icon: 'admin-settings',
         keywords: ['settings', 'dashboard', 'admin'],
@@ -361,13 +361,13 @@
                 // Inspector Controls
                 el(InspectorControls, {},
                     el(PanelBody, {
-                        title: __('Dashboard Settings', 'modern-admin-styler-v2'),
+                        title: __('Dashboard Settings', 'woow-admin-styler'),
                         initialOpen: true
                     },
-                        el('h4', {}, __('Visible Sections', 'modern-admin-styler-v2')),
+                        el('h4', {}, __('Visible Sections', 'woow-admin-styler')),
                         
                         el(CheckboxControl, {
-                            label: __('General', 'modern-admin-styler-v2'),
+                            label: __('General', 'woow-admin-styler'),
                             checked: sections.includes('general'),
                             onChange: function(checked) {
                                 const newSections = checked 
@@ -378,7 +378,7 @@
                         }),
                         
                         el(CheckboxControl, {
-                            label: __('Colors', 'modern-admin-styler-v2'),
+                            label: __('Colors', 'woow-admin-styler'),
                             checked: sections.includes('colors'),
                             onChange: function(checked) {
                                 const newSections = checked 
@@ -389,7 +389,7 @@
                         }),
                         
                         el(CheckboxControl, {
-                            label: __('Layout', 'modern-admin-styler-v2'),
+                            label: __('Layout', 'woow-admin-styler'),
                             checked: sections.includes('layout'),
                             onChange: function(checked) {
                                 const newSections = checked 
@@ -400,7 +400,7 @@
                         }),
                         
                         el(ToggleControl, {
-                            label: __('Compact Mode', 'modern-admin-styler-v2'),
+                            label: __('Compact Mode', 'woow-admin-styler'),
                             checked: compactMode,
                             onChange: function(value) {
                                 setAttributes({ compactMode: value });
@@ -413,7 +413,7 @@
                 el('div', blockProps,
                     el(Card, {},
                         el(CardHeader, {},
-                            el('h3', {}, __('MAS Settings Dashboard', 'modern-admin-styler-v2'))
+                            el('h3', {}, __('MAS Settings Dashboard', 'woow-admin-styler'))
                         ),
                         el(CardBody, {},
                             el('div', {
@@ -443,17 +443,17 @@
                                         section === 'general' && el('div', {},
                                             el('label', { style: { display: 'block', marginBottom: '5px' } },
                                                 el('input', { type: 'checkbox', style: { marginRight: '5px' } }),
-                                                __('Enable Plugin', 'modern-admin-styler-v2')
+                                                __('Enable Plugin', 'woow-admin-styler')
                                             ),
                                             el('label', { style: { display: 'block' } },
                                                 el('input', { type: 'checkbox', style: { marginRight: '5px' } }),
-                                                __('Enable Animations', 'modern-admin-styler-v2')
+                                                __('Enable Animations', 'woow-admin-styler')
                                             )
                                         ),
                                         
                                         section === 'colors' && el('div', {},
                                             el('label', { style: { display: 'block', marginBottom: '5px' } },
-                                                __('Primary Color:', 'modern-admin-styler-v2'),
+                                                __('Primary Color:', 'woow-admin-styler'),
                                                 el('input', { 
                                                     type: 'color', 
                                                     value: settings.primary_color || '#0073aa',
@@ -461,7 +461,7 @@
                                                 })
                                             ),
                                             el('label', { style: { display: 'block' } },
-                                                __('Secondary Color:', 'modern-admin-styler-v2'),
+                                                __('Secondary Color:', 'woow-admin-styler'),
                                                 el('input', { 
                                                     type: 'color', 
                                                     value: settings.secondary_color || '#005a87',
@@ -472,7 +472,7 @@
                                         
                                         section === 'layout' && el('div', {},
                                             el('label', { style: { display: 'block', marginBottom: '5px' } },
-                                                __('Admin Bar Height:', 'modern-admin-styler-v2'),
+                                                __('Admin Bar Height:', 'woow-admin-styler'),
                                                 el('input', { 
                                                     type: 'range', 
                                                     min: 28, 
@@ -482,7 +482,7 @@
                                                 })
                                             ),
                                             el('label', { style: { display: 'block' } },
-                                                __('Menu Width:', 'modern-admin-styler-v2'),
+                                                __('Menu Width:', 'woow-admin-styler'),
                                                 el('input', { 
                                                     type: 'range', 
                                                     min: 140, 
@@ -506,11 +506,11 @@
                                 el(Button, {
                                     isPrimary: true,
                                     style: { marginRight: '10px' }
-                                }, __('Save Changes', 'modern-admin-styler-v2')),
+                                }, __('Save Changes', 'woow-admin-styler')),
                                 
                                 el(Button, {
                                     isSecondary: true
-                                }, __('Full Settings', 'modern-admin-styler-v2'))
+                                }, __('Full Settings', 'woow-admin-styler'))
                             )
                         )
                     )
@@ -527,8 +527,8 @@
      * Blok: Performance Metrics
      */
     registerBlockType('mas-v2/mas-performance-metrics', {
-        title: i18n.performance || __('MAS Performance Metrics', 'modern-admin-styler-v2'),
-        description: __('Display performance metrics and optimization tips', 'modern-admin-styler-v2'),
+        title: i18n.performance || __('MAS Performance Metrics', 'woow-admin-styler'),
+        description: __('Display performance metrics and optimization tips', 'woow-admin-styler'),
         category: 'mas-blocks',
         icon: 'performance',
         keywords: ['performance', 'metrics', 'optimization'],
@@ -553,13 +553,13 @@
                 // Inspector Controls
                 el(InspectorControls, {},
                     el(PanelBody, {
-                        title: __('Metrics Settings', 'modern-admin-styler-v2'),
+                        title: __('Metrics Settings', 'woow-admin-styler'),
                         initialOpen: true
                     },
-                        el('h4', {}, __('Metrics to Display', 'modern-admin-styler-v2')),
+                        el('h4', {}, __('Metrics to Display', 'woow-admin-styler')),
                         
                         el(CheckboxControl, {
-                            label: __('Load Time', 'modern-admin-styler-v2'),
+                            label: __('Load Time', 'woow-admin-styler'),
                             checked: metricsToShow.includes('load-time'),
                             onChange: function(checked) {
                                 const newMetrics = checked 
@@ -570,7 +570,7 @@
                         }),
                         
                         el(CheckboxControl, {
-                            label: __('CSS Size', 'modern-admin-styler-v2'),
+                            label: __('CSS Size', 'woow-admin-styler'),
                             checked: metricsToShow.includes('css-size'),
                             onChange: function(checked) {
                                 const newMetrics = checked 
@@ -581,7 +581,7 @@
                         }),
                         
                         el(CheckboxControl, {
-                            label: __('Cache Hits', 'modern-admin-styler-v2'),
+                            label: __('Cache Hits', 'woow-admin-styler'),
                             checked: metricsToShow.includes('cache-hits'),
                             onChange: function(checked) {
                                 const newMetrics = checked 
@@ -592,7 +592,7 @@
                         }),
                         
                         el(ToggleControl, {
-                            label: __('Show Charts', 'modern-admin-styler-v2'),
+                            label: __('Show Charts', 'woow-admin-styler'),
                             checked: showCharts,
                             onChange: function(value) {
                                 setAttributes({ showCharts: value });
@@ -605,7 +605,7 @@
                 el('div', blockProps,
                     el(Card, {},
                         el(CardHeader, {},
-                            el('h3', {}, __('Performance Metrics', 'modern-admin-styler-v2'))
+                            el('h3', {}, __('Performance Metrics', 'woow-admin-styler'))
                         ),
                         el(CardBody, {},
                             el('div', {
@@ -625,15 +625,15 @@
                                     if (metric === 'load-time') {
                                         value = '245';
                                         unit = 'ms';
-                                        label = __('Load Time', 'modern-admin-styler-v2');
+                                        label = __('Load Time', 'woow-admin-styler');
                                     } else if (metric === 'css-size') {
                                         value = '16';
                                         unit = 'KB';
-                                        label = __('CSS Size', 'modern-admin-styler-v2');
+                                        label = __('CSS Size', 'woow-admin-styler');
                                     } else if (metric === 'cache-hits') {
                                         value = '94';
                                         unit = '%';
-                                        label = __('Cache Hits', 'modern-admin-styler-v2');
+                                        label = __('Cache Hits', 'woow-admin-styler');
                                     }
                                     
                                     return el('div', {
@@ -680,7 +680,7 @@
                                     justifyContent: 'center',
                                     color: '#666'
                                 }
-                            }, __('Performance Chart (Live Data)', 'modern-admin-styler-v2'))
+                            }, __('Performance Chart (Live Data)', 'woow-admin-styler'))
                         )
                     )
                 )
@@ -696,8 +696,8 @@
      * Blok: CSS Variable Inspector
      */
     registerBlockType('mas-v2/mas-css-inspector', {
-        title: i18n.cssInspector || __('CSS Variable Inspector', 'modern-admin-styler-v2'),
-        description: __('Inspect and modify CSS variables in real-time', 'modern-admin-styler-v2'),
+        title: i18n.cssInspector || __('CSS Variable Inspector', 'woow-admin-styler'),
+        description: __('Inspect and modify CSS variables in real-time', 'woow-admin-styler'),
         category: 'mas-blocks',
         icon: 'editor-code',
         keywords: ['css', 'variables', 'inspector'],
@@ -722,13 +722,13 @@
                 // Inspector Controls
                 el(InspectorControls, {},
                     el(PanelBody, {
-                        title: __('Inspector Settings', 'modern-admin-styler-v2'),
+                        title: __('Inspector Settings', 'woow-admin-styler'),
                         initialOpen: true
                     },
-                        el('h4', {}, __('Variable Groups', 'modern-admin-styler-v2')),
+                        el('h4', {}, __('Variable Groups', 'woow-admin-styler')),
                         
                         el(CheckboxControl, {
-                            label: __('Colors', 'modern-admin-styler-v2'),
+                            label: __('Colors', 'woow-admin-styler'),
                             checked: variableGroups.includes('colors'),
                             onChange: function(checked) {
                                 const newGroups = checked 
@@ -739,7 +739,7 @@
                         }),
                         
                         el(CheckboxControl, {
-                            label: __('Spacing', 'modern-admin-styler-v2'),
+                            label: __('Spacing', 'woow-admin-styler'),
                             checked: variableGroups.includes('spacing'),
                             onChange: function(checked) {
                                 const newGroups = checked 
@@ -750,7 +750,7 @@
                         }),
                         
                         el(CheckboxControl, {
-                            label: __('Typography', 'modern-admin-styler-v2'),
+                            label: __('Typography', 'woow-admin-styler'),
                             checked: variableGroups.includes('typography'),
                             onChange: function(checked) {
                                 const newGroups = checked 
@@ -761,7 +761,7 @@
                         }),
                         
                         el(ToggleControl, {
-                            label: __('Show Live Preview', 'modern-admin-styler-v2'),
+                            label: __('Show Live Preview', 'woow-admin-styler'),
                             checked: showLivePreview,
                             onChange: function(value) {
                                 setAttributes({ showLivePreview: value });
@@ -774,7 +774,7 @@
                 el('div', blockProps,
                     el(Card, {},
                         el(CardHeader, {},
-                            el('h3', {}, __('CSS Variable Inspector', 'modern-admin-styler-v2'))
+                            el('h3', {}, __('CSS Variable Inspector', 'woow-admin-styler'))
                         ),
                         el(CardBody, {},
                             // Tab Buttons
@@ -855,7 +855,7 @@
                                     background: '#f9f9f9'
                                 }
                             },
-                                el('h4', {}, __('Live Preview', 'modern-admin-styler-v2')),
+                                el('h4', {}, __('Live Preview', 'woow-admin-styler')),
                                 el('div', {
                                     style: {
                                         height: '100px',
@@ -867,7 +867,7 @@
                                         justifyContent: 'center',
                                         color: '#666'
                                     }
-                                }, __('Live CSS Preview Area', 'modern-admin-styler-v2'))
+                                }, __('Live CSS Preview Area', 'woow-admin-styler'))
                             )
                         )
                     )

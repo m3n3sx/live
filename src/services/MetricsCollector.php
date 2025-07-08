@@ -94,7 +94,7 @@ class MetricsCollector {
                 'floating_admin_bar' => $settings['admin_bar_floating'] ?? false,
                 'glossy_effects' => $settings['admin_bar_glossy'] ?? false,
                 'compact_mode' => $settings['compact_mode'] ?? false,
-                'auto_dark_mode' => $settings['auto_dark_mode'] ?? false
+    
             ],
             'custom_code' => [
                 'css_length' => strlen($settings['custom_css'] ?? ''),
