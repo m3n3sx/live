@@ -145,6 +145,7 @@ class ModernAdminStylerV2 {
         
         add_action('wp_ajax_mas_save_live_settings', [$this, 'ajaxSaveLiveSettings']);
         add_action('wp_ajax_mas_get_live_settings', [$this, 'ajaxGetLiveSettings']);
+        add_action('wp_ajax_mas_get_live_settings', [$this, 'ajaxGetLiveSettings']);
         add_action('wp_ajax_mas_reset_live_setting', [$this, 'ajaxResetLiveSetting']);
         
         add_action('wp_ajax_save_mas_v2_settings', [$this, 'ajaxSaveSettings']);
@@ -1221,9 +1222,16 @@ class ModernAdminStylerV2 {
             return;
         }
         
-        $dynamic_css = $this->css_generator->generate($settings);
-
-        wp_add_inline_style('woow-v2-main', $dynamic_css);
+        // NAPRAWKA: Użyj WordPress API zamiast echo
+        $css_vars = $this->generateCSSVariables($settings);
+        
+        // Dodaj do <head> z wysokim priorytetem
+        add_action('wp_head', function() use ($css_vars) {
+            echo "<style id='woow-live-styles'>{$css_vars}</style>";
+        }, 1);
+        
+        // Dodaj również przez WordPress API
+        wp_add_inline_style('woow-v2-main', $css_vars);
 
         if (!empty($settings['custom_js'])) {
             if (current_user_can('manage_options')) {
@@ -1371,12 +1379,14 @@ class ModernAdminStylerV2 {
             $css .= "--woow-space-menu-floating-left: {$menuMarginLeft}px;";
         }
 
+        $adminBarBackground = $settings['admin_bar_background'] ?? '#23282d';
         $adminBarTextColor = $settings['admin_bar_text_color'] ?? '#ffffff';
         $adminBarHoverColor = $settings['admin_bar_hover_color'] ?? '#46a6d8';
         $adminBarFontSize = $settings['admin_bar_font_size'] ?? 13;
         $adminBarPadding = $settings['admin_bar_padding'] ?? 8;
         $adminBarBorderRadiusAll = $settings['admin_bar_border_radius'] ?? 0;
         
+        $css .= "--woow-surface-bar: {$adminBarBackground};";
         $css .= "--woow-surface-bar-text: {$adminBarTextColor};";
         $css .= "--woow-surface-bar-hover: {$adminBarHoverColor};";
         $css .= "--woow-surface-bar-font-size: {$adminBarFontSize}px;";
@@ -2796,11 +2806,35 @@ class ModernAdminStylerV2 {
         try {
             $settings = $this->getSettings();
             
+            // Filtruj tylko ustawienia związane z Live Edit
+            $live_edit_settings = [];
+            $live_edit_keys = [
+                'admin_bar_background',
+                'admin_bar_text_color', 
+                'admin_bar_hover_color',
+                'admin_bar_height',
+                'admin_bar_font_size',
+                'admin_bar_border_radius',
+                'menu_background',
+                'menu_text_color',
+                'menu_hover_color',
+                'menu_width',
+                'menu_border_radius',
+                'accent_color'
+            ];
+            
+            foreach ($live_edit_keys as $key) {
+                if (isset($settings[$key])) {
+                    $live_edit_settings[$key] = $settings[$key];
+                }
+            }
+            
             wp_send_json_success([
-                'settings' => $settings,
-                'count' => count($settings),
+                'settings' => $live_edit_settings,
+                'count' => count($live_edit_settings),
                 'last_modified' => get_option('mas_v2_settings_modified', 'Unknown'),
-                'cache_status' => wp_using_ext_object_cache() ? 'External cache' : 'WordPress default'
+                'cache_status' => wp_using_ext_object_cache() ? 'External cache' : 'WordPress default',
+                'timestamp' => current_time('mysql')
             ]);
             
         } catch (Exception $e) {

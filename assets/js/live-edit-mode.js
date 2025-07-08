@@ -13,12 +13,145 @@
  * @version 3.0.0 - Live Edit Mode
  */
 
+/**
+ * 🔍 WOOW! Live Edit Debugger - System monitoringu i diagnostyki
+ */
+class LiveEditDebugger {
+    static log(message, data = null) {
+        if (window.masV2Debug) {
+            console.log(`🔍 WOOW! Debug: ${message}`, data);
+        }
+    }
+    
+    static trackSettingChange(key, oldValue, newValue) {
+        this.log(`Setting changed: ${key}`, {
+            old: oldValue,
+            new: newValue,
+            timestamp: new Date().toISOString()
+        });
+    }
+    
+    static trackDatabaseSave(key, success, error = null) {
+        if (success) {
+            this.log(`✅ Database save successful: ${key}`);
+        } else {
+            this.log(`❌ Database save failed: ${key}`, error);
+        }
+    }
+    
+    static trackCSSVariable(cssVar, value) {
+        this.log(`🎨 CSS Variable applied: ${cssVar} = ${value}`);
+    }
+}
+
+/**
+ * 🔄 WOOW! Settings Restorer - Mechanizm przywracania ustawień po refresh
+ */
+class SettingsRestorer {
+    constructor() {
+        this.init();
+    }
+    
+    init() {
+        // Przywróć ustawienia natychmiast po DOMContentLoaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.restoreSettings();
+            });
+        } else {
+            // DOM już załadowany
+            this.restoreSettings();
+        }
+    }
+    
+    async restoreSettings() {
+        try {
+            LiveEditDebugger.log('🔄 Starting settings restoration...');
+            
+            // 1. Pobierz ustawienia z bazy danych
+            const response = await fetch(window.ajaxurl + '?action=mas_get_live_settings&nonce=' + window.masNonce);
+            const data = await response.json();
+            
+            if (data.success && data.settings) {
+                LiveEditDebugger.log('✅ Settings loaded from database', data.settings);
+                
+                // 2. Aplikuj każde ustawienie
+                Object.entries(data.settings).forEach(([key, value]) => {
+                    this.applySettingToCSS(key, value);
+                });
+                
+                console.log('✅ WOOW! Settings restored from database');
+                
+                // 3. Zaktualizuj cache w LiveEditMode
+                if (window.liveEditInstance) {
+                    window.liveEditInstance.settingsCache = new Map(Object.entries(data.settings));
+                }
+                
+            } else {
+                throw new Error(data.message || 'Failed to load settings');
+            }
+        } catch (error) {
+            console.error('❌ WOOW! Failed to restore settings from database:', error);
+            // Fallback do localStorage
+            this.restoreFromLocalStorage();
+        }
+    }
+    
+    applySettingToCSS(key, value) {
+        // Mapuj ustawienia na CSS variables
+        const cssVar = this.mapSettingToCSSVar(key);
+        if (cssVar && value !== null && value !== undefined) {
+            document.documentElement.style.setProperty(cssVar, value);
+            LiveEditDebugger.trackCSSVariable(cssVar, value);
+        }
+    }
+    
+    mapSettingToCSSVar(key) {
+        const mapping = {
+            'admin_bar_background': '--woow-surface-bar',
+            'admin_bar_text_color': '--woow-surface-bar-text',
+            'admin_bar_hover_color': '--woow-surface-bar-hover',
+            'admin_bar_height': '--woow-surface-bar-height',
+            'admin_bar_font_size': '--woow-surface-bar-font-size',
+            'admin_bar_border_radius': '--woow-radius-bar',
+            'menu_background': '--woow-surface-menu',
+            'menu_text_color': '--woow-surface-menu-text',
+            'menu_hover_color': '--woow-surface-menu-hover',
+            'menu_width': '--woow-surface-menu-width',
+            'menu_border_radius': '--woow-radius-menu',
+            'accent_color': '--woow-accent-primary'
+        };
+        
+        return mapping[key] || null;
+    }
+    
+    restoreFromLocalStorage() {
+        try {
+            const saved = localStorage.getItem('mas_live_edit_settings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                LiveEditDebugger.log('🔄 Restoring from localStorage', settings);
+                
+                Object.entries(settings).forEach(([key, value]) => {
+                    this.applySettingToCSS(key, value);
+                });
+                
+                console.log('✅ WOOW! Settings restored from localStorage');
+            }
+        } catch (error) {
+            console.error('❌ WOOW! Failed to restore from localStorage:', error);
+        }
+    }
+}
+
 class LiveEditMode {
     constructor() {
         this.isActive = false;
         this.activePanels = new Map();
         this.settingsCache = new Map();
         this.globalMode = window.masLiveEdit && window.masLiveEdit.globalMode || false;
+        this.saveQueue = new Map(); // Kolejka zapisów do bazy danych
+        this.saveInProgress = false;
         this.init();
     }
 
@@ -34,6 +167,9 @@ class LiveEditMode {
             this.isActive = true;
             this.activateEditMode();
         }
+        
+        // Uruchom mechanizm przywracania ustawień
+        new SettingsRestorer();
     }
 
     /**
@@ -221,14 +357,6 @@ class LiveEditMode {
                         section: 'Appearance'
                     },
                     {
-                        id: 'menu_active_background',
-                        label: 'Active Item Background',
-                        type: 'color',
-                        cssVar: '--woow-surface-menu-active',
-                        fallback: '#0073aa',
-                        section: 'Appearance'
-                    },
-                    {
                         id: 'menu_width',
                         label: 'Menu Width',
                         type: 'slider',
@@ -240,37 +368,7 @@ class LiveEditMode {
                         section: 'Dimensions'
                     },
                     {
-                        id: 'menu_item_height',
-                        label: 'Item Height',
-                        type: 'slider',
-                        cssVar: '--woow-surface-menu-item-height',
-                        unit: 'px',
-                        min: 28,
-                        max: 50,
-                        fallback: 34,
-                        section: 'Dimensions'
-                    },
-                    // 📐 Layout i pozycjonowanie
-                    {
-                        id: 'menu_floating',
-                        label: 'Floating Mode',
-                        type: 'toggle',
-                        bodyClass: 'woow-menu-floating',
-                        cssVar: '--woow-surface-menu-floating',
-                        fallback: false,
-                        section: 'Layout'
-                    },
-                    {
-                        id: 'menu_glassmorphism',
-                        label: 'Glass Effect',
-                        type: 'toggle',
-                        bodyClass: 'mas-menu-glass',
-                        cssVar: '--woow-surface-menu-glass',
-                        fallback: false,
-                        section: 'Effects'
-                    },
-                    {
-                        id: 'menu_border_radius_all',
+                        id: 'menu_border_radius',
                         label: 'Border Radius',
                         type: 'slider',
                         cssVar: '--woow-radius-menu',
@@ -279,32 +377,6 @@ class LiveEditMode {
                         max: 25,
                         fallback: 0,
                         section: 'Layout'
-                    },
-                    // 🎯 Zaawansowane opcje
-                    {
-                        id: 'menu_hover_animation',
-                        label: 'Hover Animation',
-                        type: 'select',
-                        cssVar: '--woow-surface-menu-hover-anim',
-                        options: {
-                            'none': 'None',
-                            'slide': 'Slide',
-                            'fade': 'Fade',
-                            'scale': 'Scale'
-                        },
-                        fallback: 'none',
-                        section: 'Effects'
-                    },
-                    {
-                        id: 'menu_hover_duration',
-                        label: 'Hover Duration',
-                        type: 'slider',
-                        cssVar: '--woow-surface-menu-hover-duration',
-                        unit: 'ms',
-                        min: 100,
-                        max: 800,
-                        fallback: 300,
-                        section: 'Effects'
                     }
                 ]
             },
@@ -858,41 +930,133 @@ class LiveEditMode {
     /**
      * 💾 Save setting value
      */
-    saveSetting(key, value) {
-        this.settingsCache.set(key, value);
+    async saveSetting(key, value) {
+        const oldValue = this.settingsCache.get(key);
         
-        // Save to localStorage immediately
+        // 1. Zapisz lokalnie natychmiast (dla responsywności)
+        this.settingsCache.set(key, value);
+        this.applySettingImmediately(key, value);
+        
+        // 2. Zapisz do localStorage
         const settings = Object.fromEntries(this.settingsCache);
         localStorage.setItem('mas_live_edit_settings', JSON.stringify(settings));
-
-        // In real implementation, debounced AJAX save to WordPress
+        
+        // 3. Dodaj do kolejki zapisów do bazy danych
+        this.saveQueue.set(key, value);
+        
+        // 4. Uruchom debounced save
         this.debouncedSave();
+        
+        // 5. Track change
+        LiveEditDebugger.trackSettingChange(key, oldValue, value);
+    }
+
+    /**
+     * ⚡ Natychmiastowe aplikowanie ustawienia
+     */
+    applySettingImmediately(key, value) {
+        const cssVar = this.mapSettingToCSSVar(key);
+        if (cssVar && value !== null && value !== undefined) {
+            const unit = this.getUnitForKey(key);
+            document.documentElement.style.setProperty(cssVar, value + unit);
+            LiveEditDebugger.trackCSSVariable(cssVar, value + unit);
+        }
+    }
+    
+    /**
+     * 🗺️ Mapowanie ustawień na CSS variables
+     */
+    mapSettingToCSSVar(key) {
+        const mapping = {
+            'admin_bar_background': '--woow-surface-bar',
+            'admin_bar_text_color': '--woow-surface-bar-text',
+            'admin_bar_hover_color': '--woow-surface-bar-hover',
+            'admin_bar_height': '--woow-surface-bar-height',
+            'admin_bar_font_size': '--woow-surface-bar-font-size',
+            'admin_bar_border_radius': '--woow-radius-bar',
+            'menu_background': '--woow-surface-menu',
+            'menu_text_color': '--woow-surface-menu-text',
+            'menu_hover_color': '--woow-surface-menu-hover',
+            'menu_width': '--woow-surface-menu-width',
+            'menu_border_radius': '--woow-radius-menu',
+            'accent_color': '--woow-accent-primary'
+        };
+        
+        return mapping[key] || null;
+    }
+    
+    /**
+     * 📏 Pobieranie jednostek dla ustawień
+     */
+    getUnitForKey(key) {
+        const units = {
+            'admin_bar_height': 'px',
+            'admin_bar_font_size': 'px',
+            'admin_bar_border_radius': 'px',
+            'menu_width': 'px',
+            'menu_border_radius': 'px'
+        };
+        
+        return units[key] || '';
     }
 
     /**
      * 🔄 Debounced save to WordPress database
      */
-    debouncedSave = this.debounce(() => {
-        const settings = Object.fromEntries(this.settingsCache);
+    debouncedSave = this.debounce(async () => {
+        if (this.saveInProgress || this.saveQueue.size === 0) {
+            return;
+        }
         
-        // WordPress AJAX save
-        if (window.ajaxurl) {
-            fetch(window.ajaxurl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    action: 'mas_save_live_settings',
-                    settings: JSON.stringify(settings),
-                    nonce: window.masNonce || ''
-                })
-            }).then(response => response.json())
-              .then(data => {
-                  if (data.success) {
-                      this.showSaveToast();
-                  }
-              });
+        this.saveInProgress = true;
+        
+        try {
+            const settings = Object.fromEntries(this.saveQueue);
+            
+            LiveEditDebugger.log('💾 Saving to database', settings);
+            
+            // WordPress AJAX save
+            if (window.ajaxurl) {
+                const response = await fetch(window.ajaxurl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        action: 'mas_save_live_settings',
+                        settings: JSON.stringify(settings),
+                        nonce: window.masNonce || ''
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Wyczyść kolejkę po udanym zapisie
+                    this.saveQueue.clear();
+                    this.showSaveToast();
+                    
+                    // Track successful saves
+                    Object.keys(settings).forEach(key => {
+                        LiveEditDebugger.trackDatabaseSave(key, true);
+                    });
+                    
+                    LiveEditDebugger.log('✅ Database save successful', data);
+                } else {
+                    throw new Error(data.message || 'Unknown error');
+                }
+            }
+        } catch (error) {
+            console.error('❌ WOOW! Database save failed:', error);
+            
+            // Track failed saves
+            Object.keys(this.saveQueue).forEach(key => {
+                LiveEditDebugger.trackDatabaseSave(key, false, error.message);
+            });
+            
+            this.showToast('Failed to save settings: ' + error.message, 'error');
+        } finally {
+            this.saveInProgress = false;
         }
     }, 1000);
 
@@ -1044,7 +1208,7 @@ class MicroPanel {
     }
 
     /**
-     * ��️ Create individual control based on type
+     * 🎛️ Create individual control based on type
      */
     createControl(option) {
         const currentValue = this.getCurrentValue(option);
@@ -1057,79 +1221,59 @@ class MicroPanel {
                         <input type="color" 
                                value="${currentValue}" 
                                data-css-var="${option.cssVar}"
-                               data-option-id="${option.id}">
+                               data-option-id="${option.id}"
+                               data-unit="${option.unit || ''}"
+                               data-body-class="${option.bodyClass || ''}"
+                               data-target-selector="${option.targetSelector || ''}"
+                        />
                     </div>
                 `;
-
+                
             case 'slider':
                 return `
                     <div class="mas-control mas-control-slider" data-option-id="${option.id}">
-                        <label>
-                            ${option.label}
+                        <label>${option.label}</label>
+                        <div class="slider-container">
+                            <input type="range" 
+                                   min="${option.min}" 
+                                   max="${option.max}" 
+                                   value="${currentValue}"
+                                   data-css-var="${option.cssVar}"
+                                   data-option-id="${option.id}"
+                                   data-unit="${option.unit || ''}"
+                                   data-body-class="${option.bodyClass || ''}"
+                            />
                             <span class="mas-value">${currentValue}${option.unit || ''}</span>
-                        </label>
-                        <input type="range" 
-                               min="${option.min}" 
-                               max="${option.max}" 
-                               step="${option.step || 1}"
-                               value="${parseFloat(currentValue) || option.fallback}" 
-                               data-css-var="${option.cssVar}"
-                               data-unit="${option.unit || ''}"
-                               data-option-id="${option.id}">
+                        </div>
                     </div>
                 `;
-
+                
             case 'toggle':
-                const isChecked = this.getCurrentToggleValue(option);
                 return `
                     <div class="mas-control mas-control-toggle" data-option-id="${option.id}">
-                        <label>
-                            <input type="checkbox" 
-                                   ${isChecked ? 'checked' : ''}
-                                   data-body-class="${option.bodyClass || ''}"
-                                   data-css-var="${option.cssVar}"
-                                   data-target-selector="${option.targetSelector || ''}"
-                                   data-option-id="${option.id}">
-                            <span class="mas-toggle-switch"></span>
-                            ${option.label}
-                        </label>
+                        <label>${option.label}</label>
+                        <input type="checkbox" 
+                               ${currentValue ? 'checked' : ''}
+                               data-css-var="${option.cssVar}"
+                               data-option-id="${option.id}"
+                               data-body-class="${option.bodyClass || ''}"
+                               data-target-selector="${option.targetSelector || ''}"
+                        />
                     </div>
                 `;
-
-            case 'select':
-                let selectOptions = '';
-                Object.entries(option.options).forEach(([value, label]) => {
-                    const selected = currentValue === value ? 'selected' : '';
-                    selectOptions += `<option value="${value}" ${selected}>${label}</option>`;
-                });
                 
-                return `
-                    <div class="mas-control mas-control-select" data-option-id="${option.id}">
-                        <label>${option.label}</label>
-                        <select data-css-var="${option.cssVar}" data-option-id="${option.id}">
-                            ${selectOptions}
-                        </select>
-                    </div>
-                `;
-
-            case 'font-picker':
-                return `
-                    <div class="mas-control mas-control-font" data-option-id="${option.id}">
-                        <label>${option.label}</label>
-                        <select data-css-var="${option.cssVar}" data-option-id="${option.id}" class="mas-font-picker">
-                            <option value="system-ui">System Default</option>
-                            <option value="Inter">Inter</option>
-                            <option value="Roboto">Roboto</option>
-                            <option value="Open Sans">Open Sans</option>
-                            <option value="Lato">Lato</option>
-                            <option value="Poppins">Poppins</option>
-                            <option value="Montserrat">Montserrat</option>
-                        </select>
-                    </div>
-                `;
-
             default:
-                return '';
+                return `
+                    <div class="mas-control mas-control-text" data-option-id="${option.id}">
+                        <label>${option.label}</label>
+                        <input type="text" 
+                               value="${currentValue}" 
+                               data-css-var="${option.cssVar}"
+                               data-option-id="${option.id}"
+                               data-unit="${option.unit || ''}"
+                        />
+                    </div>
+                `;
         }
     }
 
@@ -1137,66 +1281,59 @@ class MicroPanel {
      * 🔍 Get current value for option
      */
     getCurrentValue(option) {
-        console.log(`🔍 WOOW! Debug: Getting current value for ${option.id}`, option);
-        
-        // Try CSS variable first
-        if (option.cssVar) {
-            const cssValue = getComputedStyle(document.documentElement)
-                .getPropertyValue(option.cssVar).trim();
-            console.log(`🔍 WOOW! Debug: CSS Variable ${option.cssVar} = "${cssValue}"`);
-            if (cssValue) return cssValue;
+        // 1. Sprawdź cache LiveEditMode
+        if (this.liveEditMode.settingsCache.has(option.id)) {
+            return this.liveEditMode.settingsCache.get(option.id);
         }
         
-        // Try saved settings
-        const savedValue = this.liveEditMode.settingsCache.get(option.id);
-        console.log(`🔍 WOOW! Debug: Saved value for ${option.id} = "${savedValue}"`);
-        if (savedValue !== undefined) return savedValue;
+        // 2. Sprawdź localStorage
+        const saved = localStorage.getItem('mas_live_edit_settings');
+        if (saved) {
+            try {
+                const settings = JSON.parse(saved);
+                if (settings[option.id] !== undefined) {
+                    return settings[option.id];
+                }
+            } catch (e) {
+                console.error('❌ WOOW! Failed to parse localStorage:', e);
+            }
+        }
         
-        // Return fallback
-        console.log(`🔍 WOOW! Debug: Using fallback for ${option.id} = "${option.fallback}"`);
-        return option.fallback;
+        // 3. Użyj fallback
+        return option.fallback !== undefined ? option.fallback : '';
     }
 
     /**
      * 🔍 Get current toggle value
      */
     getCurrentToggleValue(option) {
-        console.log(`🔍 WOOW! Debug: Getting toggle value for ${option.id}`, option);
-        
-        if (option.bodyClass) {
-            const hasClass = document.body.classList.contains(option.bodyClass);
-            console.log(`🔍 WOOW! Debug: Body class ${option.bodyClass} present: ${hasClass}`);
-            return hasClass;
-        }
-        
-        const savedValue = this.liveEditMode.settingsCache.get(option.id);
-        console.log(`🔍 WOOW! Debug: Saved toggle value for ${option.id} = "${savedValue}"`);
-        return savedValue === 'true' || savedValue === true;
+        const value = this.getCurrentValue(option);
+        return value === true || value === '1' || value === 1;
     }
 
     /**
-     * 📍 Position panel near target element
+     * 📍 Position panel
      */
     position() {
-        if (this.config.position === 'global') {
-            // Center the panel
+        if (!this.element) {
+            // Global panel - center on screen
             this.panel.style.position = 'fixed';
             this.panel.style.top = '50%';
             this.panel.style.left = '50%';
             this.panel.style.transform = 'translate(-50%, -50%)';
-            this.panel.style.zIndex = '999999';
-        } else {
-            // Position relative to target element
-            const rect = this.element.getBoundingClientRect();
-            this.panel.style.position = 'fixed';
-            this.panel.style.top = `${Math.min(rect.top, window.innerHeight - 400)}px`;
-            this.panel.style.left = `${Math.min(rect.right + 20, window.innerWidth - 350)}px`;
-            this.panel.style.zIndex = '999999';
+            return;
         }
+        
+        const rect = this.element.getBoundingClientRect();
+        
+        this.panel.style.position = 'fixed';
+        this.panel.style.top = rect.bottom + 10 + 'px';
+        this.panel.style.left = rect.left + 'px';
+        this.panel.style.zIndex = '999999';
     }
 
     /**
-     * 🎛️ Setup event listeners for all controls
+     * 🎯 Setup event listeners
      */
     setupEventListeners() {
         // Close button
@@ -1395,6 +1532,9 @@ setTimeout(() => {
  * ✅ Keyboard shortcuts (Ctrl+E to toggle)
  * ✅ Responsive design and positioning
  * ✅ Extensible architecture for future options
+ * ✅ NAPRAWKA: System przywracania ustawień po refresh
+ * ✅ NAPRAWKA: Ulepszona synchronizacja z bazą danych
+ * ✅ NAPRAWKA: Mechanizm debugowania i monitoringu
  * 
  * The system transforms the comprehensive option mapping into an 
  * intuitive, context-aware editing experience that rivals premium

@@ -291,6 +291,11 @@ class AssetLoader {
             ],
             'settings' => $this->settings_manager ? $this->settings_manager->getSettings() : []
         ]);
+        
+        // NAPRAWKA: Dodaj zmienne dla Live Edit Mode
+        wp_localize_script('mas-v2-live-edit-global', 'masNonce', wp_create_nonce('mas_live_edit_nonce'));
+        wp_localize_script('mas-v2-live-edit-global', 'masV2Debug', defined('WP_DEBUG') && WP_DEBUG);
+        wp_localize_script('mas-v2-live-edit-global', 'ajaxurl', admin_url('admin-ajax.php'));
     }
     
     /**
