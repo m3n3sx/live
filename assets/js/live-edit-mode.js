@@ -44,9 +44,86 @@ class LiveEditDebugger {
     }
 }
 
-/**
- * 🔄 WOOW! Settings Restorer - Mechanizm przywracania ustawień po refresh
- */
+// Toast notifications
+class Toast {
+    static show(message, type = 'info', timeout = 3000) {
+        let toast = document.createElement('div');
+        toast.className = `woow-toast woow-toast-${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.classList.add('visible'), 10);
+        setTimeout(() => {
+            toast.classList.remove('visible');
+            setTimeout(() => toast.remove(), 300);
+        }, timeout);
+    }
+}
+
+// Loader/spinner
+class Loader {
+    static show() {
+        if (document.getElementById('woow-loader')) return;
+        let loader = document.createElement('div');
+        loader.id = 'woow-loader';
+        loader.innerHTML = '<div class="woow-spinner"></div>';
+        document.body.appendChild(loader);
+    }
+    static hide() {
+        let loader = document.getElementById('woow-loader');
+        if (loader) loader.remove();
+    }
+}
+
+// Banner trybu offline/online
+class ConnectionBanner {
+    static show(status) {
+        let banner = document.getElementById('woow-connection-banner');
+        if (!banner) {
+            banner = document.createElement('div');
+            banner.id = 'woow-connection-banner';
+            document.body.appendChild(banner);
+        }
+        banner.textContent = status === 'offline' ? 'Brak połączenia – tryb offline' : 'Połączono – tryb online';
+        banner.className = status === 'offline' ? 'woow-banner-offline' : 'woow-banner-online';
+        banner.style.display = 'block';
+    }
+    static hide() {
+        const banner = document.getElementById('woow-connection-banner');
+        if (banner) banner.style.display = 'none';
+    }
+}
+
+// Obsługa zmiany statusu połączenia
+window.addEventListener('online', () => {
+    ConnectionBanner.show('online');
+    setTimeout(() => ConnectionBanner.hide(), 2000);
+});
+window.addEventListener('offline', () => {
+    ConnectionBanner.show('offline');
+});
+
+// Tooltipy (prosty mechanizm)
+document.addEventListener('mouseover', (e) => {
+    const el = e.target.closest('[data-tooltip]');
+    if (!el) return;
+    let tooltip = document.createElement('div');
+    tooltip.className = 'woow-tooltip';
+    tooltip.textContent = el.dataset.tooltip;
+    document.body.appendChild(tooltip);
+    const rect = el.getBoundingClientRect();
+    tooltip.style.left = rect.left + window.scrollX + rect.width / 2 + 'px';
+    tooltip.style.top = rect.top + window.scrollY - 32 + 'px';
+    el._woowTooltip = tooltip;
+});
+document.addEventListener('mouseout', (e) => {
+    const el = e.target.closest('[data-tooltip]');
+    if (el && el._woowTooltip) {
+        el._woowTooltip.remove();
+        el._woowTooltip = null;
+    }
+});
+
+// Rozszerzenie SettingsRestorer o synchronizację UI
 class SettingsRestorer {
     constructor() {
         this.init();
@@ -59,7 +136,6 @@ class SettingsRestorer {
                 this.restoreSettings();
             });
         } else {
-            // DOM już załadowany
             this.restoreSettings();
         }
     }
@@ -67,32 +143,19 @@ class SettingsRestorer {
     async restoreSettings() {
         try {
             LiveEditDebugger.log('🔄 Starting settings restoration...');
-            
-            // 1. Pobierz ustawienia z bazy danych
             const response = await fetch(window.ajaxurl + '?action=mas_get_live_settings&nonce=' + window.masNonce);
             const data = await response.json();
-            
             if (data.success && data.settings) {
                 LiveEditDebugger.log('✅ Settings loaded from database', data.settings);
-                
-                // 2. Aplikuj każde ustawienie
-                Object.entries(data.settings).forEach(([key, value]) => {
-                    this.applySettingToCSS(key, value);
-                });
-                
-                console.log('✅ WOOW! Settings restored from database');
-                
-                // 3. Zaktualizuj cache w LiveEditMode
+                this.applyAllSettingsToUI(data.settings);
                 if (window.liveEditInstance) {
                     window.liveEditInstance.settingsCache = new Map(Object.entries(data.settings));
                 }
-                
             } else {
                 throw new Error(data.message || 'Failed to load settings');
             }
         } catch (error) {
             console.error('❌ WOOW! Failed to restore settings from database:', error);
-            // Fallback do localStorage
             this.restoreFromLocalStorage();
         }
     }
@@ -121,7 +184,6 @@ class SettingsRestorer {
             'menu_border_radius': '--woow-radius-menu',
             'accent_color': '--woow-accent-primary'
         };
-        
         return mapping[key] || null;
     }
     
@@ -131,12 +193,7 @@ class SettingsRestorer {
             if (saved) {
                 const settings = JSON.parse(saved);
                 LiveEditDebugger.log('🔄 Restoring from localStorage', settings);
-                
-                Object.entries(settings).forEach(([key, value]) => {
-                    this.applySettingToCSS(key, value);
-                });
-                
-                console.log('✅ WOOW! Settings restored from localStorage');
+                this.applyAllSettingsToUI(settings);
             }
         } catch (error) {
             console.error('❌ WOOW! Failed to restore from localStorage:', error);
@@ -144,7 +201,8 @@ class SettingsRestorer {
     }
 }
 
-class LiveEditMode {
+// Rozszerzenie LiveEditEngine o obsługę błędów AJAX, tryb offline, retry, toasty
+class LiveEditEngine {
     constructor() {
         this.isActive = false;
         this.activePanels = new Map();
@@ -152,6 +210,11 @@ class LiveEditMode {
         this.globalMode = window.masLiveEdit && window.masLiveEdit.globalMode || false;
         this.saveQueue = new Map(); // Kolejka zapisów do bazy danych
         this.saveInProgress = false;
+        this.isOffline = false;
+        this.retryQueue = [];
+        this.debounceTimer = null;
+        window.addEventListener('online', () => this.handleOnline());
+        window.addEventListener('offline', () => this.handleOffline());
         this.init();
     }
 
@@ -928,27 +991,13 @@ class LiveEditMode {
     }
 
     /**
-     * 💾 Save setting value
+     * �� Save setting value (batch, debounced)
      */
-    async saveSetting(key, value) {
-        const oldValue = this.settingsCache.get(key);
-        
-        // 1. Zapisz lokalnie natychmiast (dla responsywności)
+    saveSetting(key, value) {
         this.settingsCache.set(key, value);
-        this.applySettingImmediately(key, value);
-        
-        // 2. Zapisz do localStorage
-        const settings = Object.fromEntries(this.settingsCache);
-        localStorage.setItem('mas_live_edit_settings', JSON.stringify(settings));
-        
-        // 3. Dodaj do kolejki zapisów do bazy danych
+        this.saveToLocalStorage();
         this.saveQueue.set(key, value);
-        
-        // 4. Uruchom debounced save
-        this.debouncedSave();
-        
-        // 5. Track change
-        LiveEditDebugger.trackSettingChange(key, oldValue, value);
+        this.debouncedBatchSave();
     }
 
     /**
@@ -1094,6 +1143,46 @@ class LiveEditMode {
                 this.toggle();
             }
         });
+
+        // Delegacja obsługi kliknięcia Reset w MicroPanel/init
+        document.addEventListener('click', async (e) => {
+            const btn = e.target.closest('.mas-reset-btn');
+            if (!btn) return;
+            const optionId = btn.dataset.resetFor;
+            if (!optionId) return;
+            btn.disabled = true;
+            Loader.show();
+            try {
+                const response = await fetch(window.ajaxurl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `action=mas_reset_live_setting&nonce=${window.masNonce}&option_id=${encodeURIComponent(optionId)}`
+                });
+                const data = await response.json();
+                Loader.hide();
+                btn.disabled = false;
+                if (data.success && data.default !== undefined) {
+                    // Zaktualizuj UI, cache, localStorage, CSS variables, klasy, widoczność
+                    if (window.liveEditInstance) {
+                        window.liveEditInstance.settingsCache.set(optionId, data.default);
+                        window.liveEditInstance.saveToLocalStorage();
+                    }
+                    // Przywróć w UI (SettingsRestorer)
+                    if (window.settingsRestorer) {
+                        const settings = Object.fromEntries(window.liveEditInstance.settingsCache);
+                        settings[optionId] = data.default;
+                        window.settingsRestorer.applyAllSettingsToUI(settings);
+                    }
+                    Toast.show('Przywrócono domyślne!', 'success');
+                } else {
+                    throw new Error(data.message || 'Błąd resetu');
+                }
+            } catch (error) {
+                Loader.hide();
+                btn.disabled = false;
+                Toast.show('Błąd resetu!', 'error');
+            }
+        });
     }
 
     /**
@@ -1128,6 +1217,38 @@ class LiveEditMode {
             toast.classList.remove('mas-toast-show');
             setTimeout(() => toast.remove(), 300);
         }, 3000);
+    }
+
+    handleAjaxError(optionId, value, error) {
+        Toast.show('Błąd zapisu! Przechodzę w tryb offline.', 'error', 4000);
+        this.isOffline = true;
+        this.retryQueue.push({ optionId, value });
+        this.saveToLocalStorage();
+    }
+    
+    handleOffline() {
+        this.isOffline = true;
+        Toast.show('Brak połączenia. Tryb offline.', 'warning', 4000);
+    }
+    
+    async handleOnline() {
+        if (!this.isOffline) return;
+        Toast.show('Połączenie przywrócone. Synchronizuję...', 'info', 4000);
+        await this.retryPendingSaves();
+        this.isOffline = false;
+    }
+    
+    async retryPendingSaves() {
+        while (this.retryQueue.length > 0) {
+            const { optionId, value } = this.retryQueue.shift();
+            await this.saveSetting(optionId, value);
+        }
+        Toast.show('Wszystkie zmiany zsynchronizowane!', 'success', 3000);
+    }
+    
+    saveToLocalStorage() {
+        const obj = Object.fromEntries(this.settingsCache);
+        localStorage.setItem('mas_live_edit_settings', JSON.stringify(obj));
     }
 }
 
@@ -1212,10 +1333,18 @@ class MicroPanel {
      */
     createControl(option) {
         const currentValue = this.getCurrentValue(option);
-        
+        return this.createControlHtml(option, currentValue);
+    }
+
+    /**
+     * ��️ Create individual control based on type
+     */
+    createControlHtml(option, currentValue) {
+        let controlHtml = '';
+        const resetBtn = `<button type="button" class="mas-reset-btn" data-reset-for="${option.id}" title="Przywróć domyślne">↺</button>`;
         switch (option.type) {
             case 'color':
-                return `
+                controlHtml = `
                     <div class="mas-control mas-control-color" data-option-id="${option.id}">
                         <label>${option.label}</label>
                         <input type="color" 
@@ -1225,12 +1354,15 @@ class MicroPanel {
                                data-unit="${option.unit || ''}"
                                data-body-class="${option.bodyClass || ''}"
                                data-target-selector="${option.targetSelector || ''}"
+                               data-tooltip="Wybierz kolor"
                         />
+                        ${resetBtn}
                     </div>
                 `;
+                break;
                 
             case 'slider':
-                return `
+                controlHtml = `
                     <div class="mas-control mas-control-slider" data-option-id="${option.id}">
                         <label>${option.label}</label>
                         <div class="slider-container">
@@ -1242,14 +1374,17 @@ class MicroPanel {
                                    data-option-id="${option.id}"
                                    data-unit="${option.unit || ''}"
                                    data-body-class="${option.bodyClass || ''}"
+                                   data-tooltip="Wybierz wartość"
                             />
                             <span class="mas-value">${currentValue}${option.unit || ''}</span>
                         </div>
+                        ${resetBtn}
                     </div>
                 `;
+                break;
                 
             case 'toggle':
-                return `
+                controlHtml = `
                     <div class="mas-control mas-control-toggle" data-option-id="${option.id}">
                         <label>${option.label}</label>
                         <input type="checkbox" 
@@ -1258,12 +1393,43 @@ class MicroPanel {
                                data-option-id="${option.id}"
                                data-body-class="${option.bodyClass || ''}"
                                data-target-selector="${option.targetSelector || ''}"
+                               data-tooltip="Włącz/wyłącz"
                         />
+                        ${resetBtn}
                     </div>
                 `;
+                break;
+                
+            case 'select':
+                controlHtml = `
+                    <div class="mas-control mas-control-select" data-option-id="${option.id}">
+                        <label>${option.label}</label>
+                        <select data-css-var="${option.cssVar}" data-option-id="${option.id}" data-tooltip="Wybierz wartość">
+                            ${Object.entries(option.options).map(([value, label]) => 
+                                `<option value="${value}" ${currentValue === value ? 'selected' : ''}>${label}</option>`
+                            ).join('')}
+                        </select>
+                        ${resetBtn}
+                    </div>
+                `;
+                break;
+                
+            case 'font-picker':
+                controlHtml = `
+                    <div class="mas-control mas-control-font-picker" data-option-id="${option.id}">
+                        <label>${option.label}</label>
+                        <select data-css-var="${option.cssVar}" data-option-id="${option.id}" data-tooltip="Wybierz czcionkę">
+                            ${Object.entries(option.options).map(([value, label]) => 
+                                `<option value="${value}" ${currentValue === value ? 'selected' : ''}>${label}</option>`
+                            ).join('')}
+                        </select>
+                        ${resetBtn}
+                    </div>
+                `;
+                break;
                 
             default:
-                return `
+                controlHtml = `
                     <div class="mas-control mas-control-text" data-option-id="${option.id}">
                         <label>${option.label}</label>
                         <input type="text" 
@@ -1271,10 +1437,13 @@ class MicroPanel {
                                data-css-var="${option.cssVar}"
                                data-option-id="${option.id}"
                                data-unit="${option.unit || ''}"
+                               data-tooltip="Wprowadź wartość"
                         />
+                        ${resetBtn}
                     </div>
                 `;
         }
+        return controlHtml;
     }
 
     /**
@@ -1466,7 +1635,15 @@ class MicroPanel {
             if (input.type === 'checkbox') {
                 input.checked = this.getCurrentToggleValue(option);
                 console.log(`🔄 WOOW! Debug: Set checkbox ${option.id} to ${input.checked}`);
-            } else {
+            } else if (input.type === 'select') {
+                input.value = currentValue;
+                console.log(`🔄 WOOW! Debug: Set select ${option.id} to "${currentValue}"`);
+            } else if (input.type === 'font-picker') {
+                // For font-picker, the value is the font family name
+                input.value = currentValue;
+                console.log(`🔄 WOOW! Debug: Set font-picker ${option.id} to "${currentValue}"`);
+            }
+            else {
                 input.value = currentValue;
                 console.log(`🔄 WOOW! Debug: Set input ${option.id} to "${currentValue}"`);
             }
@@ -1484,6 +1661,59 @@ class MicroPanel {
     }
 }
 
+// Ujednolicona obsługa eventów i synchronizacji dla wszystkich typów opcji
+function setupUnifiedOptionEvents() {
+    document.addEventListener('input', handleOptionChange, true);
+    document.addEventListener('change', handleOptionChange, true);
+}
+
+async function handleOptionChange(e) {
+    const input = e.target;
+    const optionId = input.dataset.optionId;
+    if (!optionId) return;
+    let value;
+    if (input.type === 'checkbox' || input.type === 'toggle') {
+        value = input.checked ? 1 : 0;
+    } else {
+        value = input.value;
+    }
+    // Zapisz i zsynchronizuj zmianę
+    if (window.liveEditInstance) {
+        window.liveEditInstance.saveSetting(optionId, value);
+    }
+    // Natychmiastowa synchronizacja UI (CSS variables, klasy, widoczność)
+    if (window.settingsRestorer) {
+        const settings = Object.fromEntries(window.liveEditInstance.settingsCache);
+        settings[optionId] = value;
+        window.settingsRestorer.applyAllSettingsToUI(settings);
+    }
+}
+
+// Wywołaj po inicjalizacji
+setupUnifiedOptionEvents();
+
+// CSS do bannera, tooltipów, loadera
+const uxStyle = document.createElement('style');
+uxStyle.innerHTML = `
+#woow-connection-banner {
+  position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+  z-index: 10000; padding: 8px 32px; border-radius: 0 0 12px 12px;
+  font-size: 16px; font-weight: 600; color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: background 0.3s, color 0.3s;
+}
+.woow-banner-online { background: #16a34a; }
+.woow-banner-offline { background: #dc2626; }
+.woow-tooltip {
+  position: absolute; background: #23282d; color: #fff; padding: 6px 16px; border-radius: 6px;
+  font-size: 14px; pointer-events: none; z-index: 10001; white-space: nowrap;
+  transform: translate(-50%, -8px); box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  opacity: 0.96;
+}
+#woow-loader { background: rgba(0,0,0,0.16)!important; }
+.woow-spinner { border-top: 6px solid #16a34a!important; }
+`;
+document.head.appendChild(uxStyle);
+
 // 🚀 Initialize Live Edit Mode when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     // Only initialize in admin area - NAPRAWIONA WARUNEK
@@ -1491,11 +1721,29 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('✅ WOOW! Live Edit Mode: Initializing...');
         
         // Create global instance
-        window.liveEditInstance = new LiveEditMode();
+        window.liveEditInstance = new LiveEditEngine();
         
         // Legacy compatibility
         window.masLiveEditMode = window.liveEditInstance;
         
+        // Synchronizacja wielu zakładek/przeglądarek
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'mas_live_edit_settings' && event.newValue) {
+                try {
+                    const newSettings = JSON.parse(event.newValue);
+                    if (window.liveEditInstance) {
+                        window.liveEditInstance.settingsCache = new Map(Object.entries(newSettings));
+                    }
+                    if (window.settingsRestorer) {
+                        window.settingsRestorer.applyAllSettingsToUI(newSettings);
+                    }
+                    Toast.show('Synchronizowano zmiany z innej zakładki', 'info', 2500);
+                } catch (e) {
+                    console.error('WOOW! Błąd synchronizacji zakładek:', e);
+                }
+            }
+        });
+
         console.log('✅ WOOW! Live Edit Mode: Successfully initialized', {
             globalMode: window.liveEditInstance.globalMode,
             location: window.location.pathname,
@@ -1511,7 +1759,7 @@ setTimeout(() => {
     if (!window.liveEditInstance && (window.location.pathname.includes('/wp-admin/') || document.body.classList.contains('wp-admin'))) {
         console.log('🔄 WOOW! Live Edit Mode: Backup initialization triggered');
         
-        window.liveEditInstance = new LiveEditMode();
+        window.liveEditInstance = new LiveEditEngine();
         window.masLiveEditMode = window.liveEditInstance;
         
         console.log('✅ WOOW! Live Edit Mode: Backup initialization successful');

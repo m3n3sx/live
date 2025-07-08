@@ -230,3 +230,69 @@ For issues and feature requests, please use the GitHub issue tracker.
 ---
 
 **Note**: This plugin is designed for WordPress 5.0+ and requires PHP 7.4 or higher.
+
+---
+
+## Dla deweloperów
+
+### Architektura Live Edit
+
+- **LiveEditEngine** – centralny silnik obsługujący zmiany, batchowanie, tryb offline, synchronizację, reset, kolejkę zapisów.
+- **SettingsRestorer** – przywraca stan UI po odświeżeniu, synchronizuje CSS variables, klasy, widoczność elementów.
+- **MicroPanelFactory** – generuje panele z kontrolkami na podstawie definicji opcji.
+- **LiveEditDebugger** – narzędzie do logowania i śledzenia zmian (w konsoli).
+
+**Schemat przepływu:**
+
+```
+Użytkownik zmienia opcję → MicroPanel → LiveEditEngine.saveSetting → batchSave (AJAX) → SettingsRestorer.applyAllSettingsToUI → UI
+```
+
+### API JS
+
+#### LiveEditEngine
+
+- `saveSetting(optionId, value)` – zapisuje i synchronizuje opcję (batch, offline, retry)
+- `settingsCache` – Map wszystkich aktualnych ustawień
+- `retryPendingSaves()` – ręczna synchronizacja offline
+
+#### SettingsRestorer
+
+- `restoreSettings()` – przywraca ustawienia z bazy/localStorage
+- `applyAllSettingsToUI(settings)` – wymusza odświeżenie UI na podstawie podanych ustawień
+
+#### MicroPanelFactory
+
+- `createPanel(options)` – generuje panel z kontrolkami na podstawie tablicy opcji
+- Każda opcja: `{ id, label, type, cssVar, options, default, ... }`
+
+#### Przykład dodania własnej opcji
+
+```js
+const myOptions = [
+  {
+    id: 'my_custom_color',
+    label: 'Mój kolor',
+    type: 'color',
+    cssVar: '--woow-my-custom-color',
+    default: '#23282d'
+  }
+];
+MicroPanelFactory.createPanel(myOptions);
+```
+
+#### Debugowanie i testowanie
+
+- Włącz logowanie: `window.LiveEditDebugger.enable()`
+- Testy E2E: katalog `e2e/`, uruchom `npx playwright test`
+- Sprawdzaj toasty, banner połączenia, synchronizację między zakładkami
+
+#### Wskazówki bezpieczeństwa i wydajności
+
+- AJAX zabezpieczony przez nonce (`window.masNonce`)
+- Batchowanie zapisów (optymalizacja serwera)
+- Tryb offline: zmiany nie giną, synchronizują się po powrocie online
+- Reset pojedynczego ustawienia przez AJAX
+- Synchronizacja przez localStorage (event `storage`)
+
+---

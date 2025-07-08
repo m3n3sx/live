@@ -36,7 +36,7 @@
      */
     function updateBodyClasses(settings) {
         const body = document.body;
-        
+
         // Menu floating status
         if (settings.menu_floating) {
             body.classList.add('woow-menu-floating', 'woow-menu-floating');

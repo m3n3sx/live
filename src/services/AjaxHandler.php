@@ -36,39 +36,61 @@ class AjaxHandler {
     }
     
     /**
+     * Rate limiting helper (max 10 zapisów na minutę na usera)
+     */
+    private function isRateLimited($action = 'save') {
+        $user_id = get_current_user_id();
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $key = 'mas_v2_rate_' . $action . '_' . $user_id;
+        $limit = 10;
+        $window = 60; // sekundy
+        $now = time();
+        $history = get_transient($key);
+        if (!is_array($history)) $history = [];
+        // Usuń stare wpisy
+        $history = array_filter($history, function($ts) use ($now, $window) { return $ts > $now - $window; });
+        if (count($history) >= $limit) {
+            error_log("MAS V2: Rate limit exceeded for user $user_id ($ip) at " . date('Y-m-d H:i:s'));
+            return true;
+        }
+        $history[] = $now;
+        set_transient($key, $history, $window);
+        return false;
+    }
+
+    /**
      * 💾 Obsługuje zapisywanie ustawień przez AJAX
      */
     public function handleSaveSettings() {
         if (!$this->verifyAjaxSecurity()) {
             return;
         }
-        
+        if ($this->isRateLimited('save')) {
+            wp_send_json_error(['message' => __('Zbyt wiele zapisów. Odczekaj chwilę i spróbuj ponownie.', 'woow-admin-styler')]);
+            return;
+        }
         try {
             error_log('MAS V2: AJAX Save Settings called');
-            
             // Filtruj dane formularza
             $form_data = $_POST;
             unset($form_data['nonce'], $form_data['action']);
-            
             // Sanityzacja i zapis
             $old_settings = $this->settings_manager->getSettings();
             $settings = $this->settings_manager->sanitizeSettings($form_data);
             $result = $this->settings_manager->saveSettings($settings);
-            
             // Weryfikacja zapisu
             $is_success = ($result === true || serialize($settings) === serialize($old_settings));
-            
             if ($is_success) {
                 wp_send_json_success([
                     'message' => __('Ustawienia zostały zapisane pomyślnie!', 'woow-admin-styler'),
                     'settings' => $settings
                 ]);
             } else {
+                error_log('MAS V2: Save failed for user ' . get_current_user_id() . ' (' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown') . ') at ' . date('Y-m-d H:i:s'));
                 wp_send_json_error(['message' => __('Wystąpił błąd podczas zapisu do bazy danych.', 'woow-admin-styler')]);
             }
-            
         } catch (Exception $e) {
-            error_log('MAS V2: Save error: ' . $e->getMessage());
+            error_log('MAS V2: Save error: ' . $e->getMessage() . ' for user ' . get_current_user_id() . ' (' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown') . ') at ' . date('Y-m-d H:i:s'));
             wp_send_json_error(['message' => $e->getMessage()]);
         }
     }
@@ -80,7 +102,10 @@ class AjaxHandler {
         if (!$this->verifyAjaxSecurity()) {
             return;
         }
-        
+        if ($this->isRateLimited('reset')) {
+            wp_send_json_error(['message' => __('Zbyt wiele resetów. Odczekaj chwilę i spróbuj ponownie.', 'woow-admin-styler')]);
+            return;
+        }
         try {
             $defaults = $this->settings_manager->getDefaultSettings();
             $this->settings_manager->saveSettings($defaults);
@@ -89,6 +114,7 @@ class AjaxHandler {
                 'message' => __('Ustawienia zostały przywrócone do domyślnych!', 'woow-admin-styler')
             ]);
         } catch (Exception $e) {
+            error_log('MAS V2: Reset error: ' . $e->getMessage() . ' for user ' . get_current_user_id() . ' (' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown') . ') at ' . date('Y-m-d H:i:s'));
             wp_send_json_error(['message' => $e->getMessage()]);
         }
     }
