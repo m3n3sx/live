@@ -107,6 +107,339 @@ body.mas-live-edit-active .mas-edit-trigger {
 }
 
 /* ========================================
+   🎨 LIVE EDIT ACTIVATOR STYLES
+   ======================================== */
+
+/**
+ * ========================================================================
+ * Live Edit Mode - Visual Activator Layer
+ * ========================================================================
+ * These styles provide visual feedback for elements that are editable
+ * when Live Edit Mode is enabled. They are only active when the body
+ * has the 'woow-live-edit-enabled' or 'mas-live-edit-active' class.
+ * 
+ * CRITICAL: This is the "visual layer" that shows users which elements
+ * are clickable and editable in Live Edit mode.
+ */
+
+/* Main activator styles - applied to all editable elements */
+body.woow-live-edit-enabled [data-woow-editable="true"],
+body.mas-live-edit-active [data-woow-editable="true"],
+body.woow-live-edit-enabled [data-mas-editable="true"],
+body.mas-live-edit-active [data-mas-editable="true"] {
+    /* Use outline to avoid affecting layout (unlike border) */
+    outline: 2px dashed rgba(139, 92, 246, 0.6) !important;
+    outline-offset: 2px !important;
+
+    /* Add a subtle glow to make elements stand out */
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2) !important;
+
+    /* Indicate that the element is clickable */
+    cursor: pointer !important;
+
+    /* Smooth transition for hover effects */
+    transition: outline-color 0.2s ease, box-shadow 0.2s ease !important;
+    
+    /* Ensure element is visible and accessible */
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Hover state for better UX */
+body.woow-live-edit-enabled [data-woow-editable="true"]:hover,
+body.mas-live-edit-active [data-woow-editable="true"]:hover,
+body.woow-live-edit-enabled [data-mas-editable="true"]:hover,
+body.mas-live-edit-active [data-mas-editable="true"]:hover {
+    outline-color: rgba(139, 92, 246, 1) !important;
+    box-shadow: 0 0 0 5px rgba(139, 92, 246, 0.4) !important;
+}
+
+/* Special styling for admin bar when editable */
+body.woow-live-edit-enabled #wpadminbar[data-woow-editable="true"],
+body.mas-live-edit-active #wpadminbar[data-woow-editable="true"],
+body.woow-live-edit-enabled #wpadminbar[data-mas-editable="true"],
+body.mas-live-edit-active #wpadminbar[data-mas-editable="true"] {
+    outline: 2px dashed rgba(34, 197, 94, 0.7) !important;
+    outline-offset: -2px !important;
+    box-shadow: inset 0 0 0 2px rgba(34, 197, 94, 0.3) !important;
+}
+
+body.woow-live-edit-enabled #wpadminbar[data-woow-editable="true"]:hover,
+body.mas-live-edit-active #wpadminbar[data-woow-editable="true"]:hover,
+body.woow-live-edit-enabled #wpadminbar[data-mas-editable="true"]:hover,
+body.mas-live-edit-active #wpadminbar[data-mas-editable="true"]:hover {
+    outline-color: rgba(34, 197, 94, 1) !important;
+    box-shadow: inset 0 0 0 3px rgba(34, 197, 94, 0.5) !important;
+}
+
+/* Special styling for admin menu when editable */
+body.woow-live-edit-enabled #adminmenuwrap[data-woow-editable="true"],
+body.mas-live-edit-active #adminmenuwrap[data-woow-editable="true"],
+body.woow-live-edit-enabled #adminmenuwrap[data-mas-editable="true"],
+body.mas-live-edit-active #adminmenuwrap[data-mas-editable="true"] {
+    outline: 2px dashed rgba(249, 115, 22, 0.7) !important;
+    outline-offset: -2px !important;
+    box-shadow: inset 0 0 0 2px rgba(249, 115, 22, 0.3) !important;
+}
+
+body.woow-live-edit-enabled #adminmenuwrap[data-woow-editable="true"]:hover,
+body.mas-live-edit-active #adminmenuwrap[data-woow-editable="true"]:hover,
+body.woow-live-edit-enabled #adminmenuwrap[data-mas-editable="true"]:hover,
+body.mas-live-edit-active #adminmenuwrap[data-mas-editable="true"]:hover {
+    outline-color: rgba(249, 115, 22, 1) !important;
+    box-shadow: inset 0 0 0 3px rgba(249, 115, 22, 0.5) !important;
+}
+
+/* Pulse animation for newly activated elements */
+@keyframes masEditablePulse {
+    0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7); }
+    50% { box-shadow: 0 0 0 8px rgba(139, 92, 246, 0.3); }
+    100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+}
+
+body.woow-live-edit-enabled.mas-just-activated [data-woow-editable="true"],
+body.mas-live-edit-active.mas-just-activated [data-woow-editable="true"],
+body.woow-live-edit-enabled.mas-just-activated [data-mas-editable="true"],
+body.mas-live-edit-active.mas-just-activated [data-mas-editable="true"] {
+    animation: masEditablePulse 1s ease-out !important;
+}
+
+/* ========================================
+   🎯 ADVANCED TOOLTIP SYSTEM
+   ======================================== */
+
+/* SIMPLIFIED: Basic tooltips without heavy effects */
+body.woow-live-edit-enabled [data-woow-editable="true"]::before,
+body.mas-live-edit-active [data-woow-editable="true"]::before,
+body.woow-live-edit-enabled [data-mas-editable="true"]::before,
+body.mas-live-edit-active [data-mas-editable="true"]::before {
+    content: "✏️ Click to edit";
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(139, 92, 246, 0.9);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 999999;
+}
+
+/* Hover state for tooltips */
+body.woow-live-edit-enabled [data-woow-editable="true"]:hover::before,
+body.mas-live-edit-active [data-woow-editable="true"]:hover::before,
+body.woow-live-edit-enabled [data-mas-editable="true"]:hover::before,
+body.mas-live-edit-active [data-mas-editable="true"]:hover::before {
+    opacity: 1;
+}
+
+/* Edit badge hover states are handled in the enhanced visual indicators section */
+
+/* ========================================
+   🎨 ENHANCED VISUAL INDICATORS
+   ======================================== */
+
+/* Floating edit icons */
+body.woow-live-edit-enabled [data-woow-editable="true"],
+body.mas-live-edit-active [data-woow-editable="true"],
+body.woow-live-edit-enabled [data-mas-editable="true"],
+body.mas-live-edit-active [data-mas-editable="true"] {
+    position: relative;
+}
+
+/* SIMPLIFIED: Basic corner edit badge without heavy effects */
+body.woow-live-edit-enabled [data-woow-editable="true"]::after,
+body.mas-live-edit-active [data-woow-editable="true"]::after,
+body.woow-live-edit-enabled [data-mas-editable="true"]::after,
+body.mas-live-edit-active [data-mas-editable="true"]::after {
+    content: "✏️";
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+    background: rgba(139, 92, 246, 0.8);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 999998;
+}
+
+body.woow-live-edit-enabled [data-woow-editable="true"]:hover::after,
+body.mas-live-edit-active [data-woow-editable="true"]:hover::after,
+body.woow-live-edit-enabled [data-mas-editable="true"]:hover::after,
+body.mas-live-edit-active [data-mas-editable="true"]:hover::after {
+    opacity: 1;
+}
+
+/* ========================================
+   🌈 CATEGORY-SPECIFIC STYLING
+   ======================================== */
+
+/* SIMPLIFIED: Category colors without gradients */
+body.woow-live-edit-enabled #wpadminbar[data-woow-editable="true"]::after,
+body.mas-live-edit-active #wpadminbar[data-woow-editable="true"]::after {
+    background: rgba(34, 197, 94, 0.8);
+}
+
+body.woow-live-edit-enabled #adminmenuwrap[data-woow-editable="true"]::after,
+body.mas-live-edit-active #adminmenuwrap[data-woow-editable="true"]::after {
+    background: rgba(249, 115, 22, 0.8);
+}
+
+/* ========================================
+   ⚡ ADVANCED ANIMATIONS
+   ======================================== */
+
+/* SIMPLIFIED: Only pulse on activation, no continuous breathing */
+body.woow-live-edit-enabled.mas-just-activated [data-woow-editable="true"],
+body.mas-live-edit-active.mas-just-activated [data-woow-editable="true"],
+body.woow-live-edit-enabled.mas-just-activated [data-mas-editable="true"],
+body.mas-live-edit-active.mas-just-activated [data-mas-editable="true"] {
+    animation: masEditablePulse 1s ease-out;
+}
+
+/* ========================================
+   🎭 INTERACTION STATES
+   ======================================== */
+
+/* SIMPLIFIED: Basic interaction states */
+body.woow-live-edit-enabled [data-woow-editable="true"]:active,
+body.mas-live-edit-active [data-woow-editable="true"]:active,
+body.woow-live-edit-enabled [data-mas-editable="true"]:active,
+body.mas-live-edit-active [data-mas-editable="true"]:active {
+    outline-color: rgba(139, 92, 246, 1) !important;
+}
+
+/* Focus state for accessibility */
+body.woow-live-edit-enabled [data-woow-editable="true"]:focus,
+body.mas-live-edit-active [data-woow-editable="true"]:focus,
+body.woow-live-edit-enabled [data-mas-editable="true"]:focus,
+body.mas-live-edit-active [data-mas-editable="true"]:focus {
+    outline: 2px solid rgba(139, 92, 246, 0.8) !important;
+    outline-offset: 2px !important;
+}
+
+/* ========================================
+   📱 RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Smaller tooltips on mobile */
+    body.woow-live-edit-enabled [data-woow-editable="true"]::before,
+    body.mas-live-edit-active [data-woow-editable="true"]::before,
+    body.woow-live-edit-enabled [data-mas-editable="true"]::before,
+    body.mas-live-edit-active [data-mas-editable="true"]::before {
+        font-size: 11px;
+        padding: 4px 8px;
+        top: -30px;
+    }
+    
+    /* Smaller edit badges */
+    body.woow-live-edit-enabled [data-woow-editable="true"]::after,
+    body.mas-live-edit-active [data-woow-editable="true"]::after,
+    body.woow-live-edit-enabled [data-mas-editable="true"]::after,
+    body.mas-live-edit-active [data-mas-editable="true"]::after {
+        width: 20px;
+        height: 20px;
+        font-size: 9px;
+        top: 4px;
+        right: 4px;
+    }
+    
+    /* Thinner outlines on mobile */
+    body.woow-live-edit-enabled [data-woow-editable="true"],
+    body.mas-live-edit-active [data-woow-editable="true"],
+    body.woow-live-edit-enabled [data-mas-editable="true"],
+    body.mas-live-edit-active [data-mas-editable="true"] {
+        outline-width: 1px !important;
+        outline-offset: 1px !important;
+    }
+}
+
+/* ========================================
+   🎬 SLIDE ANIMATIONS
+   ======================================== */
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes slideOutLeft {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+}
+
+/* ========================================
+   🌙 DARK MODE SUPPORT
+   ======================================== */
+
+@media (prefers-color-scheme: dark) {
+    body.woow-live-edit-enabled [data-woow-editable="true"]::before,
+    body.mas-live-edit-active [data-woow-editable="true"]::before,
+    body.woow-live-edit-enabled [data-mas-editable="true"]::before,
+    body.mas-live-edit-active [data-mas-editable="true"]::before {
+        background: linear-gradient(135deg, rgba(167, 139, 250, 0.95), rgba(139, 92, 246, 0.95));
+        border-color: rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 20px rgba(167, 139, 250, 0.4);
+    }
+    
+    body.woow-live-edit-enabled [data-woow-editable="true"]::after,
+    body.mas-live-edit-active [data-woow-editable="true"]::after,
+    body.woow-live-edit-enabled [data-mas-editable="true"]::after,
+    body.mas-live-edit-active [data-mas-editable="true"]::after {
+        background: linear-gradient(135deg, rgba(167, 139, 250, 0.9), rgba(139, 92, 246, 0.9));
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+}
+
+/* ========================================
    🎛️ MICRO PANELS
    ======================================== */
 
