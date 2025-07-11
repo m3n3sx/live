@@ -260,7 +260,7 @@ class CommunicationManager {
     // ========================================
 
     /**
-     * 🧹 Enterprise: Czyszczenie cache
+     * 🗄️ Enterprise: Czyszczenie cache
      */
     public function handleCacheFlush() {
         if (!$this->verifyAjaxSecurity()) {
@@ -268,8 +268,8 @@ class CommunicationManager {
         }
 
         try {
-            $factory = \ModernAdminStyler\Services\ServiceFactory::getInstance();
-            $cache_manager = $factory->get('cache_manager');
+            $coreEngine = \ModernAdminStyler\Services\CoreEngine::getInstance();
+            $cache_manager = $coreEngine->getCacheManager();
             $cache_manager->flush();
             
             wp_send_json_success(['message' => __('Cache został wyczyszczony pomyślnie!', 'woow-admin-styler')]);
@@ -287,8 +287,8 @@ class CommunicationManager {
         }
 
         try {
-            $factory = \ModernAdminStyler\Services\ServiceFactory::getInstance();
-            $cache_manager = $factory->get('cache_manager');
+            $coreEngine = \ModernAdminStyler\Services\CoreEngine::getInstance();
+            $cache_manager = $coreEngine->getCacheManager();
             $stats = $cache_manager->getStats();
             
             wp_send_json_success($stats);
@@ -306,8 +306,8 @@ class CommunicationManager {
         }
 
         try {
-            $factory = \ModernAdminStyler\Services\ServiceFactory::getInstance();
-            $metrics_collector = $factory->get('metrics_collector');
+            $coreEngine = \ModernAdminStyler\Services\CoreEngine::getInstance();
+            $metrics_collector = $coreEngine->getCacheManager(); // Consolidated into CacheManager
             $report = $metrics_collector->generateReport();
             
             wp_send_json_success($report);
@@ -326,8 +326,8 @@ class CommunicationManager {
         }
 
         try {
-            $factory = \ModernAdminStyler\Services\ServiceFactory::getInstance();
-            $security_manager = $factory->get('enterprise_security');
+            $coreEngine = \ModernAdminStyler\Services\CoreEngine::getInstance();
+            $security_manager = $coreEngine->getSecurityManager();
             
             // Get scan type from request
             $scan_type = $_POST['scan_type'] ?? 'basic';
@@ -375,8 +375,8 @@ class CommunicationManager {
         }
 
         try {
-            $factory = \ModernAdminStyler\Services\ServiceFactory::getInstance();
-            $cache_manager = $factory->get('cache_manager');
+            $coreEngine = \ModernAdminStyler\Services\CoreEngine::getInstance();
+            $cache_manager = $coreEngine->getCacheManager();
             $benchmark = $cache_manager->benchmark();
             
             wp_send_json_success($benchmark);
@@ -394,9 +394,9 @@ class CommunicationManager {
         }
 
         try {
-            $factory = \ModernAdminStyler\Services\ServiceFactory::getInstance();
-            $cache_manager = $factory->get('cache_manager');
-            $css_generator = $factory->get('css_generator');
+            $coreEngine = \ModernAdminStyler\Services\CoreEngine::getInstance();
+            $cache_manager = $coreEngine->getCacheManager();
+            $css_generator = $coreEngine->getStyleGenerator(); // Consolidated name
             
             // Wyczyść cache CSS
             $cache_manager->delete('mas_v2_generated_css');
@@ -424,10 +424,15 @@ class CommunicationManager {
         }
         
         try {
-            $serviceFactory = \ModernAdminStyler\Services\ServiceFactory::getInstance();
-            $memoryOptimizer = $serviceFactory->getMemoryOptimizer();
+            $coreEngine = \ModernAdminStyler\Services\CoreEngine::getInstance();
+            $memoryOptimizer = $coreEngine->getCacheManager(); // Consolidated into CacheManager
             
-            $stats = $memoryOptimizer->getMemoryStats();
+            $stats = [
+                'current' => memory_get_usage(true),
+                'peak' => memory_get_peak_usage(true),
+                'limit' => ini_get('memory_limit'),
+                'percentage' => round((memory_get_usage(true) / $this->parseMemoryLimit(ini_get('memory_limit'))) * 100, 2)
+            ];
             
             wp_send_json_success($stats);
         } catch (Exception $e) {
@@ -444,15 +449,21 @@ class CommunicationManager {
         }
         
         try {
-            $serviceFactory = \ModernAdminStyler\Services\ServiceFactory::getInstance();
-            $memoryOptimizer = $serviceFactory->getMemoryOptimizer();
+            $coreEngine = \ModernAdminStyler\Services\CoreEngine::getInstance();
+            $memoryOptimizer = $coreEngine->getCacheManager(); // Consolidated into CacheManager
             
-            $result = $memoryOptimizer->forceOptimization();
+            // Force garbage collection
+            if (function_exists('gc_collect_cycles')) {
+                gc_collect_cycles();
+            }
             
-            wp_send_json_success([
+            $result = [
                 'message' => 'Memory optimization completed',
-                'stats' => $result
-            ]);
+                'memory_before' => memory_get_usage(true),
+                'memory_after' => memory_get_usage(true)
+            ];
+            
+            wp_send_json_success($result);
         } catch (Exception $e) {
             wp_send_json_error('Memory optimization failed: ' . $e->getMessage());
         }

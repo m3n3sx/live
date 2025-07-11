@@ -1,29 +1,21 @@
 <?php
 /**
- * Admin Page - Phase 5 Demo
+ * 🚀 Phase 5 Demo Page - Advanced Performance & UX Optimizations
  * 
- * FAZA 5: Advanced Performance & UX Demo
- * Prezentacja zaawansowanych funkcjonalności performance i UX
- * 
- * @package ModernAdminStyler
- * @version 3.2.0
+ * Demonstracja zaawansowanych optymalizacji wydajności i UX
+ * z użyciem enterprise-grade tools i metrics
  */
 
-// Zabezpieczenie
+// Security check
 if (!defined('ABSPATH')) {
     exit;
 }
 
-$serviceFactory = \ModernAdminStyler\Services\ServiceFactory::getInstance();
-$lazyLoader = $serviceFactory->getLazyLoader();
-$cacheManager = $serviceFactory->getAdvancedCacheManager();
-$cssGenerator = $serviceFactory->getCSSVariablesGenerator();
-$settings = $serviceFactory->getSettingsManager()->getSettings();
-
-// Pobierz statystyki
-$lazyStats = $lazyLoader->getPerformanceStats();
-$cacheStats = $cacheManager->getStats();
-$cssStats = $cssGenerator->getStats();
+// Get services
+$coreEngine = \ModernAdminStyler\Services\CoreEngine::getInstance();
+$performance_metrics = $coreEngine->getCacheManager(); // Consolidated into CacheManager
+$cache_manager = $coreEngine->getCacheManager();
+$security_manager = $coreEngine->getSecurityManager();
 ?>
 
 <div class="wrap mas-v2-admin-wrap">
