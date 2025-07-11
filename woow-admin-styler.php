@@ -738,46 +738,50 @@ class ModernAdminStylerV2 {
     }
     
     /**
-     * 🏗️ Inicjalizacja serwisów przez ServiceFactory
-     * 🎯 DEPENDENCY-AWARE ORDER: Services initialized in proper dependency order
+     * 🏗️ Inicjalizacja serwisów przez CoreEngine (UPDATED)
+     * 🎯 NEW CONSOLIDATED ARCHITECTURE: 8 strategic services with dependency injection
      */
     public function initServices() {
-        $factory = \ModernAdminStyler\Services\ServiceFactory::getInstance();
+        $coreEngine = \ModernAdminStyler\Services\CoreEngine::getInstance();
         
-        // === PHASE 1: CORE ENGINE (No dependencies) ===
-        // Core engine must be first as it provides infrastructure
+        // Initialize all core services in proper dependency order
+        $coreEngine->initialize();
         
-        // === PHASE 2: FOUNDATION SERVICES (Minimal dependencies) ===
-        $this->settings_manager = $factory->get('settings_manager');  // Depends on: core_engine
-        $this->cache_manager = $factory->get('cache_manager');        // Depends on: core_engine
-        $this->metrics_collector = $factory->get('metrics_collector'); // Depends on: core_engine (MOVED UP: Required by security_manager)
-        $this->security_service = $factory->get('security_manager');  // Consolidated: security_service → security_manager (Depends on: core_engine, metrics_collector)
+        // === CONSOLIDATED SERVICES (8 TOTAL) ===
         
-        // === PHASE 3: BUSINESS LOGIC SERVICES (Depend on foundation) ===
-        $this->css_generator = $factory->get('style_generator');      // Consolidated: css_generator → style_generator
-        $this->ajax_handler = $factory->get('ajax_handler');          // Depends on: settings_manager
-        $this->preset_manager = $factory->get('preset_manager');      // Depends on: settings_manager
+        // 1. Settings Management (includes presets)
+        $this->settings_manager = $coreEngine->getSettingsManager();
+        $this->preset_manager = $coreEngine->getSettingsManager(); // Consolidated into SettingsManager
+        $this->component_adapter = $coreEngine->getSettingsManager(); // Integrated into SettingsManager
         
-        // === PHASE 4: INTEGRATION SERVICES (Depend on business logic) ===
-        $this->asset_loader = $factory->get('asset_loader');          // Depends on: style_generator
+        // 2. Cache & Performance Management (includes metrics)
+        $this->cache_manager = $coreEngine->getCacheManager();
+        $this->metrics_collector = $coreEngine->getCacheManager(); // Consolidated into CacheManager
+        $this->analytics_engine = $coreEngine->getCacheManager(); // Consolidated into CacheManager
+        $this->memory_optimizer = $coreEngine->getCacheManager(); // Consolidated into CacheManager
         
-        // === PHASE 5: API SERVICES (Depend on all core services) ===
-        $this->settings_api = $factory->get('api_manager');           // Consolidated: settings_api + rest_api → api_manager
-        $this->rest_api = $factory->get('api_manager');               // Consolidated: settings_api + rest_api → api_manager
+        // 3. Security Management
+        $this->security_service = $coreEngine->getSecurityManager();
         
-        // === PHASE 6: ADAPTER SERVICES (Depend on settings) ===
-        $this->component_adapter = $factory->get('settings_manager'); // Integrated into settings_manager
+        // 4. Style Generation
+        $this->css_generator = $coreEngine->getStyleGenerator();
         
-        // === PHASE 7: INTERFACE SERVICES (Depend on adapters) ===
-        $this->hooks_manager = $factory->get('admin_interface');      // Consolidated: hooks_manager + gutenberg_manager → admin_interface
-        $this->gutenberg_manager = $factory->get('admin_interface');  // Consolidated: hooks_manager + gutenberg_manager → admin_interface
+        // 5. Communication Management (includes API + AJAX)
+        $this->ajax_handler = $coreEngine->getCommunicationManager(); // Consolidated into CommunicationManager
+        $this->settings_api = $coreEngine->getCommunicationManager(); // Consolidated into CommunicationManager
+        $this->rest_api = $coreEngine->getCommunicationManager(); // Consolidated into CommunicationManager
         
-        // === LEGACY SERVICES (Consolidated) ===
-        $this->analytics_engine = $factory->get('metrics_collector'); // Consolidated: analytics_engine → metrics_collector
-        $this->integration_manager = null;                            // Removed - functionality distributed
-        $this->memory_optimizer = $factory->get('cache_manager');     // Consolidated: memory_optimizer → cache_manager
+        // 6. Admin Interface (includes dashboard + hooks + gutenberg)
+        $this->hooks_manager = $coreEngine->getAdminInterface(); // Consolidated into AdminInterface
+        $this->gutenberg_manager = $coreEngine->getAdminInterface(); // Consolidated into AdminInterface
         
-        error_log('🎯 MAS V2: Services initialized in dependency-aware order');
+        // 7. Asset Loading
+        $this->asset_loader = $coreEngine->getAssetLoader();
+        
+        // === REMOVED/DEPRECATED SERVICES ===
+        $this->integration_manager = null; // Removed - functionality distributed
+        
+        error_log('🎯 MAS V2: New consolidated architecture initialized - 8 strategic services');
     }
     
     /**
@@ -1094,16 +1098,16 @@ class ModernAdminStylerV2 {
     }
 
     /**
-     * 🎨 FAZA 2: Renderowanie strony demo pokazującej WordPress komponenty
+     * 🎨 FAZA 2: Renderowanie strony demo pokazującej WordPress Components
      */
     public function renderPhase2Demo() {
         if (!current_user_can('manage_options')) {
             wp_die(__('You do not have sufficient permissions to access this page.'));
         }
         
-        $factory = \ModernAdminStyler\Services\ServiceFactory::getInstance();
-        $component_adapter = $factory->get('component_adapter');
-        $settings_manager = $factory->get('settings_manager');
+        $coreEngine = \ModernAdminStyler\Services\CoreEngine::getInstance();
+        $component_adapter = $coreEngine->getSettingsManager(); // Consolidated into SettingsManager
+        $settings_manager = $coreEngine->getSettingsManager();
         
         echo '<style>
             .wrap { max-width: none; }
@@ -1153,7 +1157,7 @@ class ModernAdminStylerV2 {
             wp_die(__('You do not have sufficient permissions to access this page.'));
         }
         
-        $this->serviceFactory = \ModernAdminStyler\Services\ServiceFactory::getInstance();
+        $this->coreEngine = \ModernAdminStyler\Services\CoreEngine::getInstance();
         
         echo '<style>
             .wrap { max-width: none; }
@@ -1171,7 +1175,7 @@ class ModernAdminStylerV2 {
             wp_die(__('You do not have sufficient permissions to access this page.'));
         }
         
-        $this->serviceFactory = \ModernAdminStyler\Services\ServiceFactory::getInstance();
+        $this->coreEngine = \ModernAdminStyler\Services\CoreEngine::getInstance();
         
         echo '<style>
             .wrap { max-width: none; }
