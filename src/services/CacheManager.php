@@ -1179,14 +1179,6 @@ class CacheManager {
         $this->collectSystemHealthMetric('admin_init', 'healthy');
     }
     
-    public function onShutdown() {
-        // Flush any remaining metrics
-        $this->flushMetricsBuffer();
-        
-        // Save session summary
-        $this->saveSessionSummary();
-    }
-    
     private function saveSessionSummary() {
         $summary = [
             'session_id' => $this->sessionId,
