@@ -1,0 +1,534 @@
+/**
+ * MAS V2 Gutenberg Blocks - Frontend CSS
+ * 
+ * Faza 3: Ecosystem Integration
+ * Style dla bloków na froncie strony
+ * 
+ * @package ModernAdminStyler
+ * @version 3.0.0
+ */
+
+/* === BLOCK CONTAINER STYLES === */
+.wp-block-mas-v2-mas-admin-preview,
+.wp-block-mas-v2-mas-color-scheme,
+.wp-block-mas-v2-mas-settings-dashboard,
+.wp-block-mas-v2-mas-performance-metrics,
+.wp-block-mas-v2-mas-css-inspector {
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* === ADMIN PREVIEW BLOCK === */
+.mas-block-admin-preview {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+.mas-preview-container {
+    margin-bottom: 1rem;
+}
+
+.mas-admin-bar-preview {
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1;
+    border-radius: 3px;
+    margin-bottom: 10px;
+}
+
+.mas-menu-preview {
+    border-radius: 3px;
+    margin-bottom: 10px;
+}
+
+.mas-menu-items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.mas-menu-items li {
+    padding: 8px 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 14px;
+}
+
+.mas-menu-items li:last-child {
+    border-bottom: none;
+}
+
+.mas-preview-settings {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    font-size: 13px;
+    border-left: 4px solid #0073aa;
+}
+
+.mas-preview-settings h4 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #23282d;
+}
+
+.mas-preview-settings ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.mas-preview-settings li {
+    margin-bottom: 5px;
+    color: #555;
+}
+
+/* === COLOR SCHEME BLOCK === */
+.mas-block-color-scheme h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+    color: #23282d;
+}
+
+.mas-scheme-selector {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.mas-scheme-selector[data-layout="vertical"] {
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.mas-scheme-selector[data-layout="grid"] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.mas-scheme-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #fafafa;
+    min-width: 100px;
+}
+
+.mas-scheme-option:hover {
+    border-color: #0073aa;
+    background: #f0f6fc;
+}
+
+.mas-scheme-option.active {
+    border-color: #0073aa;
+    background: #f0f6fc;
+    box-shadow: 0 0 0 1px #0073aa;
+}
+
+.mas-scheme-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.mas-scheme-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 14px;
+    color: #23282d;
+}
+
+.mas-scheme-preview {
+    width: 60px;
+    height: 40px;
+    border-radius: 3px;
+    border: 1px solid #ddd;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.mas-preview-bar {
+    flex: 0 0 30%;
+}
+
+.mas-preview-content {
+    flex: 1;
+}
+
+/* Light scheme colors */
+.mas-scheme-light .mas-preview-bar {
+    background: #23282d;
+}
+
+.mas-scheme-light .mas-preview-content {
+    background: #f0f0f1;
+}
+
+/* Dark scheme colors */
+.mas-scheme-dark .mas-preview-bar {
+    background: #1e1e1e;
+}
+
+.mas-scheme-dark .mas-preview-content {
+    background: #2d2d2d;
+}
+
+/* Auto scheme removed - only light/dark modes available */
+
+/* === SETTINGS DASHBOARD BLOCK === */
+.mas-block-settings-dashboard h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.25rem;
+    color: #23282d;
+}
+
+.mas-dashboard-sections {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.mas-block-settings-dashboard.compact .mas-dashboard-sections {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.mas-dashboard-section {
+    padding: 1.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background: #fafafa;
+}
+
+.mas-dashboard-section h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    color: #0073aa;
+    border-bottom: 2px solid #0073aa;
+    padding-bottom: 0.5rem;
+}
+
+.mas-setting-item {
+    margin-bottom: 1rem;
+}
+
+.mas-setting-item:last-child {
+    margin-bottom: 0;
+}
+
+.mas-setting-item label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #23282d;
+}
+
+.mas-setting-item input[type="checkbox"] {
+    margin-right: 0.5rem;
+}
+
+.mas-setting-item input[type="color"] {
+    width: 50px;
+    height: 30px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    margin-left: 0.5rem;
+}
+
+.mas-setting-item input[type="range"] {
+    width: 100%;
+    margin: 0.5rem 0;
+}
+
+.mas-setting-item .value {
+    font-weight: 600;
+    color: #0073aa;
+    margin-left: 0.5rem;
+}
+
+.mas-dashboard-actions {
+    text-align: center;
+    padding-top: 1rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.mas-dashboard-actions .button {
+    margin: 0 0.5rem;
+    padding: 0.5rem 1.5rem;
+    border-radius: 4px;
+}
+
+.mas-dashboard-actions .button-primary {
+    background: #0073aa;
+    border-color: #005a87;
+    color: #ffffff;
+}
+
+.mas-dashboard-actions .button-primary:hover {
+    background: #005a87;
+}
+
+/* === PERFORMANCE METRICS BLOCK === */
+.mas-block-performance-metrics h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.25rem;
+    color: #23282d;
+}
+
+.mas-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.mas-metric-item {
+    text-align: center;
+    padding: 1.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background: #fafafa;
+    transition: transform 0.2s ease;
+}
+
+.mas-metric-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mas-metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #0073aa;
+}
+
+.mas-metric-label {
+    font-size: 0.875rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mas-metrics-chart {
+    height: 200px;
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-style: italic;
+}
+
+/* === CSS INSPECTOR BLOCK === */
+.mas-block-css-inspector h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.25rem;
+    color: #23282d;
+}
+
+.mas-inspector-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 1rem;
+}
+
+.mas-tab-button {
+    padding: 0.5rem 1rem;
+    border: 1px solid #e0e0e0;
+    background: #fafafa;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.mas-tab-button:hover,
+.mas-tab-button.active {
+    background: #0073aa;
+    color: #ffffff;
+    border-color: #005a87;
+}
+
+.mas-inspector-content {
+    margin-bottom: 1.5rem;
+}
+
+.mas-variable-group {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background: #fafafa;
+}
+
+.mas-variable-group h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    color: #0073aa;
+    text-transform: capitalize;
+}
+
+.mas-variable-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+}
+
+.mas-variable-item:last-child {
+    margin-bottom: 0;
+}
+
+.mas-variable-item label {
+    flex: 0 0 200px;
+    font-family: monospace;
+    font-size: 13px;
+    color: #23282d;
+    font-weight: 500;
+}
+
+.mas-variable-item input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+.mas-variable-item input[type="color"] {
+    flex: 0 0 50px;
+    height: 35px;
+    padding: 0;
+}
+
+.mas-variable-item input[type="range"] {
+    flex: 1;
+}
+
+.mas-variable-value {
+    flex: 0 0 80px;
+    font-family: monospace;
+    font-size: 12px;
+    color: #666;
+    text-align: right;
+}
+
+.mas-live-preview {
+    padding: 1.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background: #f8f9fa;
+}
+
+.mas-live-preview h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    color: #23282d;
+}
+
+.mas-preview-area {
+    height: 100px;
+    background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-style: italic;
+}
+
+/* === RESPONSIVE STYLES === */
+@media (max-width: 768px) {
+    .mas-scheme-selector {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .mas-dashboard-sections {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .mas-metrics-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .mas-inspector-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .mas-variable-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+    
+    .mas-variable-item label {
+        flex: none;
+    }
+    
+    .mas-variable-value {
+        flex: none;
+        text-align: left;
+    }
+}
+
+/* === ACCESSIBILITY === */
+.mas-scheme-option:focus-within {
+    outline: 2px solid #0073aa;
+    outline-offset: 2px;
+}
+
+.mas-tab-button:focus {
+    outline: 2px solid #0073aa;
+    outline-offset: 2px;
+}
+
+.mas-variable-item input:focus {
+    outline: 2px solid #0073aa;
+    outline-offset: 1px;
+}
+
+/* === PRINT STYLES === */
+@media print {
+    .wp-block-mas-v2-mas-admin-preview,
+    .wp-block-mas-v2-mas-color-scheme,
+    .wp-block-mas-v2-mas-settings-dashboard,
+    .wp-block-mas-v2-mas-performance-metrics,
+    .wp-block-mas-v2-mas-css-inspector {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+    
+    .mas-scheme-option {
+        border: 1px solid #000;
+    }
+    
+    .mas-metrics-chart,
+    .mas-preview-area {
+        background: #f0f0f0 !important;
+    }
+} 

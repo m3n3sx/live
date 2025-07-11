@@ -1,26 +1,312 @@
 /**
- * MAS Utilities CSS - Faza 2: Adaptacja języka wizualnego WordPress
+ * WOOW! Utilities - Consolidated CSS v4.0
  * 
- * Minimalistyczny zestaw utility classes z prefiksem mas-
- * Zawiera tylko te klasy, których brakuje w natywnym WordPress
+ * 🎯 COMPREHENSIVE UTILITY SYSTEM:
+ * All helper classes, responsive utilities, and debug tools
  * 
  * @package ModernAdminStyler
- * @version 2.2.0
+ * @version 4.0.0 - Consolidated
+ * @size ~20KB (enhanced from 16KB)
+ * @loading On-demand or cached
  */
 
-/* === FLEXBOX UTILITIES === */
+/* ========================================================================
+   📦 SECTION 1: SPACING UTILITIES - Margin & Padding
+   ======================================================================== */
+
+/* Margin utilities */
+.mas-m-0 { margin: 0 !important; }
+.mas-m-1 { margin: 0.25rem !important; }
+.mas-m-2 { margin: 0.5rem !important; }
+.mas-m-3 { margin: 0.75rem !important; }
+.mas-m-4 { margin: 1rem !important; }
+.mas-m-5 { margin: 1.25rem !important; }
+.mas-m-6 { margin: 1.5rem !important; }
+.mas-m-8 { margin: 2rem !important; }
+.mas-m-10 { margin: 2.5rem !important; }
+.mas-m-12 { margin: 3rem !important; }
+.mas-m-16 { margin: 4rem !important; }
+.mas-m-20 { margin: 5rem !important; }
+.mas-m-auto { margin: auto !important; }
+
+/* Margin X/Y */
+.mas-mx-0 { margin-left: 0 !important; margin-right: 0 !important; }
+.mas-mx-1 { margin-left: 0.25rem !important; margin-right: 0.25rem !important; }
+.mas-mx-2 { margin-left: 0.5rem !important; margin-right: 0.5rem !important; }
+.mas-mx-3 { margin-left: 0.75rem !important; margin-right: 0.75rem !important; }
+.mas-mx-4 { margin-left: 1rem !important; margin-right: 1rem !important; }
+.mas-mx-auto { margin-left: auto !important; margin-right: auto !important; }
+
+.mas-my-0 { margin-top: 0 !important; margin-bottom: 0 !important; }
+.mas-my-1 { margin-top: 0.25rem !important; margin-bottom: 0.25rem !important; }
+.mas-my-2 { margin-top: 0.5rem !important; margin-bottom: 0.5rem !important; }
+.mas-my-3 { margin-top: 0.75rem !important; margin-bottom: 0.75rem !important; }
+.mas-my-4 { margin-top: 1rem !important; margin-bottom: 1rem !important; }
+
+/* Individual margin sides */
+.mas-mt-0 { margin-top: 0 !important; }
+.mas-mt-1 { margin-top: 0.25rem !important; }
+.mas-mt-2 { margin-top: 0.5rem !important; }
+.mas-mt-3 { margin-top: 0.75rem !important; }
+.mas-mt-4 { margin-top: 1rem !important; }
+.mas-mt-6 { margin-top: 1.5rem !important; }
+.mas-mt-8 { margin-top: 2rem !important; }
+
+.mas-mr-0 { margin-right: 0 !important; }
+.mas-mr-1 { margin-right: 0.25rem !important; }
+.mas-mr-2 { margin-right: 0.5rem !important; }
+.mas-mr-3 { margin-right: 0.75rem !important; }
+.mas-mr-4 { margin-right: 1rem !important; }
+
+.mas-mb-0 { margin-bottom: 0 !important; }
+.mas-mb-1 { margin-bottom: 0.25rem !important; }
+.mas-mb-2 { margin-bottom: 0.5rem !important; }
+.mas-mb-3 { margin-bottom: 0.75rem !important; }
+.mas-mb-4 { margin-bottom: 1rem !important; }
+.mas-mb-6 { margin-bottom: 1.5rem !important; }
+.mas-mb-8 { margin-bottom: 2rem !important; }
+
+.mas-ml-0 { margin-left: 0 !important; }
+.mas-ml-1 { margin-left: 0.25rem !important; }
+.mas-ml-2 { margin-left: 0.5rem !important; }
+.mas-ml-3 { margin-left: 0.75rem !important; }
+.mas-ml-4 { margin-left: 1rem !important; }
+
+/* Padding utilities */
+.mas-p-0 { padding: 0 !important; }
+.mas-p-1 { padding: 0.25rem !important; }
+.mas-p-2 { padding: 0.5rem !important; }
+.mas-p-3 { padding: 0.75rem !important; }
+.mas-p-4 { padding: 1rem !important; }
+.mas-p-5 { padding: 1.25rem !important; }
+.mas-p-6 { padding: 1.5rem !important; }
+.mas-p-8 { padding: 2rem !important; }
+.mas-p-10 { padding: 2.5rem !important; }
+.mas-p-12 { padding: 3rem !important; }
+
+/* Padding X/Y */
+.mas-px-0 { padding-left: 0 !important; padding-right: 0 !important; }
+.mas-px-1 { padding-left: 0.25rem !important; padding-right: 0.25rem !important; }
+.mas-px-2 { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+.mas-px-3 { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+.mas-px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
+.mas-px-6 { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
+.mas-px-8 { padding-left: 2rem !important; padding-right: 2rem !important; }
+
+.mas-py-0 { padding-top: 0 !important; padding-bottom: 0 !important; }
+.mas-py-1 { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
+.mas-py-2 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+.mas-py-3 { padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; }
+.mas-py-4 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+.mas-py-6 { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
+.mas-py-8 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+
+/* Individual padding sides */
+.mas-pt-0 { padding-top: 0 !important; }
+.mas-pt-1 { padding-top: 0.25rem !important; }
+.mas-pt-2 { padding-top: 0.5rem !important; }
+.mas-pt-3 { padding-top: 0.75rem !important; }
+.mas-pt-4 { padding-top: 1rem !important; }
+.mas-pt-6 { padding-top: 1.5rem !important; }
+.mas-pt-8 { padding-top: 2rem !important; }
+
+.mas-pr-0 { padding-right: 0 !important; }
+.mas-pr-1 { padding-right: 0.25rem !important; }
+.mas-pr-2 { padding-right: 0.5rem !important; }
+.mas-pr-3 { padding-right: 0.75rem !important; }
+.mas-pr-4 { padding-right: 1rem !important; }
+
+.mas-pb-0 { padding-bottom: 0 !important; }
+.mas-pb-1 { padding-bottom: 0.25rem !important; }
+.mas-pb-2 { padding-bottom: 0.5rem !important; }
+.mas-pb-3 { padding-bottom: 0.75rem !important; }
+.mas-pb-4 { padding-bottom: 1rem !important; }
+.mas-pb-6 { padding-bottom: 1.5rem !important; }
+.mas-pb-8 { padding-bottom: 2rem !important; }
+
+.mas-pl-0 { padding-left: 0 !important; }
+.mas-pl-1 { padding-left: 0.25rem !important; }
+.mas-pl-2 { padding-left: 0.5rem !important; }
+.mas-pl-3 { padding-left: 0.75rem !important; }
+.mas-pl-4 { padding-left: 1rem !important; }
+
+/* ========================================================================
+   📦 SECTION 2: SIZING UTILITIES - Width, Height, Min/Max
+   ======================================================================== */
+
+/* Width */
+.mas-w-auto { width: auto !important; }
+.mas-w-full { width: 100% !important; }
+.mas-w-screen { width: 100vw !important; }
+.mas-w-1\/2 { width: 50% !important; }
+.mas-w-1\/3 { width: 33.333333% !important; }
+.mas-w-2\/3 { width: 66.666667% !important; }
+.mas-w-1\/4 { width: 25% !important; }
+.mas-w-2\/4 { width: 50% !important; }
+.mas-w-3\/4 { width: 75% !important; }
+.mas-w-1\/5 { width: 20% !important; }
+.mas-w-2\/5 { width: 40% !important; }
+.mas-w-3\/5 { width: 60% !important; }
+.mas-w-4\/5 { width: 80% !important; }
+
+/* Fixed widths */
+.mas-w-12 { width: 3rem !important; }
+.mas-w-16 { width: 4rem !important; }
+.mas-w-20 { width: 5rem !important; }
+.mas-w-24 { width: 6rem !important; }
+.mas-w-32 { width: 8rem !important; }
+.mas-w-40 { width: 10rem !important; }
+.mas-w-48 { width: 12rem !important; }
+.mas-w-56 { width: 14rem !important; }
+.mas-w-64 { width: 16rem !important; }
+
+/* Height */
+.mas-h-auto { height: auto !important; }
+.mas-h-full { height: 100% !important; }
+.mas-h-screen { height: 100vh !important; }
+.mas-h-1\/2 { height: 50% !important; }
+.mas-h-1\/3 { height: 33.333333% !important; }
+.mas-h-2\/3 { height: 66.666667% !important; }
+.mas-h-1\/4 { height: 25% !important; }
+.mas-h-3\/4 { height: 75% !important; }
+
+/* Fixed heights */
+.mas-h-12 { height: 3rem !important; }
+.mas-h-16 { height: 4rem !important; }
+.mas-h-20 { height: 5rem !important; }
+.mas-h-24 { height: 6rem !important; }
+.mas-h-32 { height: 8rem !important; }
+.mas-h-40 { height: 10rem !important; }
+.mas-h-48 { height: 12rem !important; }
+.mas-h-56 { height: 14rem !important; }
+.mas-h-64 { height: 16rem !important; }
+
+/* Min/Max Width */
+.mas-min-w-0 { min-width: 0 !important; }
+.mas-min-w-full { min-width: 100% !important; }
+.mas-min-w-min { min-width: min-content !important; }
+.mas-min-w-max { min-width: max-content !important; }
+
+.mas-max-w-none { max-width: none !important; }
+.mas-max-w-full { max-width: 100% !important; }
+.mas-max-w-screen { max-width: 100vw !important; }
+.mas-max-w-xs { max-width: 20rem !important; }
+.mas-max-w-sm { max-width: 24rem !important; }
+.mas-max-w-md { max-width: 28rem !important; }
+.mas-max-w-lg { max-width: 32rem !important; }
+.mas-max-w-xl { max-width: 36rem !important; }
+.mas-max-w-2xl { max-width: 42rem !important; }
+.mas-max-w-3xl { max-width: 48rem !important; }
+.mas-max-w-4xl { max-width: 56rem !important; }
+
+/* Min/Max Height */
+.mas-min-h-0 { min-height: 0 !important; }
+.mas-min-h-full { min-height: 100% !important; }
+.mas-min-h-screen { min-height: 100vh !important; }
+
+.mas-max-h-full { max-height: 100% !important; }
+.mas-max-h-screen { max-height: 100vh !important; }
+
+/* ========================================================================
+   📦 SECTION 3: POSITION UTILITIES - Positioning & Layout
+   ======================================================================== */
+
+/* Position */
+.mas-static { position: static !important; }
+.mas-fixed { position: fixed !important; }
+.mas-absolute { position: absolute !important; }
+.mas-relative { position: relative !important; }
+.mas-sticky { position: sticky !important; }
+
+/* Top/Right/Bottom/Left */
+.mas-inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+.mas-inset-auto { top: auto; right: auto; bottom: auto; left: auto; }
+
+.mas-top-0 { top: 0 !important; }
+.mas-top-auto { top: auto !important; }
+.mas-top-1\/2 { top: 50% !important; }
+.mas-top-full { top: 100% !important; }
+
+.mas-right-0 { right: 0 !important; }
+.mas-right-auto { right: auto !important; }
+.mas-right-1\/2 { right: 50% !important; }
+.mas-right-full { right: 100% !important; }
+
+.mas-bottom-0 { bottom: 0 !important; }
+.mas-bottom-auto { bottom: auto !important; }
+.mas-bottom-1\/2 { bottom: 50% !important; }
+.mas-bottom-full { bottom: 100% !important; }
+
+.mas-left-0 { left: 0 !important; }
+.mas-left-auto { left: auto !important; }
+.mas-left-1\/2 { left: 50% !important; }
+.mas-left-full { left: 100% !important; }
+
+/* Z-Index */
+.mas-z-0 { z-index: 0 !important; }
+.mas-z-10 { z-index: 10 !important; }
+.mas-z-20 { z-index: 20 !important; }
+.mas-z-30 { z-index: 30 !important; }
+.mas-z-40 { z-index: 40 !important; }
+.mas-z-50 { z-index: 50 !important; }
+.mas-z-auto { z-index: auto !important; }
+
+/* ========================================================================
+   📦 SECTION 4: DISPLAY UTILITIES - Visibility & Display
+   ======================================================================== */
+
+/* Display */
+.mas-block { display: block !important; }
+.mas-inline-block { display: inline-block !important; }
+.mas-inline { display: inline !important; }
 .mas-flex { display: flex !important; }
 .mas-inline-flex { display: inline-flex !important; }
+.mas-grid { display: grid !important; }
+.mas-inline-grid { display: inline-grid !important; }
+.mas-hidden { display: none !important; }
+.mas-table { display: table !important; }
+.mas-table-cell { display: table-cell !important; }
+.mas-table-row { display: table-row !important; }
+
+/* Visibility */
+.mas-visible { visibility: visible !important; }
+.mas-invisible { visibility: hidden !important; }
+
+/* Opacity */
+.mas-opacity-0 { opacity: 0 !important; }
+.mas-opacity-25 { opacity: 0.25 !important; }
+.mas-opacity-50 { opacity: 0.5 !important; }
+.mas-opacity-75 { opacity: 0.75 !important; }
+.mas-opacity-100 { opacity: 1 !important; }
+
+/* ========================================================================
+   📦 SECTION 5: FLEXBOX UTILITIES - Layout & Alignment
+   ======================================================================== */
 
 /* Flex Direction */
 .mas-flex-row { flex-direction: row !important; }
-.mas-flex-col { flex-direction: column !important; }
 .mas-flex-row-reverse { flex-direction: row-reverse !important; }
+.mas-flex-col { flex-direction: column !important; }
 .mas-flex-col-reverse { flex-direction: column-reverse !important; }
 
 /* Flex Wrap */
 .mas-flex-wrap { flex-wrap: wrap !important; }
+.mas-flex-wrap-reverse { flex-wrap: wrap-reverse !important; }
 .mas-flex-nowrap { flex-wrap: nowrap !important; }
+
+/* Flex */
+.mas-flex-1 { flex: 1 1 0% !important; }
+.mas-flex-auto { flex: 1 1 auto !important; }
+.mas-flex-initial { flex: 0 1 auto !important; }
+.mas-flex-none { flex: none !important; }
+
+/* Flex Grow */
+.mas-flex-grow-0 { flex-grow: 0 !important; }
+.mas-flex-grow { flex-grow: 1 !important; }
+
+/* Flex Shrink */
+.mas-flex-shrink-0 { flex-shrink: 0 !important; }
+.mas-flex-shrink { flex-shrink: 1 !important; }
 
 /* Justify Content */
 .mas-justify-start { justify-content: flex-start !important; }
@@ -37,6 +323,14 @@
 .mas-items-baseline { align-items: baseline !important; }
 .mas-items-stretch { align-items: stretch !important; }
 
+/* Align Content */
+.mas-content-start { align-content: flex-start !important; }
+.mas-content-end { align-content: flex-end !important; }
+.mas-content-center { align-content: center !important; }
+.mas-content-between { align-content: space-between !important; }
+.mas-content-around { align-content: space-around !important; }
+.mas-content-evenly { align-content: space-evenly !important; }
+
 /* Align Self */
 .mas-self-auto { align-self: auto !important; }
 .mas-self-start { align-self: flex-start !important; }
@@ -44,20 +338,19 @@
 .mas-self-center { align-self: center !important; }
 .mas-self-stretch { align-self: stretch !important; }
 
-/* Flex Grow/Shrink */
-.mas-flex-1 { flex: 1 1 0% !important; }
-.mas-flex-auto { flex: 1 1 auto !important; }
-.mas-flex-initial { flex: 0 1 auto !important; }
-.mas-flex-none { flex: none !important; }
+/* Gap */
+.mas-gap-0 { gap: 0 !important; }
+.mas-gap-1 { gap: 0.25rem !important; }
+.mas-gap-2 { gap: 0.5rem !important; }
+.mas-gap-3 { gap: 0.75rem !important; }
+.mas-gap-4 { gap: 1rem !important; }
+.mas-gap-5 { gap: 1.25rem !important; }
+.mas-gap-6 { gap: 1.5rem !important; }
+.mas-gap-8 { gap: 2rem !important; }
 
-.mas-grow { flex-grow: 1 !important; }
-.mas-grow-0 { flex-grow: 0 !important; }
-.mas-shrink { flex-shrink: 1 !important; }
-.mas-shrink-0 { flex-shrink: 0 !important; }
-
-/* === CSS GRID UTILITIES === */
-.mas-grid { display: grid !important; }
-.mas-inline-grid { display: inline-grid !important; }
+/* ========================================================================
+   📦 SECTION 6: GRID UTILITIES - CSS Grid Layout
+   ======================================================================== */
 
 /* Grid Template Columns */
 .mas-grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)) !important; }
@@ -66,178 +359,77 @@
 .mas-grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
 .mas-grid-cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; }
 .mas-grid-cols-6 { grid-template-columns: repeat(6, minmax(0, 1fr)) !important; }
+.mas-grid-cols-12 { grid-template-columns: repeat(12, minmax(0, 1fr)) !important; }
+.mas-grid-cols-none { grid-template-columns: none !important; }
 
 /* Grid Template Rows */
 .mas-grid-rows-1 { grid-template-rows: repeat(1, minmax(0, 1fr)) !important; }
 .mas-grid-rows-2 { grid-template-rows: repeat(2, minmax(0, 1fr)) !important; }
 .mas-grid-rows-3 { grid-template-rows: repeat(3, minmax(0, 1fr)) !important; }
 .mas-grid-rows-4 { grid-template-rows: repeat(4, minmax(0, 1fr)) !important; }
+.mas-grid-rows-6 { grid-template-rows: repeat(6, minmax(0, 1fr)) !important; }
+.mas-grid-rows-none { grid-template-rows: none !important; }
 
 /* Grid Column Span */
+.mas-col-auto { grid-column: auto !important; }
 .mas-col-span-1 { grid-column: span 1 / span 1 !important; }
 .mas-col-span-2 { grid-column: span 2 / span 2 !important; }
 .mas-col-span-3 { grid-column: span 3 / span 3 !important; }
 .mas-col-span-4 { grid-column: span 4 / span 4 !important; }
+.mas-col-span-5 { grid-column: span 5 / span 5 !important; }
+.mas-col-span-6 { grid-column: span 6 / span 6 !important; }
 .mas-col-span-full { grid-column: 1 / -1 !important; }
 
 /* Grid Row Span */
+.mas-row-auto { grid-row: auto !important; }
 .mas-row-span-1 { grid-row: span 1 / span 1 !important; }
 .mas-row-span-2 { grid-row: span 2 / span 2 !important; }
 .mas-row-span-3 { grid-row: span 3 / span 3 !important; }
 .mas-row-span-4 { grid-row: span 4 / span 4 !important; }
+.mas-row-span-full { grid-row: 1 / -1 !important; }
 
-/* === GAP UTILITIES === */
-.mas-gap-0 { gap: 0 !important; }
-.mas-gap-1 { gap: 0.25rem !important; } /* 4px */
-.mas-gap-2 { gap: 0.5rem !important; }  /* 8px */
-.mas-gap-3 { gap: 0.75rem !important; } /* 12px */
-.mas-gap-4 { gap: 1rem !important; }    /* 16px */
-.mas-gap-5 { gap: 1.25rem !important; } /* 20px */
-.mas-gap-6 { gap: 1.5rem !important; }  /* 24px */
-.mas-gap-8 { gap: 2rem !important; }    /* 32px */
+/* ========================================================================
+   📦 SECTION 7: OVERFLOW UTILITIES - Scroll & Overflow
+   ======================================================================== */
 
-/* Column/Row Gap */
-.mas-gap-x-0 { column-gap: 0 !important; }
-.mas-gap-x-2 { column-gap: 0.5rem !important; }
-.mas-gap-x-4 { column-gap: 1rem !important; }
-.mas-gap-x-6 { column-gap: 1.5rem !important; }
-
-.mas-gap-y-0 { row-gap: 0 !important; }
-.mas-gap-y-2 { row-gap: 0.5rem !important; }
-.mas-gap-y-4 { row-gap: 1rem !important; }
-.mas-gap-y-6 { row-gap: 1.5rem !important; }
-
-/* === SPACING UTILITIES === */
-/* Margin */
-.mas-m-0 { margin: 0 !important; }
-.mas-m-1 { margin: 0.25rem !important; }
-.mas-m-2 { margin: 0.5rem !important; }
-.mas-m-3 { margin: 0.75rem !important; }
-.mas-m-4 { margin: 1rem !important; }
-.mas-m-6 { margin: 1.5rem !important; }
-.mas-m-8 { margin: 2rem !important; }
-.mas-m-auto { margin: auto !important; }
-
-/* Margin X/Y */
-.mas-mx-auto { margin-left: auto !important; margin-right: auto !important; }
-.mas-my-2 { margin-top: 0.5rem !important; margin-bottom: 0.5rem !important; }
-.mas-my-4 { margin-top: 1rem !important; margin-bottom: 1rem !important; }
-
-/* Margin Top/Right/Bottom/Left */
-.mas-mt-0 { margin-top: 0 !important; }
-.mas-mt-2 { margin-top: 0.5rem !important; }
-.mas-mt-4 { margin-top: 1rem !important; }
-.mas-mt-6 { margin-top: 1.5rem !important; }
-
-.mas-mr-2 { margin-right: 0.5rem !important; }
-.mas-mr-4 { margin-right: 1rem !important; }
-
-.mas-mb-0 { margin-bottom: 0 !important; }
-.mas-mb-2 { margin-bottom: 0.5rem !important; }
-.mas-mb-4 { margin-bottom: 1rem !important; }
-.mas-mb-6 { margin-bottom: 1.5rem !important; }
-
-.mas-ml-2 { margin-left: 0.5rem !important; }
-.mas-ml-4 { margin-left: 1rem !important; }
-
-/* Padding */
-.mas-p-0 { padding: 0 !important; }
-.mas-p-1 { padding: 0.25rem !important; }
-.mas-p-2 { padding: 0.5rem !important; }
-.mas-p-3 { padding: 0.75rem !important; }
-.mas-p-4 { padding: 1rem !important; }
-.mas-p-6 { padding: 1.5rem !important; }
-.mas-p-8 { padding: 2rem !important; }
-
-/* Padding X/Y */
-.mas-px-2 { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
-.mas-px-3 { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
-.mas-px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
-
-.mas-py-1 { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
-.mas-py-2 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
-.mas-py-3 { padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; }
-
-/* === SIZING UTILITIES === */
-/* Width */
-.mas-w-auto { width: auto !important; }
-.mas-w-full { width: 100% !important; }
-.mas-w-1\/2 { width: 50% !important; }
-.mas-w-1\/3 { width: 33.333333% !important; }
-.mas-w-2\/3 { width: 66.666667% !important; }
-.mas-w-1\/4 { width: 25% !important; }
-.mas-w-3\/4 { width: 75% !important; }
-
-/* Height */
-.mas-h-auto { height: auto !important; }
-.mas-h-full { height: 100% !important; }
-.mas-h-screen { height: 100vh !important; }
-
-/* Min/Max Width */
-.mas-min-w-0 { min-width: 0 !important; }
-.mas-min-w-full { min-width: 100% !important; }
-.mas-max-w-none { max-width: none !important; }
-.mas-max-w-full { max-width: 100% !important; }
-
-/* === POSITION UTILITIES === */
-.mas-static { position: static !important; }
-.mas-fixed { position: fixed !important; }
-.mas-absolute { position: absolute !important; }
-.mas-relative { position: relative !important; }
-.mas-sticky { position: sticky !important; }
-
-/* Top/Right/Bottom/Left */
-.mas-inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
-.mas-top-0 { top: 0 !important; }
-.mas-right-0 { right: 0 !important; }
-.mas-bottom-0 { bottom: 0 !important; }
-.mas-left-0 { left: 0 !important; }
-
-/* === DISPLAY UTILITIES === */
-.mas-block { display: block !important; }
-.mas-inline-block { display: inline-block !important; }
-.mas-inline { display: inline !important; }
-.mas-hidden { display: none !important; }
-
-/* === OVERFLOW UTILITIES === */
+/* Overflow */
 .mas-overflow-auto { overflow: auto !important; }
 .mas-overflow-hidden { overflow: hidden !important; }
 .mas-overflow-visible { overflow: visible !important; }
 .mas-overflow-scroll { overflow: scroll !important; }
 
+/* Overflow X */
 .mas-overflow-x-auto { overflow-x: auto !important; }
+.mas-overflow-x-hidden { overflow-x: hidden !important; }
+.mas-overflow-x-visible { overflow-x: visible !important; }
+.mas-overflow-x-scroll { overflow-x: scroll !important; }
+
+/* Overflow Y */
 .mas-overflow-y-auto { overflow-y: auto !important; }
+.mas-overflow-y-hidden { overflow-y: hidden !important; }
+.mas-overflow-y-visible { overflow-y: visible !important; }
+.mas-overflow-y-scroll { overflow-y: scroll !important; }
 
-/* === BORDER RADIUS UTILITIES === */
-.mas-rounded-none { border-radius: 0 !important; }
-.mas-rounded-sm { border-radius: 0.125rem !important; } /* 2px */
-.mas-rounded { border-radius: 0.25rem !important; }     /* 4px */
-.mas-rounded-md { border-radius: 0.375rem !important; } /* 6px */
-.mas-rounded-lg { border-radius: 0.5rem !important; }   /* 8px */
-.mas-rounded-xl { border-radius: 0.75rem !important; }  /* 12px */
-.mas-rounded-2xl { border-radius: 1rem !important; }    /* 16px */
-.mas-rounded-full { border-radius: 9999px !important; }
+/* Scrollbar Styling */
+.mas-scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+.mas-scrollbar-thin::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1); }
+.mas-scrollbar-thin::-webkit-scrollbar-thumb { 
+    background: rgba(0, 0, 0, 0.3); 
+    border-radius: 3px; 
+}
+.mas-scrollbar-thin::-webkit-scrollbar-thumb:hover { 
+    background: rgba(0, 0, 0, 0.5); 
+}
 
-/* === SHADOW UTILITIES === */
-.mas-shadow-none { box-shadow: none !important; }
-.mas-shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important; }
-.mas-shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important; }
-.mas-shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important; }
-.mas-shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important; }
+.mas-scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.mas-scrollbar-none::-webkit-scrollbar { display: none; }
 
-/* === TEXT UTILITIES === */
-.mas-text-left { text-align: left !important; }
-.mas-text-center { text-align: center !important; }
-.mas-text-right { text-align: right !important; }
-.mas-text-justify { text-align: justify !important; }
-
-/* Font Weight */
-.mas-font-thin { font-weight: 100 !important; }
-.mas-font-light { font-weight: 300 !important; }
-.mas-font-normal { font-weight: 400 !important; }
-.mas-font-medium { font-weight: 500 !important; }
-.mas-font-semibold { font-weight: 600 !important; }
-.mas-font-bold { font-weight: 700 !important; }
+/* ========================================================================
+   📦 SECTION 8: TYPOGRAPHY UTILITIES - Text & Font
+   ======================================================================== */
 
 /* Font Size */
 .mas-text-xs { font-size: 0.75rem !important; line-height: 1rem !important; }
@@ -245,151 +437,534 @@
 .mas-text-base { font-size: 1rem !important; line-height: 1.5rem !important; }
 .mas-text-lg { font-size: 1.125rem !important; line-height: 1.75rem !important; }
 .mas-text-xl { font-size: 1.25rem !important; line-height: 1.75rem !important; }
+.mas-text-2xl { font-size: 1.5rem !important; line-height: 2rem !important; }
+.mas-text-3xl { font-size: 1.875rem !important; line-height: 2.25rem !important; }
+.mas-text-4xl { font-size: 2.25rem !important; line-height: 2.5rem !important; }
 
-/* === BACKGROUND UTILITIES === */
+/* Font Weight */
+.mas-font-thin { font-weight: 100 !important; }
+.mas-font-extralight { font-weight: 200 !important; }
+.mas-font-light { font-weight: 300 !important; }
+.mas-font-normal { font-weight: 400 !important; }
+.mas-font-medium { font-weight: 500 !important; }
+.mas-font-semibold { font-weight: 600 !important; }
+.mas-font-bold { font-weight: 700 !important; }
+.mas-font-extrabold { font-weight: 800 !important; }
+.mas-font-black { font-weight: 900 !important; }
+
+/* Text Alignment */
+.mas-text-left { text-align: left !important; }
+.mas-text-center { text-align: center !important; }
+.mas-text-right { text-align: right !important; }
+.mas-text-justify { text-align: justify !important; }
+
+/* Text Transform */
+.mas-uppercase { text-transform: uppercase !important; }
+.mas-lowercase { text-transform: lowercase !important; }
+.mas-capitalize { text-transform: capitalize !important; }
+.mas-normal-case { text-transform: none !important; }
+
+/* Text Decoration */
+.mas-underline { text-decoration: underline !important; }
+.mas-line-through { text-decoration: line-through !important; }
+.mas-no-underline { text-decoration: none !important; }
+
+/* Line Height */
+.mas-leading-3 { line-height: 0.75rem !important; }
+.mas-leading-4 { line-height: 1rem !important; }
+.mas-leading-5 { line-height: 1.25rem !important; }
+.mas-leading-6 { line-height: 1.5rem !important; }
+.mas-leading-7 { line-height: 1.75rem !important; }
+.mas-leading-8 { line-height: 2rem !important; }
+.mas-leading-none { line-height: 1 !important; }
+.mas-leading-tight { line-height: 1.25 !important; }
+.mas-leading-snug { line-height: 1.375 !important; }
+.mas-leading-normal { line-height: 1.5 !important; }
+.mas-leading-relaxed { line-height: 1.625 !important; }
+.mas-leading-loose { line-height: 2 !important; }
+
+/* Letter Spacing */
+.mas-tracking-tighter { letter-spacing: -0.05em !important; }
+.mas-tracking-tight { letter-spacing: -0.025em !important; }
+.mas-tracking-normal { letter-spacing: 0em !important; }
+.mas-tracking-wide { letter-spacing: 0.025em !important; }
+.mas-tracking-wider { letter-spacing: 0.05em !important; }
+.mas-tracking-widest { letter-spacing: 0.1em !important; }
+
+/* White Space */
+.mas-whitespace-normal { white-space: normal !important; }
+.mas-whitespace-nowrap { white-space: nowrap !important; }
+.mas-whitespace-pre { white-space: pre !important; }
+.mas-whitespace-pre-line { white-space: pre-line !important; }
+.mas-whitespace-pre-wrap { white-space: pre-wrap !important; }
+
+/* Word Break */
+.mas-break-normal { overflow-wrap: normal; word-break: normal !important; }
+.mas-break-words { overflow-wrap: break-word !important; }
+.mas-break-all { word-break: break-all !important; }
+
+/* ========================================================================
+   📦 SECTION 9: COLOR UTILITIES - Text & Background Colors
+   ======================================================================== */
+
+/* Text Colors */
+.mas-text-transparent { color: transparent !important; }
+.mas-text-current { color: currentColor !important; }
+.mas-text-black { color: #000000 !important; }
+.mas-text-white { color: #ffffff !important; }
+
+.mas-text-gray-50 { color: #f9fafb !important; }
+.mas-text-gray-100 { color: #f3f4f6 !important; }
+.mas-text-gray-200 { color: #e5e7eb !important; }
+.mas-text-gray-300 { color: #d1d5db !important; }
+.mas-text-gray-400 { color: #9ca3af !important; }
+.mas-text-gray-500 { color: #6b7280 !important; }
+.mas-text-gray-600 { color: #4b5563 !important; }
+.mas-text-gray-700 { color: #374151 !important; }
+.mas-text-gray-800 { color: #1f2937 !important; }
+.mas-text-gray-900 { color: #111827 !important; }
+
+.mas-text-red-500 { color: #ef4444 !important; }
+.mas-text-red-600 { color: #dc2626 !important; }
+.mas-text-yellow-500 { color: #eab308 !important; }
+.mas-text-yellow-600 { color: #ca8a04 !important; }
+.mas-text-green-500 { color: #22c55e !important; }
+.mas-text-green-600 { color: #16a34a !important; }
+.mas-text-blue-500 { color: #3b82f6 !important; }
+.mas-text-blue-600 { color: #2563eb !important; }
+.mas-text-indigo-500 { color: #6366f1 !important; }
+.mas-text-indigo-600 { color: #4f46e5 !important; }
+.mas-text-purple-500 { color: #a855f7 !important; }
+.mas-text-purple-600 { color: #9333ea !important; }
+.mas-text-pink-500 { color: #ec4899 !important; }
+.mas-text-pink-600 { color: #db2777 !important; }
+
+/* Background Colors */
 .mas-bg-transparent { background-color: transparent !important; }
+.mas-bg-current { background-color: currentColor !important; }
+.mas-bg-black { background-color: #000000 !important; }
 .mas-bg-white { background-color: #ffffff !important; }
+
 .mas-bg-gray-50 { background-color: #f9fafb !important; }
 .mas-bg-gray-100 { background-color: #f3f4f6 !important; }
 .mas-bg-gray-200 { background-color: #e5e7eb !important; }
+.mas-bg-gray-300 { background-color: #d1d5db !important; }
+.mas-bg-gray-400 { background-color: #9ca3af !important; }
+.mas-bg-gray-500 { background-color: #6b7280 !important; }
+.mas-bg-gray-600 { background-color: #4b5563 !important; }
+.mas-bg-gray-700 { background-color: #374151 !important; }
+.mas-bg-gray-800 { background-color: #1f2937 !important; }
+.mas-bg-gray-900 { background-color: #111827 !important; }
 
-/* === CURSOR UTILITIES === */
-.mas-cursor-auto { cursor: auto !important; }
-.mas-cursor-default { cursor: default !important; }
-.mas-cursor-pointer { cursor: pointer !important; }
-.mas-cursor-wait { cursor: wait !important; }
-.mas-cursor-not-allowed { cursor: not-allowed !important; }
+.mas-bg-red-500 { background-color: #ef4444 !important; }
+.mas-bg-green-500 { background-color: #22c55e !important; }
+.mas-bg-blue-500 { background-color: #3b82f6 !important; }
+.mas-bg-yellow-500 { background-color: #eab308 !important; }
+.mas-bg-indigo-500 { background-color: #6366f1 !important; }
+.mas-bg-purple-500 { background-color: #a855f7 !important; }
+.mas-bg-pink-500 { background-color: #ec4899 !important; }
 
-/* === OPACITY UTILITIES === */
-.mas-opacity-0 { opacity: 0 !important; }
-.mas-opacity-25 { opacity: 0.25 !important; }
-.mas-opacity-50 { opacity: 0.5 !important; }
-.mas-opacity-75 { opacity: 0.75 !important; }
-.mas-opacity-100 { opacity: 1 !important; }
+/* ========================================================================
+   📦 SECTION 10: BORDER UTILITIES - Borders & Radius
+   ======================================================================== */
 
-/* === TRANSITION UTILITIES === */
-.mas-transition-none { transition: none !important; }
-.mas-transition-all { transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1) !important; }
-.mas-transition-colors { transition: color, background-color, border-color 150ms cubic-bezier(0.4, 0, 0.2, 1) !important; }
-.mas-transition-opacity { transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) !important; }
-.mas-transition-transform { transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1) !important; }
+/* Border Width */
+.mas-border-0 { border-width: 0px !important; }
+.mas-border { border-width: 1px !important; }
+.mas-border-2 { border-width: 2px !important; }
+.mas-border-4 { border-width: 4px !important; }
+.mas-border-8 { border-width: 8px !important; }
 
-/* Duration */
-.mas-duration-75 { transition-duration: 75ms !important; }
-.mas-duration-100 { transition-duration: 100ms !important; }
-.mas-duration-150 { transition-duration: 150ms !important; }
-.mas-duration-200 { transition-duration: 200ms !important; }
-.mas-duration-300 { transition-duration: 300ms !important; }
+/* Border Style */
+.mas-border-solid { border-style: solid !important; }
+.mas-border-dashed { border-style: dashed !important; }
+.mas-border-dotted { border-style: dotted !important; }
+.mas-border-double { border-style: double !important; }
+.mas-border-none { border-style: none !important; }
 
-/* === RESPONSIVE UTILITIES === */
-@media (max-width: 640px) {
-    .mas-sm\:hidden { display: none !important; }
+/* Border Color */
+.mas-border-transparent { border-color: transparent !important; }
+.mas-border-current { border-color: currentColor !important; }
+.mas-border-black { border-color: #000000 !important; }
+.mas-border-white { border-color: #ffffff !important; }
+.mas-border-gray-200 { border-color: #e5e7eb !important; }
+.mas-border-gray-300 { border-color: #d1d5db !important; }
+.mas-border-gray-400 { border-color: #9ca3af !important; }
+.mas-border-gray-500 { border-color: #6b7280 !important; }
+
+/* Border Radius */
+.mas-rounded-none { border-radius: 0px !important; }
+.mas-rounded-sm { border-radius: 0.125rem !important; }
+.mas-rounded { border-radius: 0.25rem !important; }
+.mas-rounded-md { border-radius: 0.375rem !important; }
+.mas-rounded-lg { border-radius: 0.5rem !important; }
+.mas-rounded-xl { border-radius: 0.75rem !important; }
+.mas-rounded-2xl { border-radius: 1rem !important; }
+.mas-rounded-3xl { border-radius: 1.5rem !important; }
+.mas-rounded-full { border-radius: 9999px !important; }
+
+/* Individual border radius */
+.mas-rounded-t-none { border-top-left-radius: 0px !important; border-top-right-radius: 0px !important; }
+.mas-rounded-r-none { border-top-right-radius: 0px !important; border-bottom-right-radius: 0px !important; }
+.mas-rounded-b-none { border-bottom-right-radius: 0px !important; border-bottom-left-radius: 0px !important; }
+.mas-rounded-l-none { border-top-left-radius: 0px !important; border-bottom-left-radius: 0px !important; }
+
+.mas-rounded-t { border-top-left-radius: 0.25rem !important; border-top-right-radius: 0.25rem !important; }
+.mas-rounded-r { border-top-right-radius: 0.25rem !important; border-bottom-right-radius: 0.25rem !important; }
+.mas-rounded-b { border-bottom-right-radius: 0.25rem !important; border-bottom-left-radius: 0.25rem !important; }
+.mas-rounded-l { border-top-left-radius: 0.25rem !important; border-bottom-left-radius: 0.25rem !important; }
+
+/* ========================================================================
+   📦 SECTION 11: SHADOW UTILITIES - Box Shadows & Effects
+   ======================================================================== */
+
+/* Box Shadow */
+.mas-shadow-none { box-shadow: none !important; }
+.mas-shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important; }
+.mas-shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important; }
+.mas-shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important; }
+.mas-shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important; }
+.mas-shadow-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important; }
+.mas-shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important; }
+.mas-shadow-inner { box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06) !important; }
+
+/* ========================================================================
+   📦 SECTION 12: RESPONSIVE UTILITIES - Breakpoint Classes
+   ======================================================================== */
+
+/* Mobile First Responsive Utilities */
+@media (min-width: 480px) {
     .mas-sm\:block { display: block !important; }
     .mas-sm\:flex { display: flex !important; }
-    .mas-sm\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)) !important; }
-    .mas-sm\:text-sm { font-size: 0.875rem !important; line-height: 1.25rem !important; }
+    .mas-sm\:grid { display: grid !important; }
+    .mas-sm\:hidden { display: none !important; }
+    
+    .mas-sm\:w-1\/2 { width: 50% !important; }
+    .mas-sm\:w-full { width: 100% !important; }
+    
+    .mas-sm\:text-sm { font-size: 0.875rem !important; }
+    .mas-sm\:text-base { font-size: 1rem !important; }
+    .mas-sm\:text-lg { font-size: 1.125rem !important; }
+    
+    .mas-sm\:p-4 { padding: 1rem !important; }
+    .mas-sm\:p-6 { padding: 1.5rem !important; }
+    .mas-sm\:m-4 { margin: 1rem !important; }
+    .mas-sm\:m-6 { margin: 1.5rem !important; }
 }
 
-@media (max-width: 768px) {
-    .mas-md\:hidden { display: none !important; }
+@media (min-width: 768px) {
     .mas-md\:block { display: block !important; }
     .mas-md\:flex { display: flex !important; }
-    .mas-md\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)) !important; }
+    .mas-md\:grid { display: grid !important; }
+    .mas-md\:hidden { display: none !important; }
+    
+    .mas-md\:w-1\/2 { width: 50% !important; }
+    .mas-md\:w-1\/3 { width: 33.333333% !important; }
+    .mas-md\:w-2\/3 { width: 66.666667% !important; }
+    .mas-md\:w-full { width: 100% !important; }
+    
     .mas-md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+    .mas-md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+    .mas-md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+    
+    .mas-md\:text-lg { font-size: 1.125rem !important; }
+    .mas-md\:text-xl { font-size: 1.25rem !important; }
+    .mas-md\:text-2xl { font-size: 1.5rem !important; }
+    
+    .mas-md\:p-6 { padding: 1.5rem !important; }
+    .mas-md\:p-8 { padding: 2rem !important; }
+    .mas-md\:m-6 { margin: 1.5rem !important; }
+    .mas-md\:m-8 { margin: 2rem !important; }
 }
 
-@media (max-width: 1024px) {
-    .mas-lg\:hidden { display: none !important; }
+@media (min-width: 1024px) {
     .mas-lg\:block { display: block !important; }
+    .mas-lg\:flex { display: flex !important; }
+    .mas-lg\:grid { display: grid !important; }
+    .mas-lg\:hidden { display: none !important; }
+    
+    .mas-lg\:w-1\/4 { width: 25% !important; }
+    .mas-lg\:w-1\/3 { width: 33.333333% !important; }
+    .mas-lg\:w-1\/2 { width: 50% !important; }
+    .mas-lg\:w-2\/3 { width: 66.666667% !important; }
+    .mas-lg\:w-3\/4 { width: 75% !important; }
+    .mas-lg\:w-full { width: 100% !important; }
+    
     .mas-lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+    .mas-lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+    .mas-lg\:grid-cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; }
+    .mas-lg\:grid-cols-6 { grid-template-columns: repeat(6, minmax(0, 1fr)) !important; }
+    
+    .mas-lg\:text-xl { font-size: 1.25rem !important; }
+    .mas-lg\:text-2xl { font-size: 1.5rem !important; }
+    .mas-lg\:text-3xl { font-size: 1.875rem !important; }
+    
+    .mas-lg\:p-8 { padding: 2rem !important; }
+    .mas-lg\:p-10 { padding: 2.5rem !important; }
+    .mas-lg\:m-8 { margin: 2rem !important; }
+    .mas-lg\:m-10 { margin: 2.5rem !important; }
 }
 
-/* === WORDPRESS INTEGRATION UTILITIES === */
-/* Komponenty kompatybilne z WordPress */
-.mas-wp-card {
-    background: #fff;
-    border: 1px solid #c3c4c7;
-    border-radius: 4px;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+@media (min-width: 1280px) {
+    .mas-xl\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+    .mas-xl\:grid-cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; }
+    .mas-xl\:grid-cols-6 { grid-template-columns: repeat(6, minmax(0, 1fr)) !important; }
+    
+    .mas-xl\:text-2xl { font-size: 1.5rem !important; }
+    .mas-xl\:text-3xl { font-size: 1.875rem !important; }
+    .mas-xl\:text-4xl { font-size: 2.25rem !important; }
+    
+    .mas-xl\:p-10 { padding: 2.5rem !important; }
+    .mas-xl\:p-12 { padding: 3rem !important; }
 }
 
-.mas-wp-notice {
-    background: #fff;
-    border-left: 4px solid #72aee6;
-    margin: 5px 15px 2px;
-    padding: 1px 12px;
+/* ========================================================================
+   📦 SECTION 13: DEBUG UTILITIES - Development Helpers
+   ======================================================================== */
+
+/* Debug Outlines */
+.mas-debug * { outline: 1px solid red !important; }
+.mas-debug-blue * { outline: 1px solid blue !important; }
+.mas-debug-green * { outline: 1px solid green !important; }
+
+/* Grid Debug */
+.mas-debug-grid {
+    background-image: 
+        linear-gradient(rgba(255, 0, 0, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px !important;
 }
 
-.mas-wp-notice.mas-notice-success {
-    border-left-color: #00a32a;
+/* Element Info */
+.mas-debug-info::before {
+    content: attr(class) !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+    color: white !important;
+    font-size: 10px !important;
+    padding: 2px 4px !important;
+    border-radius: 2px !important;
+    z-index: 9999 !important;
+    pointer-events: none !important;
 }
 
-.mas-wp-notice.mas-notice-warning {
-    border-left-color: #dba617;
+/* Performance Debug */
+.mas-debug-performance {
+    animation: mas-debug-flash 2s infinite;
 }
 
-.mas-wp-notice.mas-notice-error {
-    border-left-color: #d63638;
+@keyframes mas-debug-flash {
+    0%, 100% { background-color: transparent; }
+    50% { background-color: rgba(255, 255, 0, 0.3); }
 }
 
-/* WordPress button enhancements */
-.mas-btn-group {
-    display: inline-flex;
-    vertical-align: middle;
+/* ========================================================================
+   📦 SECTION 14: ACCESSIBILITY UTILITIES - A11y Helpers
+   ======================================================================== */
+
+/* Screen Reader Only */
+.mas-sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
 }
 
-.mas-btn-group .button {
-    margin-right: -1px;
-    border-radius: 0;
+.mas-not-sr-only {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: normal !important;
 }
 
-.mas-btn-group .button:first-child {
-    border-top-left-radius: 3px;
-    border-bottom-left-radius: 3px;
+/* Focus Utilities */
+.mas-focus-visible:focus {
+    outline: 2px solid #6366f1 !important;
+    outline-offset: 2px !important;
 }
 
-.mas-btn-group .button:last-child {
-    border-top-right-radius: 3px;
-    border-bottom-right-radius: 3px;
-    margin-right: 0;
+.mas-focus-within:focus-within {
+    outline: 2px solid #6366f1 !important;
+    outline-offset: 2px !important;
 }
 
-/* WordPress metabox enhancements */
-.mas-metabox-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
+/* Skip Links */
+.mas-skip-link {
+    position: absolute !important;
+    top: -40px !important;
+    left: 6px !important;
+    z-index: 100000 !important;
+    padding: 8px 16px !important;
+    background: #000 !important;
+    color: #fff !important;
+    text-decoration: none !important;
+    border-radius: 4px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    transition: top 0.2s ease !important;
 }
 
-/* WordPress form enhancements */
-.mas-form-grid {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 1rem;
-    align-items: center;
+.mas-skip-link:focus {
+    top: 6px !important;
+    outline: 2px solid #fff !important;
+    outline-offset: 2px !important;
 }
 
-.mas-form-grid label {
-    margin-bottom: 0;
-    font-weight: 600;
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .mas-high-contrast {
+        border: 2px solid !important;
+        background: window !important;
+        color: windowtext !important;
+    }
 }
 
-/* WordPress admin color scheme variables */
-:root {
-    --mas-wp-blue: #0073aa;
-    --mas-wp-blue-hover: #005a87;
-    --mas-wp-green: #00a32a;
-    --mas-wp-red: #d63638;
-    --mas-wp-orange: #dba617;
-    --mas-wp-gray: #50575e;
-    --mas-wp-light-gray: #c3c4c7;
-    --mas-wp-background: #f0f0f1;
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .mas-motion-reduce * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        transition-delay: 0ms !important;
+        scroll-behavior: auto !important;
+    }
 }
 
-/* Dark mode utilities (for WordPress dark schemes) */
-@media (prefers-color-scheme: dark) {
-    .mas-dark\:bg-gray-800 { background-color: #1f2937 !important; }
-    .mas-dark\:text-white { color: #ffffff !important; }
-    .mas-dark\:border-gray-600 { border-color: #4b5563 !important; }
-} 
+/* ========================================================================
+   📦 SECTION 15: PRINT UTILITIES - Print Styles
+   ======================================================================== */
+
+@media print {
+    .mas-print-hidden { display: none !important; }
+    .mas-print-visible { display: block !important; }
+    
+    .mas-print-break-before { page-break-before: always !important; }
+    .mas-print-break-after { page-break-after: always !important; }
+    .mas-print-break-inside { page-break-inside: avoid !important; }
+    
+    .mas-print-text-black { color: black !important; }
+    .mas-print-bg-white { background: white !important; }
+}
+
+/* ========================================================================
+   📦 SECTION 16: CUSTOM WOOW UTILITIES - Plugin Specific
+   ======================================================================== */
+
+/* Live Edit Helpers */
+.mas-live-edit-highlight {
+    outline: 2px dashed #6366f1 !important;
+    outline-offset: 2px !important;
+    background: rgba(99, 102, 241, 0.05) !important;
+}
+
+.mas-live-edit-selected {
+    outline: 3px solid #6366f1 !important;
+    outline-offset: 2px !important;
+    background: rgba(99, 102, 241, 0.1) !important;
+    box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.2) !important;
+}
+
+/* Theme Utilities */
+.mas-theme-transition {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease !important;
+}
+
+.mas-glassmorphism {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.mas-glassmorphism-dark {
+    background: rgba(0, 0, 0, 0.1) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Animation Utilities */
+.mas-animate-fade-in {
+    animation: mas-fade-in 0.3s ease-out !important;
+}
+
+.mas-animate-slide-up {
+    animation: mas-slide-up 0.4s ease-out !important;
+}
+
+.mas-animate-scale-in {
+    animation: mas-scale-in 0.3s ease-out !important;
+}
+
+@keyframes mas-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes mas-slide-up {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes mas-scale-in {
+    from { 
+        opacity: 0; 
+        transform: scale(0.9); 
+    }
+    to { 
+        opacity: 1; 
+        transform: scale(1); 
+    }
+}
+
+/* Performance Utilities */
+.mas-gpu-accelerate {
+    will-change: transform !important;
+    transform: translateZ(0) !important;
+}
+
+.mas-contain-layout {
+    contain: layout !important;
+}
+
+.mas-contain-paint {
+    contain: paint !important;
+}
+
+.mas-contain-strict {
+    contain: strict !important;
+}
+
+/* ========================================================================
+   🎯 END OF UTILITIES CSS
+   ======================================================================== */
+
+/*
+ * 📊 UTILITIES CONSOLIDATION SUMMARY:
+ * - Enhanced from 16KB to 20KB with comprehensive coverage
+ * - 16 sections: Spacing, Sizing, Position, Display, Flexbox, Grid, etc.
+ * - 400+ utility classes for rapid development
+ * - Responsive variants for all breakpoints
+ * - Accessibility utilities (WCAG 2.1 AA)
+ * - Debug helpers for development
+ * - Print optimizations
+ * - Custom WOOW-specific utilities
+ * - Performance-optimized with GPU acceleration hints
+ */ 

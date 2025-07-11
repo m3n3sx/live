@@ -137,6 +137,73 @@ class AssetLoader {
     }
 
     /**
+     * 🎨 ENHANCED: Load core stylesheets with consolidated architecture
+     * NEW: Single file loading strategy for improved performance
+     */
+    private function loadCoreCSS() {
+        $css_suffix = $this->is_production ? '.min' : '';
+        $css_dir = $this->is_production ? 'dist/' : '';
+        
+        // 🎯 CONSOLIDATED MAIN CSS - All core admin styles
+        wp_enqueue_style(
+            'woow-main-consolidated',
+            $this->plugin_url . 'assets/css/' . $css_dir . 'woow-main' . $css_suffix . '.css',
+            ['dashicons'],
+            $this->plugin_version,
+            'all'
+        );
+        
+        // 🎛️ CONDITIONAL LIVE EDIT CSS - Only when Live Edit is active
+        if ($this->isLiveEditActive()) {
+            wp_enqueue_style(
+                'woow-live-edit',
+                $this->plugin_url . 'assets/css/' . $css_dir . 'woow-live-edit' . $css_suffix . '.css',
+                ['woow-main-consolidated'],
+                $this->plugin_version,
+                'all'
+            );
+        }
+        
+        // 🛠️ UTILITIES CSS - Load on demand or cached
+        if (is_admin() || $this->isDebugMode()) {
+            wp_enqueue_style(
+                'woow-utilities',
+                $this->plugin_url . 'assets/css/' . $css_dir . 'woow-utilities' . $css_suffix . '.css',
+                [],
+                $this->plugin_version,
+                'all'
+            );
+        }
+    }
+    
+    /**
+     * 🎛️ Check if Live Edit Mode is active
+     */
+    private function isLiveEditActive() {
+        // Check if Live Edit is enabled globally
+        $global_live_edit = get_option('woow_live_edit_global', false);
+        
+        // Check if current user can use Live Edit
+        $user_can_edit = current_user_can('edit_theme_options');
+        
+        // Check if Live Edit is enabled for current page/session
+        $session_live_edit = isset($_GET['woow_live_edit']) || 
+                           isset($_SESSION['woow_live_edit_active']) ||
+                           (isset($_COOKIE['woow_live_edit']) && $_COOKIE['woow_live_edit'] === 'active');
+        
+        return $global_live_edit || ($user_can_edit && $session_live_edit);
+    }
+    
+    /**
+     * 🐛 Check if debug mode is active
+     */
+    private function isDebugMode() {
+        return defined('WP_DEBUG') && WP_DEBUG || 
+               isset($_GET['woow_debug']) ||
+               get_option('woow_debug_mode', false);
+    }
+
+    /**
      * 🚀 Load core JavaScript with optimization
      */
     private function loadCoreJavaScript() {
