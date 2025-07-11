@@ -106,10 +106,10 @@ class AssetLoader {
         $css_suffix = $this->is_production ? '.min' : '';
         $css_dir = $this->is_production ? 'dist/' : '';
         
-        // Load core CSS
+        // Load consolidated main CSS which includes core styles
         wp_enqueue_style(
-            'woow-core',
-            $this->plugin_url . 'assets/css/' . $css_dir . 'woow-core' . $css_suffix . '.css',
+            'woow-main',
+            $this->plugin_url . 'assets/css/' . $css_dir . 'woow-main' . $css_suffix . '.css',
             ['dashicons'],
             $this->plugin_version,
             'all'
@@ -121,7 +121,7 @@ class AssetLoader {
             if (file_exists($critical_css_path)) {
                 $critical_css = file_get_contents($critical_css_path);
                 if ($critical_css) {
-                    wp_add_inline_style('woow-core', $critical_css);
+                    wp_add_inline_style('woow-main', $critical_css);
                 }
             }
         }
@@ -131,7 +131,7 @@ class AssetLoader {
             $settings = $this->settings_manager->getSettings();
             $dynamic_css = $this->css_generator->generate($settings);
             if ($dynamic_css) {
-                wp_add_inline_style('woow-core', $dynamic_css);
+                wp_add_inline_style('woow-main', $dynamic_css);
             }
         }
     }
@@ -276,43 +276,25 @@ class AssetLoader {
 
     /**
      * 🎭 Setup lazy loading for advanced features
+     * NOTE: Features now consolidated in woow-main.css
      */
     private function setupLazyLoading() {
-        // Features CSS - lazy loaded
-        wp_register_style(
-            'woow-features',
-            $this->plugin_url . 'assets/css/' . ($this->is_production ? 'dist/' : '') . 'woow-features' . ($this->is_production ? '.min' : '') . '.css',
-            ['woow-core'],
-            $this->plugin_version,
-            'all'
-        );
+        // Advanced features are now included in woow-main.css
+        // Conditional loading handled by loadCoreCSS()
         
-        // Add lazy loading script
-        $lazy_loading_script = "
-        document.addEventListener('DOMContentLoaded', function() {
-            // Lazy load features when needed
-            const loadFeatures = function() {
-                if (!document.getElementById('woow-features-css')) {
-                    const link = document.createElement('link');
-                    link.id = 'woow-features-css';
-                    link.rel = 'stylesheet';
-                    link.href = '" . wp_style_is('woow-features', 'registered') ? wp_styles()->registered['woow-features']->src : '' . "';
-                    document.head.appendChild(link);
-                }
-            };
-            
-            // Load features on user interaction or after 3 seconds
-            const events = ['mousedown', 'touchstart', 'keydown'];
-            const loadOnInteraction = function() {
-                loadFeatures();
-                events.forEach(event => document.removeEventListener(event, loadOnInteraction));
-            };
-            
-            events.forEach(event => document.addEventListener(event, loadOnInteraction));
-            setTimeout(loadFeatures, 3000);
-        });";
+        // Load Live Edit features conditionally
+        if ($this->isLiveEditActive()) {
+            add_action('wp_footer', function() {
+                echo '<script>console.log("🎛️ Live Edit Mode: Activated");</script>';
+            });
+        }
         
-        wp_add_inline_script('woow-core', $lazy_loading_script);
+        // Performance monitoring
+        add_action('wp_footer', function() {
+            if ($this->isDebugMode()) {
+                echo '<script>console.log("🔍 Debug Mode: Asset loading completed");</script>';
+            }
+        });
     }
 
     /**
@@ -353,13 +335,14 @@ class AssetLoader {
     private function loadMinimalGlobalAssets() {
         wp_enqueue_style('dashicons');
         
-        // Load minimal core CSS for global pages
+        // Load minimal core CSS for global pages - consolidated in woow-main.css
         $css_suffix = $this->is_production ? '.min' : '';
         $css_dir = $this->is_production ? 'dist/' : '';
         
+        // 🎯 CONSOLIDATED: Load main CSS which includes core styles
         wp_enqueue_style(
-            'woow-core-global',
-            $this->plugin_url . 'assets/css/' . $css_dir . 'woow-core' . $css_suffix . '.css',
+            'woow-main-global',
+            $this->plugin_url . 'assets/css/' . $css_dir . 'woow-main' . $css_suffix . '.css',
             ['dashicons'],
             $this->plugin_version,
             'all'
@@ -374,26 +357,11 @@ class AssetLoader {
             true
         );
         
-        // Load core JS with minimal dependencies
-        wp_enqueue_script(
-            'woow-core-global',
-            $this->plugin_url . 'assets/js/' . ($this->is_production ? 'dist/' : '') . 'woow-core' . ($this->is_production ? '.min' : '') . '.js',
-            ['jquery', 'woow-admin-global'],
-            $this->plugin_version,
-            true
-        );
-        
-        // Localize global data
-        wp_localize_script('woow-core-global', 'woowV2Global', [
+        // Lokalizacja skryptów z ustawieniami
+        wp_localize_script('woow-admin-global', 'woowGlobal', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
-            'restUrl' => rest_url('woow/v1/'),
-            'restNonce' => wp_create_nonce('wp_rest'),
-            'ajaxNonce' => wp_create_nonce('mas_live_edit_nonce'),
-            'debug' => !$this->is_production,
-            'version' => $this->plugin_version,
-            'globalMode' => true,
-            'pluginUrl' => $this->plugin_url,
-            'isProduction' => $this->is_production
+            'nonce' => wp_create_nonce('woow_global_nonce'),
+            'pluginUrl' => $this->plugin_url
         ]);
     }
 
