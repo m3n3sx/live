@@ -287,9 +287,9 @@ add_filter('mas_v2_component_output', function($output, $type, $args) {
                 </div>
                 <div class="inside">
                     <div class="mas-grid mas-grid-cols-2 mas-gap-2">
-                        <a href="<?php echo admin_url('customize.php?autofocus[panel]=mas_v2_panel&url=' . urlencode(admin_url('index.php'))); ?>" class="button button-small">
-                            🎨 Customizer
-                        </a>
+                                        <a href="<?php echo admin_url('admin.php?page=modern-admin-styler-settings'); ?>" class="button button-small">
+                    🎨 Live Edit Mode
+                </a>
                         <a href="<?php echo admin_url('admin.php?page=mas-v2-general'); ?>" class="button button-small">
                             ⚙️ Settings
                         </a>

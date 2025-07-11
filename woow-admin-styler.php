@@ -125,7 +125,6 @@ class ModernAdminStylerV2 {
         
         // REFACTOR: The admin_head hook for styles is no longer needed.
         // We now use the WordPress-native wp_add_inline_style().
-        add_filter('admin_body_class', [$this, 'addCustomizerBodyClasses']);
         
         add_filter('admin_footer_text', [$this, 'customAdminFooter']);
         
@@ -740,33 +739,45 @@ class ModernAdminStylerV2 {
     
     /**
      * 🏗️ Inicjalizacja serwisów przez ServiceFactory
-     * 🎯 FAZA 1: Głęboka integracja z WordPress API
+     * 🎯 DEPENDENCY-AWARE ORDER: Services initialized in proper dependency order
      */
     public function initServices() {
         $factory = \ModernAdminStyler\Services\ServiceFactory::getInstance();
         
-        $this->settings_manager = $factory->get('settings_manager');
-        $this->asset_loader = $factory->get('asset_loader');
-        $this->ajax_handler = $factory->get('ajax_handler');
+        // === PHASE 1: CORE ENGINE (No dependencies) ===
+        // Core engine must be first as it provides infrastructure
         
-        $this->cache_manager = $factory->get('cache_manager');
-        $this->css_generator = $factory->get('css_generator');
-        $this->security_service = $factory->get('security_service');
-        $this->metrics_collector = $factory->get('metrics_collector');
+        // === PHASE 2: FOUNDATION SERVICES (Minimal dependencies) ===
+        $this->settings_manager = $factory->get('settings_manager');  // Depends on: core_engine
+        $this->cache_manager = $factory->get('cache_manager');        // Depends on: core_engine
+        $this->metrics_collector = $factory->get('metrics_collector'); // Depends on: core_engine (MOVED UP: Required by security_manager)
+        $this->security_service = $factory->get('security_manager');  // Consolidated: security_service → security_manager (Depends on: core_engine, metrics_collector)
         
-        $this->settings_api = $factory->get('settings_api');
-        $this->rest_api = $factory->get('rest_api');
+        // === PHASE 3: BUSINESS LOGIC SERVICES (Depend on foundation) ===
+        $this->css_generator = $factory->get('style_generator');      // Consolidated: css_generator → style_generator
+        $this->ajax_handler = $factory->get('ajax_handler');          // Depends on: settings_manager
+        $this->preset_manager = $factory->get('preset_manager');      // Depends on: settings_manager
         
-        $this->component_adapter = $factory->get('component_adapter');
+        // === PHASE 4: INTEGRATION SERVICES (Depend on business logic) ===
+        $this->asset_loader = $factory->get('asset_loader');          // Depends on: style_generator
         
-        $this->hooks_manager = $factory->get('hooks_manager');
-        $this->gutenberg_manager = $factory->get('gutenberg_manager');
+        // === PHASE 5: API SERVICES (Depend on all core services) ===
+        $this->settings_api = $factory->get('api_manager');           // Consolidated: settings_api + rest_api → api_manager
+        $this->rest_api = $factory->get('api_manager');               // Consolidated: settings_api + rest_api → api_manager
         
-        $this->analytics_engine = $factory->get('analytics_engine');
-        $this->integration_manager = $factory->get('integration_manager');
-        $this->memory_optimizer = $factory->get('memory_optimizer');
+        // === PHASE 6: ADAPTER SERVICES (Depend on settings) ===
+        $this->component_adapter = $factory->get('settings_manager'); // Integrated into settings_manager
         
-        $this->preset_manager = $factory->get('preset_manager');
+        // === PHASE 7: INTERFACE SERVICES (Depend on adapters) ===
+        $this->hooks_manager = $factory->get('admin_interface');      // Consolidated: hooks_manager + gutenberg_manager → admin_interface
+        $this->gutenberg_manager = $factory->get('admin_interface');  // Consolidated: hooks_manager + gutenberg_manager → admin_interface
+        
+        // === LEGACY SERVICES (Consolidated) ===
+        $this->analytics_engine = $factory->get('metrics_collector'); // Consolidated: analytics_engine → metrics_collector
+        $this->integration_manager = null;                            // Removed - functionality distributed
+        $this->memory_optimizer = $factory->get('cache_manager');     // Consolidated: memory_optimizer → cache_manager
+        
+        error_log('🎯 MAS V2: Services initialized in dependency-aware order');
     }
     
     /**
@@ -960,10 +971,7 @@ class ModernAdminStylerV2 {
         // REFACTOR: Use the canonical WordPress way to add inline styles.
         // This guarantees our custom styles are loaded AFTER the main stylesheet,
         // ensuring they correctly override the defaults.
-        $custom_css = $this->getCustomizerStylesString();
-        if (!empty($custom_css)) {
-            wp_add_inline_style('woow-semantic-themes', $custom_css);
-        }
+        // Note: Customizer styles removed - using Live Edit Mode instead
         
         $woow_pages = [
             'toplevel_page_woow-v2-general',
@@ -1014,10 +1022,7 @@ class ModernAdminStylerV2 {
         // REFACTOR: Use the canonical WordPress way to add inline styles.
         // This guarantees our custom styles are loaded AFTER the main stylesheet,
         // ensuring they correctly override the defaults.
-        $custom_css = $this->getCustomizerStylesString();
-        if (!empty($custom_css)) {
-            wp_add_inline_style('woow-semantic-themes', $custom_css);
-        }
+        // Note: Customizer styles removed - using Live Edit Mode instead
         
         add_action('admin_head', [$this->asset_loader, 'addEarlyLoadingProtection'], 1);
         
@@ -1032,17 +1037,18 @@ class ModernAdminStylerV2 {
             ];
             
             if (!in_array($hook, $woow_pages)) {
-        $settings = $this->getSettings();
-        error_log('🔍 MAS V2 PHP Debug - Settings being passed to JS: ' . print_r($settings, true));
-        error_log('🔍 MAS V2 PHP Debug - admin_bar_floating value: ' . ($settings['admin_bar_floating'] ?? 'NOT SET'));
-        
-        wp_localize_script('woow-v2-global', 'woowV2Global', [
-            'ajaxUrl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('woow_v2_nonce'),
-            'restUrl' => rest_url('woow/v1/'),
-            'restNonce' => wp_create_nonce('wp_rest'),
-            'settings' => $settings
-        ]);
+                $settings = $this->getSettings();
+                error_log('🔍 MAS V2 PHP Debug - Settings being passed to JS: ' . print_r($settings, true));
+                error_log('🔍 MAS V2 PHP Debug - admin_bar_floating value: ' . ($settings['admin_bar_floating'] ?? 'NOT SET'));
+                
+                // 🎯 NAPRAWKA: Używaj poprawnego handle skryptu (woow-core-global zamiast woow-v2-global)
+                wp_localize_script('woow-core-global', 'woowV2Global', [
+                    'ajaxUrl' => admin_url('admin-ajax.php'),
+                    'nonce' => wp_create_nonce('woow_v2_nonce'),
+                    'restUrl' => rest_url('woow/v1/'),
+                    'restNonce' => wp_create_nonce('wp_rest'),
+                    'settings' => $settings
+                ]);
             }
         }
     }
@@ -2869,7 +2875,9 @@ class ModernAdminStylerV2 {
                 return;
             }
             
-            $current_settings[$setting_key] = $default_value;
+            // ✅ ENTERPRISE FIX: Remove key from database instead of setting default value
+            // This allows CSS to fall back to the default value defined in the stylesheet
+            unset($current_settings[$setting_key]);
             
             $result = update_option('mas_v2_settings', $current_settings);
             
@@ -3145,67 +3153,15 @@ class ModernAdminStylerV2 {
     }
 
     /**
-     * REFACTOR: This function now returns the CSS string instead of echoing it.
-     * This allows us to use the WordPress-native wp_add_inline_style() function
-     * for guaranteed load order and persistence.
-     *
-     * @return string The generated CSS rules for the inline style block.
+     * CUSTOMIZER METHODS REMOVED
+     * 
+     * These methods were removed as part of WordPress Customizer elimination:
+     * - getCustomizerStylesString(): Handled by Live Edit Mode
+     * - addCustomizerBodyClasses(): Handled by Live Edit Mode
+     * 
+     * Live Edit Mode provides superior UX with instant preview and
+     * direct admin page editing without needing separate Customizer interface.
      */
-    private function getCustomizerStylesString() {
-        $settings = $this->getSettings();
-        $config = $this->getComponentsConfig();
-        $style_rules = [];
-
-        foreach ($config as $component) {
-            if (isset($component['tabs'])) {
-                foreach ($component['tabs'] as $tab) {
-                    if (isset($tab['options'])) {
-                        foreach ($tab['options'] as $option) {
-                            if (isset($option['cssVar']) && isset($option['id']) && isset($settings[$option['id']]) && $settings[$option['id']] !== '') {
-                                $value = $settings[$option['id']];
-                                $unit = isset($option['unit']) ? $option['unit'] : '';
-                                $style_rules[] = esc_attr($option['cssVar']) . ': ' . esc_attr($value . $unit) . ' !important;';
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        if (empty($style_rules)) { return ''; }
-        // FINAL FIX: Use a hyper-specific selector that is guaranteed to exist on
-        // all admin pages. This selector (`body` with two classes) has a higher
-        // specificity than any theme-switcher attribute selector (e.g., `[data-theme="dark"]`),
-        // ensuring that user-defined styles ALWAYS take precedence after a refresh or theme change.
-        return 'body.wp-admin.wp-core-ui {' . implode(' ', $style_rules) . '}';
-    }
-
-    /**
-     * REFACTOR: Adds saved body classes to the admin body.
-     * This ensures toggleable states (like floating modes) are applied
-     * correctly on page load.
-     */
-    public function addCustomizerBodyClasses($classes) {
-        $settings = $this->getSettings();
-        $config = $this->getComponentsConfig();
-        $class_array = explode(' ', $classes);
-
-        foreach ($config as $component) {
-            if (isset($component['tabs'])) {
-                foreach ($component['tabs'] as $tab) {
-                    if (isset($tab['options'])) {
-                        foreach ($tab['options'] as $option) {
-                            if (isset($option['bodyClass']) && isset($option['id']) && !empty($settings[$option['id']])) {
-                                $class_array[] = esc_attr($option['bodyClass']);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        return implode(' ', array_unique($class_array));
-    }
 }
 
 ModernAdminStylerV2::getInstance();

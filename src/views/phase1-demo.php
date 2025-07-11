@@ -27,9 +27,9 @@ $plugin = ModernAdminStylerV2::getInstance();
     <!-- Architecture Overview -->
     <div class="mas-v2-architecture-overview" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 30px 0;">
         
-        <!-- Customizer Integration -->
+        <!-- Live Edit Mode -->
         <div class="mas-v2-integration-card" style="background: #f0f6ff; border-left: 4px solid #3b82f6; padding: 20px; border-radius: 8px;">
-            <h2>🎨 WordPress Customizer</h2>
+            <h2>🎨 Live Edit Mode</h2>
             <p><strong>Opcje wizualne z podglądem na żywo</strong></p>
             <ul style="margin: 15px 0;">
                 <li>✅ Kolory i motywy</li>
@@ -39,8 +39,8 @@ $plugin = ModernAdminStylerV2::getInstance();
                 <li>✅ Efekty wizualne</li>
             </ul>
             <p>
-                <a href="<?php echo admin_url('customize.php?autofocus[panel]=mas_v2_panel&url=' . urlencode(admin_url('index.php'))); ?>" class="button button-primary">
-                    🎯 Otwórz Customizer
+                <a href="<?php echo admin_url('admin.php?page=modern-admin-styler-settings'); ?>" class="button button-primary">
+                    🎯 Otwórz Live Edit Mode
                 </a>
             </p>
         </div>
@@ -118,7 +118,7 @@ $plugin = ModernAdminStylerV2::getInstance();
             <div>
                 <h4>📁 Nowe serwisy</h4>
                 <code style="display: block; background: white; padding: 10px; border-radius: 4px; margin: 10px 0;">
-                    CustomizerIntegration.php<br>
+                    AdminInterface.php<br>
                     SettingsAPI.php<br>
                     RestAPI.php
                 </code>
@@ -127,9 +127,9 @@ $plugin = ModernAdminStylerV2::getInstance();
             <div>
                 <h4>🎨 Frontend assets</h4>
                 <code style="display: block; background: white; padding: 10px; border-radius: 4px; margin: 10px 0;">
-                    customizer-preview.js<br>
+                    live-edit-mode.js<br>
                     Live preview support<br>
-                    PostMessage API
+                    Direct DOM manipulation
                 </code>
             </div>
             

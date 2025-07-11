@@ -1,0 +1,684 @@
+/**
+ * WOOW! Features CSS - Advanced Functionality
+ * Lazy-loaded advanced features and components
+ * 
+ * @package ModernAdminStyler
+ * @version 4.0.0 - Performance Optimized
+ * @size ~30KB (compressed)
+ */
+
+/* ========================================================================
+   🎛️ LIVE EDIT MODE
+   ======================================================================== */
+
+/* Live edit toggle button */
+.mas-live-edit-toggle {
+    position: fixed;
+    top: 40px;
+    right: 20px;
+    z-index: var(--woow-z-panel);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--woow-space-2);
+    padding: var(--woow-space-3) var(--woow-space-4);
+    background: linear-gradient(135deg, var(--woow-primary) 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: var(--woow-radius-xl);
+    font-size: var(--woow-font-size-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--woow-duration-normal) var(--woow-ease-out);
+    box-shadow: var(--woow-shadow-lg);
+    will-change: transform;
+}
+
+.mas-live-edit-toggle:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: var(--woow-shadow-xl);
+    background: linear-gradient(135deg, var(--woow-primary-hover) 0%, #6b46c1 100%);
+}
+
+.mas-live-edit-toggle.active {
+    background: linear-gradient(135deg, var(--woow-error) 0%, #dc2626 100%);
+    animation: mas-pulse 2s infinite;
+}
+
+@keyframes mas-pulse {
+    0%, 100% { box-shadow: var(--woow-shadow-lg); }
+    50% { box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4); }
+}
+
+/* Editable elements highlighting */
+body.mas-live-edit-active [data-mas-editable="true"] {
+    position: relative;
+    transition: all var(--woow-duration-fast) var(--woow-ease-out);
+    outline: 2px dashed transparent;
+}
+
+body.mas-live-edit-active [data-mas-editable="true"]:hover {
+    outline-color: var(--woow-primary);
+    background-color: rgba(102, 126, 234, 0.05);
+    cursor: pointer;
+}
+
+/* Edit triggers */
+.mas-edit-trigger {
+    position: absolute;
+    top: var(--woow-space-2);
+    right: var(--woow-space-2);
+    display: flex;
+    align-items: center;
+    gap: var(--woow-space-1);
+    padding: var(--woow-space-1) var(--woow-space-2);
+    background: rgba(102, 126, 234, 0.95);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--woow-radius-md);
+    font-size: var(--woow-font-size-xs);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--woow-duration-normal) var(--woow-ease-out);
+    opacity: 0;
+    pointer-events: none;
+    backdrop-filter: blur(12px);
+    z-index: var(--woow-z-tooltip);
+    transform: scale(0.8);
+}
+
+body.mas-live-edit-active [data-mas-editable="true"]:hover .mas-edit-trigger {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+}
+
+.mas-edit-trigger:hover {
+    background: rgba(102, 126, 234, 1);
+    transform: scale(1.1);
+}
+
+/* ========================================================================
+   🎨 MICRO PANELS
+   ======================================================================== */
+
+.mas-micro-panel {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    width: 320px;
+    max-height: 80vh;
+    background: var(--woow-surface);
+    border: 1px solid var(--woow-border);
+    border-radius: var(--woow-radius-xl);
+    box-shadow: var(--woow-shadow-xl);
+    backdrop-filter: blur(20px);
+    z-index: var(--woow-z-panel);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(100%) scale(0.95);
+    transition: all var(--woow-duration-normal) var(--woow-ease-out);
+    will-change: transform, opacity;
+    contain: layout style paint;
+}
+
+.mas-micro-panel.mas-panel-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0) scale(1);
+}
+
+.mas-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--woow-space-4) var(--woow-space-5);
+    border-bottom: 1px solid var(--woow-border-light);
+    background: linear-gradient(135deg, var(--woow-surface) 0%, var(--woow-surface-hover) 100%);
+    border-radius: var(--woow-radius-xl) var(--woow-radius-xl) 0 0;
+}
+
+.mas-panel-header h4 {
+    margin: 0;
+    font-size: var(--woow-font-size-base);
+    font-weight: 600;
+    color: var(--woow-text);
+}
+
+.mas-panel-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: 1px solid var(--woow-border);
+    border-radius: var(--woow-radius-full);
+    color: var(--woow-text-light);
+    cursor: pointer;
+    transition: all var(--woow-duration-fast) var(--woow-ease-out);
+}
+
+.mas-panel-close:hover {
+    background: var(--woow-error);
+    border-color: var(--woow-error);
+    color: white;
+    transform: scale(1.1);
+}
+
+.mas-panel-content {
+    padding: var(--woow-space-4);
+    max-height: calc(80vh - 80px);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.mas-panel-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.mas-panel-content::-webkit-scrollbar-track {
+    background: var(--woow-border-light);
+    border-radius: var(--woow-radius-full);
+}
+
+.mas-panel-content::-webkit-scrollbar-thumb {
+    background: var(--woow-border);
+    border-radius: var(--woow-radius-full);
+}
+
+.mas-panel-content::-webkit-scrollbar-thumb:hover {
+    background: var(--woow-text-light);
+}
+
+/* Panel sections */
+.mas-section {
+    margin-bottom: var(--woow-space-5);
+}
+
+.mas-section:last-child {
+    margin-bottom: 0;
+}
+
+.mas-section h5 {
+    margin: 0 0 var(--woow-space-3) 0;
+    font-size: var(--woow-font-size-sm);
+    font-weight: 600;
+    color: var(--woow-text);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Control styles */
+.mas-control {
+    margin-bottom: var(--woow-space-4);
+    animation: mas-control-slide-in 0.3s var(--woow-ease-out) forwards;
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.mas-control:nth-child(1) { animation-delay: 50ms; }
+.mas-control:nth-child(2) { animation-delay: 100ms; }
+.mas-control:nth-child(3) { animation-delay: 150ms; }
+.mas-control:nth-child(4) { animation-delay: 200ms; }
+.mas-control:nth-child(5) { animation-delay: 250ms; }
+.mas-control:nth-child(n+6) { animation-delay: 300ms; }
+
+@keyframes mas-control-slide-in {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mas-control label {
+    display: block;
+    margin-bottom: var(--woow-space-2);
+    font-size: var(--woow-font-size-sm);
+    font-weight: 500;
+    color: var(--woow-text);
+}
+
+/* Color controls */
+.mas-control-color input[type="color"] {
+    width: 100%;
+    height: 40px;
+    border: 1px solid var(--woow-border);
+    border-radius: var(--woow-radius-md);
+    cursor: pointer;
+    transition: all var(--woow-duration-fast) var(--woow-ease-out);
+}
+
+.mas-control-color input[type="color"]:hover {
+    transform: scale(1.02);
+    box-shadow: var(--woow-shadow-md);
+}
+
+/* Range controls */
+.mas-control-slider input[type="range"] {
+    width: 100%;
+    height: 6px;
+    background: var(--woow-border-light);
+    border-radius: var(--woow-radius-full);
+    outline: none;
+    cursor: pointer;
+    transition: background var(--woow-duration-fast) var(--woow-ease-out);
+    -webkit-appearance: none;
+}
+
+.mas-control-slider input[type="range"]::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+    background: var(--woow-primary);
+    border-radius: var(--woow-radius-full);
+    cursor: pointer;
+    transition: all var(--woow-duration-fast) var(--woow-ease-out);
+    -webkit-appearance: none;
+    box-shadow: var(--woow-shadow-sm);
+}
+
+.mas-control-slider input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: var(--woow-shadow-md);
+}
+
+.mas-control-slider .mas-value {
+    display: inline-block;
+    padding: var(--woow-space-1) var(--woow-space-2);
+    background: var(--woow-surface-hover);
+    border: 1px solid var(--woow-border);
+    border-radius: var(--woow-radius-sm);
+    font-size: var(--woow-font-size-xs);
+    font-weight: 600;
+    color: var(--woow-text);
+    min-width: 40px;
+    text-align: center;
+}
+
+/* Toggle controls */
+.mas-control-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--woow-space-3);
+}
+
+.mas-control-toggle input[type="checkbox"] {
+    width: 48px;
+    height: 24px;
+    background: var(--woow-border-light);
+    border-radius: var(--woow-radius-full);
+    position: relative;
+    cursor: pointer;
+    transition: all var(--woow-duration-fast) var(--woow-ease-out);
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.mas-control-toggle input[type="checkbox"]::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: var(--woow-radius-full);
+    transition: all var(--woow-duration-fast) var(--woow-ease-out);
+    box-shadow: var(--woow-shadow-sm);
+}
+
+.mas-control-toggle input[type="checkbox"]:checked {
+    background: var(--woow-primary);
+}
+
+.mas-control-toggle input[type="checkbox"]:checked::before {
+    transform: translateX(24px);
+}
+
+/* Text controls */
+.mas-control-text input[type="text"] {
+    width: 100%;
+    padding: var(--woow-space-2) var(--woow-space-3);
+    background: var(--woow-surface);
+    border: 1px solid var(--woow-border);
+    border-radius: var(--woow-radius-md);
+    color: var(--woow-text);
+    font-size: var(--woow-font-size-sm);
+    transition: all var(--woow-duration-fast) var(--woow-ease-out);
+}
+
+.mas-control-text input[type="text"]:focus {
+    border-color: var(--woow-primary);
+    box-shadow: 0 0 0 1px var(--woow-primary);
+    outline: none;
+}
+
+/* ========================================================================
+   🎭 TOAST NOTIFICATIONS
+   ======================================================================== */
+
+.mas-notifications-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: var(--woow-z-toast);
+    pointer-events: none;
+    max-width: 400px;
+}
+
+.mas-notification {
+    display: flex;
+    align-items: center;
+    gap: var(--woow-space-3);
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--woow-radius-xl);
+    padding: var(--woow-space-4) var(--woow-space-5);
+    margin-bottom: var(--woow-space-3);
+    color: white;
+    font-family: var(--woow-font-family);
+    font-size: var(--woow-font-size-sm);
+    font-weight: 500;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--woow-shadow-xl);
+    transform: translateX(400px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: auto;
+    min-width: 300px;
+    will-change: transform, opacity;
+}
+
+.mas-notification.mas-notification-show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.mas-notification.mas-notification-success {
+    background: linear-gradient(135deg, var(--woow-success), #059669);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.mas-notification.mas-notification-error {
+    background: linear-gradient(135deg, var(--woow-error), #dc2626);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.mas-notification.mas-notification-warning {
+    background: linear-gradient(135deg, var(--woow-warning), #d97706);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+.mas-notification-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.mas-notification-message {
+    flex: 1;
+    line-height: 1.4;
+}
+
+.mas-notification-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    transition: color var(--woow-duration-fast) var(--woow-ease-out);
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mas-notification-close:hover {
+    color: white;
+}
+
+/* ========================================================================
+   🎨 PRESET SYSTEM
+   ======================================================================== */
+
+.mas-preset-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: var(--woow-space-3);
+    margin-bottom: var(--woow-space-4);
+}
+
+.mas-preset-btn {
+    padding: var(--woow-space-3);
+    background: var(--woow-surface);
+    border: 1px solid var(--woow-border);
+    border-radius: var(--woow-radius-lg);
+    cursor: pointer;
+    transition: all var(--woow-duration-fast) var(--woow-ease-out);
+    text-align: center;
+    font-size: var(--woow-font-size-xs);
+    font-weight: 500;
+    color: var(--woow-text);
+}
+
+.mas-preset-btn:hover {
+    background: var(--woow-surface-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--woow-shadow-md);
+}
+
+.mas-preset-btn.active {
+    background: var(--woow-primary);
+    border-color: var(--woow-primary);
+    color: white;
+}
+
+/* Quick actions */
+.mas-quick-actions {
+    display: flex;
+    gap: var(--woow-space-2);
+    margin-bottom: var(--woow-space-4);
+    flex-wrap: wrap;
+}
+
+.mas-quick-btn {
+    padding: var(--woow-space-2) var(--woow-space-3);
+    background: var(--woow-surface);
+    border: 1px solid var(--woow-border);
+    border-radius: var(--woow-radius-md);
+    color: var(--woow-text);
+    font-size: var(--woow-font-size-xs);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--woow-duration-fast) var(--woow-ease-out);
+    flex: 1;
+    min-width: 80px;
+}
+
+.mas-quick-btn:hover {
+    background: var(--woow-primary);
+    border-color: var(--woow-primary);
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* ========================================================================
+   📱 MOBILE OPTIMIZATIONS
+   ======================================================================== */
+
+@media (max-width: 768px) {
+    .mas-live-edit-toggle {
+        top: 20px;
+        right: 10px;
+        font-size: var(--woow-font-size-xs);
+        padding: var(--woow-space-2) var(--woow-space-3);
+    }
+    
+    .mas-micro-panel {
+        right: 10px;
+        left: 10px;
+        width: auto;
+        max-width: none;
+        transform: translateY(100%) scale(0.95);
+        top: auto;
+        bottom: 20px;
+    }
+    
+    .mas-micro-panel.mas-panel-visible {
+        transform: translateY(0) scale(1);
+    }
+    
+    .mas-notifications-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    .mas-notification {
+        min-width: auto;
+        margin: 0 0 var(--woow-space-2) 0;
+    }
+    
+    .mas-preset-grid {
+        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+        gap: var(--woow-space-2);
+    }
+    
+    .mas-quick-actions {
+        flex-direction: column;
+    }
+    
+    .mas-quick-btn {
+        min-width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .mas-panel-header {
+        padding: var(--woow-space-3) var(--woow-space-4);
+    }
+    
+    .mas-panel-content {
+        padding: var(--woow-space-3);
+    }
+    
+    .mas-control {
+        margin-bottom: var(--woow-space-3);
+    }
+    
+    .mas-preset-grid {
+        grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+    }
+}
+
+/* ========================================================================
+   ♿ ACCESSIBILITY ENHANCEMENTS
+   ======================================================================== */
+
+/* High contrast support */
+@media (prefers-contrast: high) {
+    .mas-micro-panel {
+        border-width: 2px;
+        border-color: var(--woow-text);
+    }
+    
+    .mas-notification {
+        border-width: 2px;
+    }
+    
+    .mas-live-edit-toggle {
+        border: 2px solid white;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .mas-micro-panel {
+        transition-duration: 0.01ms;
+    }
+    
+    .mas-notification {
+        transition-duration: 0.01ms;
+        animation: none;
+    }
+    
+    .mas-control {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Focus management */
+.mas-panel-close:focus,
+.mas-control input:focus,
+.mas-preset-btn:focus,
+.mas-quick-btn:focus {
+    outline: 2px solid var(--woow-primary);
+    outline-offset: 2px;
+}
+
+/* Touch targets */
+@media (pointer: coarse) {
+    .mas-panel-close {
+        min-width: 44px;
+        min-height: 44px;
+    }
+    
+    .mas-quick-btn {
+        min-height: 44px;
+    }
+    
+    .mas-preset-btn {
+        min-height: 44px;
+    }
+}
+
+/* ========================================================================
+   🚀 PERFORMANCE OPTIMIZATIONS
+   ======================================================================== */
+
+/* GPU acceleration for animations */
+.mas-micro-panel,
+.mas-notification,
+.mas-live-edit-toggle {
+    transform: translateZ(0);
+    will-change: transform;
+}
+
+/* Layout containment */
+.mas-panel-content {
+    contain: layout style paint;
+}
+
+.mas-control {
+    contain: layout style;
+}
+
+/* Lazy loading placeholders */
+.mas-lazy-loading {
+    opacity: 0.6;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    background-size: 200% 100%;
+    animation: mas-shimmer 1.5s infinite;
+}
+
+@keyframes mas-shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Efficient transforms */
+.mas-hardware-accelerated {
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+} 

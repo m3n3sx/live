@@ -5030,54 +5030,163 @@ body.mas-theme-light {
     }
 }
 
-/* MicroPanel Base Styles */
+/* ========================================================================
+   🎯 ENHANCED MICRO-PANEL SYSTEM WITH INTELLIGENT POSITIONING
+   ========================================================================*/
+
+/* MicroPanel Base Styles - Enhanced for Intelligent Positioning */
 .woow-micro-panel {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    /* Core positioning handled by JavaScript intelligent engine */
+    position: fixed;
+    z-index: 999999;
+    width: 320px;
+    max-width: 90vw;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.12),
+        0 8px 16px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    color: #333;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: slideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    /* Modern glassmorphism effect */
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    /* Ensure panels stay in viewport bounds */
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
 }
 
+.woow-micro-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.3) 0%, 
+        rgba(255, 255, 255, 0.1) 50%, 
+        transparent 100%);
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.woow-micro-panel:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 32px 64px rgba(0, 0, 0, 0.16),
+        0 16px 32px rgba(0, 0, 0, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+/* Enhanced Panel Header with Better Visual Hierarchy */
+
 .woow-micro-panel .woow-panel-header {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 16px 20px;
-    border-radius: 12px 12px 0 0;
+    padding: 18px 24px;
+    border-radius: 16px 16px 0 0;
     font-weight: 600;
     position: relative;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.woow-micro-panel .woow-panel-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.2) 0%, 
+        transparent 50%, 
+        rgba(0, 0, 0, 0.05) 100%);
+    pointer-events: none;
+}
+
+.woow-micro-panel .woow-panel-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    flex: 1;
 }
 
 .woow-micro-panel .woow-panel-close {
-    position: absolute;
-    top: 50%;
-    right: 16px;
-    transform: translateY(-50%);
     background: none;
     border: none;
     color: white;
-    font-size: 18px;
+    font-size: 20px;
     cursor: pointer;
     opacity: 0.8;
     transition: all 0.2s ease;
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    z-index: 2;
+    font-weight: bold;
+    line-height: 1;
 }
 
 .woow-micro-panel .woow-panel-close:hover {
     opacity: 1;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
+.woow-micro-panel .woow-panel-close:active {
+    transform: scale(0.95);
+}
+
+/* Enhanced Panel Content Area */
+.woow-micro-panel .woow-panel-content,
 .woow-micro-panel .woow-panel-body {
-    padding: 20px;
-    background: white;
-    border-radius: 0 0 12px 12px;
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 0 0 16px 16px;
+    position: relative;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
+.woow-micro-panel .woow-panel-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(0, 0, 0, 0.1), 
+        transparent);
+}
+
+/* Enhanced Control Groups */
 .woow-micro-panel .woow-control-group {
     margin-bottom: 20px;
+    padding: 0;
+    position: relative;
 }
 
 .woow-micro-panel .woow-control-group:last-child {
@@ -5086,65 +5195,129 @@ body.mas-theme-light {
 
 .woow-micro-panel .woow-control-label {
     display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
+    margin-bottom: 10px;
+    font-weight: 600;
     color: #374151;
     font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    padding-left: 0;
 }
 
+.woow-micro-panel .woow-control-label::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 24px;
+    height: 2px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 1px;
+    opacity: 0.6;
+}
+
+/* Enhanced Input Styles */
 .woow-micro-panel .woow-control-input {
     width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
+    padding: 12px 16px;
+    border: 2px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
     font-size: 14px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    background: white;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    font-family: inherit;
 }
 
 .woow-micro-panel .woow-control-input:focus {
     outline: none;
     border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    box-shadow: 
+        0 0 0 4px rgba(102, 126, 234, 0.15),
+        0 4px 12px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    transform: translateY(-1px);
 }
 
+.woow-micro-panel .woow-control-input:hover {
+    border-color: rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Enhanced Color Input */
 .woow-micro-panel .woow-color-input {
-    width: 80px;
-    height: 40px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
+    width: 100%;
+    height: 48px;
+    border: 2px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    position: relative;
+    overflow: hidden;
 }
 
 .woow-micro-panel .woow-color-input:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-color: rgba(102, 126, 234, 0.3);
 }
 
+.woow-micro-panel .woow-color-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 
+        0 0 0 4px rgba(102, 126, 234, 0.15),
+        0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Enhanced Range Slider */
 .woow-micro-panel input[type="range"] {
     width: 100%;
-    height: 6px;
-    border-radius: 3px;
-    background: #e5e7eb;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #f1f5f9, #e2e8f0);
     outline: none;
     -webkit-appearance: none;
+    border: none;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.woow-micro-panel input[type="range"]:hover {
+    background: linear-gradient(90deg, #e2e8f0, #cbd5e1);
 }
 
 .woow-micro-panel input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     background: linear-gradient(135deg, #667eea, #764ba2);
     cursor: pointer;
-    border: 2px solid white;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease;
+    border: 3px solid white;
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.15),
+        0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
 }
 
 .woow-micro-panel input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 
+        0 6px 16px rgba(0, 0, 0, 0.2),
+        0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.woow-micro-panel input[type="range"]::-webkit-slider-thumb:active {
     transform: scale(1.1);
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.2),
+        0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .woow-micro-panel input[type="range"]::-moz-range-thumb {
@@ -5168,12 +5341,31 @@ body.mas-theme-light {
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
-/* Responsive adjustments */
+/* Enhanced Responsive adjustments for Intelligent Positioning */
 @media (max-width: 768px) {
     .woow-micro-panel {
-        width: 90vw !important;
-        left: 5vw !important;
+        width: calc(100vw - 20px) !important;
+        max-width: 360px !important;
+        left: 10px !important;
         right: auto !important;
+        max-height: calc(100vh - 60px) !important;
+    }
+    
+    .woow-micro-panel .woow-panel-header {
+        padding: 16px 20px;
+    }
+    
+    .woow-micro-panel .woow-panel-content,
+    .woow-micro-panel .woow-panel-body {
+        padding: 20px;
+    }
+    
+    .woow-micro-panel .woow-control-group {
+        margin-bottom: 16px;
+    }
+    
+    .woow-micro-panel .woow-color-input {
+        height: 44px;
     }
     
     .woow-live-edit-enabled [data-woow-editable="true"]::after {
@@ -5182,25 +5374,404 @@ body.mas-theme-light {
     }
 }
 
-/* Dark mode support */
+@media (max-width: 480px) {
+    .woow-micro-panel {
+        width: calc(100vw - 16px) !important;
+        left: 8px !important;
+        max-height: calc(100vh - 40px) !important;
+        border-radius: 12px;
+    }
+    
+    .woow-micro-panel .woow-panel-header {
+        padding: 14px 18px;
+        border-radius: 12px 12px 0 0;
+    }
+    
+    .woow-micro-panel .woow-panel-header h3 {
+        font-size: 15px;
+    }
+    
+    .woow-micro-panel .woow-panel-close {
+        width: 26px;
+        height: 26px;
+        font-size: 18px;
+    }
+}
+
+/* Enhanced Dark mode support */
 @media (prefers-color-scheme: dark) {
+    .woow-micro-panel {
+        background: rgba(31, 41, 55, 0.95);
+        border-color: rgba(75, 85, 99, 0.4);
+    }
+    
+    .woow-micro-panel::before {
+        background: linear-gradient(135deg, 
+            rgba(255, 255, 255, 0.05) 0%, 
+            rgba(255, 255, 255, 0.02) 50%, 
+            transparent 100%);
+    }
+    
+    .woow-micro-panel .woow-panel-content,
     .woow-micro-panel .woow-panel-body {
-        background: #1f2937;
-        color: white;
+        background: rgba(31, 41, 55, 0.98);
+        color: #f3f4f6;
     }
     
     .woow-micro-panel .woow-control-input {
-        background: #374151;
-        border-color: #4b5563;
-        color: white;
+        background: rgba(55, 65, 81, 0.8);
+        border-color: rgba(75, 85, 99, 0.6);
+        color: #f3f4f6;
     }
     
     .woow-micro-panel .woow-control-input:focus {
         border-color: #667eea;
-        background: #374151;
+        background: rgba(55, 65, 81, 0.95);
+        box-shadow: 
+            0 0 0 4px rgba(102, 126, 234, 0.2),
+            0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .woow-micro-panel .woow-control-input:hover {
+        border-color: rgba(102, 126, 234, 0.4);
+        background: rgba(55, 65, 81, 0.9);
     }
     
     .woow-micro-panel .woow-control-label {
-        color: #d1d5db;
+        color: #e5e7eb;
+    }
+    
+    .woow-micro-panel .woow-control-label::after {
+        background: linear-gradient(90deg, #818cf8, #a78bfa);
+    }
+    
+    .woow-micro-panel input[type="range"] {
+        background: linear-gradient(90deg, #374151, #4b5563);
+    }
+    
+    .woow-micro-panel input[type="range"]:hover {
+        background: linear-gradient(90deg, #4b5563, #6b7280);
+    }
+    
+    .woow-micro-panel .woow-color-input {
+        border-color: rgba(75, 85, 99, 0.6);
+        background: rgba(55, 65, 81, 0.5);
+    }
+}
+
+/* ========================================================================
+   🎯 INTELLIGENT POSITIONING SYSTEM - Panel Constraints & Positioning
+   ======================================================================== */
+   
+.mas-micro-panel {
+    /* Intelligent positioning constraints */
+    position: fixed !important;
+    max-width: 90vw !important;
+    max-height: calc(100vh - 32px) !important;
+    min-width: 280px !important;
+    min-height: 200px !important;
+    z-index: 999999 !important;
+    
+    /* Overflow handling */
+    overflow: auto !important;
+    overscroll-behavior: contain;
+    
+    /* Smooth transitions for repositioning */
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Visual feedback for positioning */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12),
+                0 4px 16px rgba(0, 0, 0, 0.08);
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+        max-width: calc(100vw - 20px) !important;
+        max-height: calc(100vh - 40px) !important;
+        min-width: 260px !important;
+    }
+    
+    /* Touch-friendly sizing for mobile */
+    @media (max-width: 480px) {
+        max-width: calc(100vw - 16px) !important;
+        min-width: 240px !important;
+    }
+}
+
+/* Panel positioning anchors - visual feedback */
+.mas-micro-panel[data-anchor="right-top"],
+.mas-micro-panel[data-anchor="right-bottom"] {
+    border-left: 3px solid var(--mas-primary-color, #0073aa);
+}
+
+.mas-micro-panel[data-anchor="left-top"],
+.mas-micro-panel[data-anchor="left-bottom"] {
+    border-right: 3px solid var(--mas-primary-color, #0073aa);
+}
+
+.mas-micro-panel[data-anchor="bottom-left"],
+.mas-micro-panel[data-anchor="bottom-right"] {
+    border-top: 3px solid var(--mas-primary-color, #0073aa);
+}
+
+.mas-micro-panel[data-anchor="top-left"],
+.mas-micro-panel[data-anchor="top-right"] {
+    border-bottom: 3px solid var(--mas-primary-color, #0073aa);
+}
+
+/* Overflow state indicators */
+.mas-micro-panel.mas-overflow-detected {
+    animation: mas-overflow-pulse 1s ease-in-out;
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.3),
+                0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+@keyframes mas-overflow-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+/* Smart positioning feedback */
+.mas-micro-panel.mas-repositioning {
+    opacity: 0.8;
+    transform: scale(0.98);
+    pointer-events: none;
+}
+
+.mas-micro-panel.mas-repositioning::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg, transparent 45%, rgba(0, 115, 170, 0.1) 50%, transparent 55%);
+    animation: mas-repositioning-scan 0.8s ease-in-out;
+}
+
+@keyframes mas-repositioning-scan {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Viewport constraint indicators */
+.mas-micro-panel.mas-edge-constrained {
+    border-radius: 8px 8px 0 0;
+}
+
+.mas-micro-panel[data-constrained="top"] {
+    border-top: 2px solid var(--mas-warning-color, #f59e0b);
+}
+
+.mas-micro-panel[data-constrained="bottom"] {
+    border-bottom: 2px solid var(--mas-warning-color, #f59e0b);
+}
+
+.mas-micro-panel[data-constrained="left"] {
+    border-left: 2px solid var(--mas-warning-color, #f59e0b);
+}
+
+.mas-micro-panel[data-constrained="right"] {
+    border-right: 2px solid var(--mas-warning-color, #f59e0b);
+}
+
+/* Collision detection state */
+.mas-micro-panel.mas-collision-detected {
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.4),
+                0 8px 32px rgba(0, 0, 0, 0.12);
+    animation: mas-collision-warning 0.5s ease-in-out 2;
+}
+
+@keyframes mas-collision-warning {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+}
+
+/* Panel content overflow handling */
+.mas-micro-panel .mas-panel-content {
+    max-height: calc(100% - 60px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.mas-micro-panel .mas-panel-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.mas-micro-panel .mas-panel-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mas-micro-panel .mas-panel-content::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.mas-micro-panel .mas-panel-content::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Device-specific positioning adjustments */
+@media (max-width: 1024px) {
+    .mas-micro-panel {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+}
+
+@media (max-width: 768px) {
+    .mas-micro-panel {
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+    
+    .mas-micro-panel .mas-panel-header {
+        padding: 16px 20px;
+        font-size: 16px;
+    }
+    
+    .mas-micro-panel .mas-panel-content {
+        padding: 16px 20px;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .mas-micro-panel {
+        border: 2px solid;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .mas-micro-panel[data-anchor*="right"] {
+        border-left: 4px solid;
+    }
+    
+    .mas-micro-panel[data-anchor*="left"] {
+        border-right: 4px solid;
+    }
+    
+    .mas-micro-panel[data-anchor*="top"] {
+        border-bottom: 4px solid;
+    }
+    
+    .mas-micro-panel[data-anchor*="bottom"] {
+        border-top: 4px solid;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .mas-micro-panel {
+        transition: none !important;
+        animation: none !important;
+    }
+    
+    .mas-micro-panel.mas-repositioning::after {
+        animation: none !important;
+    }
+    
+    .mas-micro-panel.mas-collision-detected {
+        animation: none !important;
+    }
+}
+
+/* Print styles */
+@media print {
+    .mas-micro-panel {
+        position: static !important;
+        max-width: 100% !important;
+        max-height: none !important;
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+        page-break-inside: avoid;
+    }
+}
+
+/* ==========================================================================
+   🎨 FLOATING LIVE EDIT TOGGLE - Uniwersalny przycisk Live Edit Mode
+   ========================================================================== */
+
+/* 🎛️ Floating Live Edit Toggle */
+.mas-live-edit-toggle {
+    position: fixed;
+    top: 40px;
+    right: 80px; /* Obok theme toggle */
+    z-index: var(--woow-z-panel, 999999);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--woow-space-2, 8px);
+    padding: var(--woow-space-3, 12px) var(--woow-space-4, 16px);
+    background: linear-gradient(135deg, var(--woow-accent-primary, #667eea) 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: var(--woow-radius-xl, 25px);
+    font-size: var(--woow-font-size-sm, 13px);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--woow-duration-normal, 0.3s) var(--woow-ease-out, ease-out);
+    box-shadow: var(--woow-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+    will-change: transform;
+    text-decoration: none;
+}
+
+.mas-live-edit-toggle:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: var(--woow-shadow-xl, 0 20px 25px -5px rgba(0, 0, 0, 0.1));
+    background: linear-gradient(135deg, var(--woow-accent-primary-hover, #5a6fd8) 0%, #6b46c1 100%);
+    color: white;
+    text-decoration: none;
+}
+
+.mas-live-edit-toggle.active {
+    background: linear-gradient(135deg, var(--woow-accent-success, #10b981) 0%, #059669 100%);
+    animation: mas-pulse 2s infinite;
+}
+
+@keyframes mas-pulse {
+    0%, 100% { box-shadow: var(--woow-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1)); }
+    50% { box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4); }
+}
+
+.mas-live-edit-toggle .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+.mas-live-edit-toggle .toggle-text,
+.mas-live-edit-toggle .label {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    letter-spacing: 0.3px;
+}
+
+/* 🌙 Dark theme support */
+body.mas-theme-dark .mas-live-edit-toggle {
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+}
+
+body.mas-theme-dark .mas-live-edit-toggle:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+}
+
+/* 📱 Mobile responsiveness */
+@media (max-width: 782px) {
+    .mas-live-edit-toggle {
+        top: 46px; /* WordPress mobile admin bar height */
+        right: 20px;
+        padding: 10px 14px;
+        font-size: 12px;
+    }
+    
+    .mas-live-edit-toggle .toggle-text,
+    .mas-live-edit-toggle .label {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .mas-live-edit-toggle {
+        width: 40px;
+        height: 40px;
+        padding: 8px;
+        justify-content: center;
     }
 }

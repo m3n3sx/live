@@ -17,7 +17,6 @@ use ModernAdminStyler\Services\ComponentAdapter;
 
 // Pobierz aktualne ustawienia
 $settings = $this->settings_manager->getSettings();
-$customizer_url = admin_url('customize.php?autofocus[panel]=mas_v2_panel&url=' . urlencode(admin_url('index.php')));
 $settings_url = admin_url('admin.php?page=modern-admin-styler-settings');
 
 ?>
@@ -28,8 +27,8 @@ $settings_url = admin_url('admin.php?page=modern-admin-styler-settings');
         <span class="title-count theme-count"><?php _e('Phase 2', 'woow-admin-styler'); ?></span>
     </h1>
     
-    <a href="<?php echo esc_url($customizer_url); ?>" class="page-title-action">
-        <?php _e('Customize Appearance', 'woow-admin-styler'); ?>
+    <a href="<?php echo esc_url($settings_url); ?>" class="page-title-action">
+        <?php _e('Plugin Settings', 'woow-admin-styler'); ?>
     </a>
     
     <hr class="wp-header-end">
@@ -52,11 +51,11 @@ $settings_url = admin_url('admin.php?page=modern-admin-styler-settings');
             <?php
             $quick_actions_content = '
                 <div class="mas-flex mas-flex-wrap mas-gap-3 mas-mb-4">
-                    ' . ComponentAdapter::button(__('Visual Customizer', 'woow-admin-styler'), 'primary', [
-                        'icon' => 'admin-customizer',
-                        'attributes' => ['onclick' => 'window.open("' . esc_js($customizer_url) . '", "_blank")']
+                    ' . ComponentAdapter::button(__('Live Edit Mode', 'woow-admin-styler'), 'primary', [
+                        'icon' => 'admin-appearance',
+                        'attributes' => ['onclick' => 'window.location.href="' . esc_js($settings_url) . '"']
                     ]) . '
-                    ' . ComponentAdapter::button(__('Functional Settings', 'woow-admin-styler'), 'secondary', [
+                    ' . ComponentAdapter::button(__('Settings', 'woow-admin-styler'), 'secondary', [
                         'icon' => 'admin-settings',
                         'attributes' => ['onclick' => 'window.location.href="' . esc_js($settings_url) . '"']
                     ]) . '
@@ -69,7 +68,7 @@ $settings_url = admin_url('admin.php?page=modern-admin-styler-settings');
                         'id' => 'export-settings-btn'
                     ]) . '
                 </div>
-                <p class="description">' . __('Quick access to main plugin functions. Visual options are managed through WordPress Customizer, functional options through Settings API.', 'woow-admin-styler') . '</p>
+                <p class="description">' . __('Quick access to main plugin functions. Visual options are managed through Live Edit Mode with instant preview.', 'woow-admin-styler') . '</p>
             ';
             
             echo ComponentAdapter::metabox(

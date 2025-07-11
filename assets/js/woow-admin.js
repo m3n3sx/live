@@ -3096,47 +3096,7 @@
          * @param {string} newValue - The new value to apply
          */
         
-/**
- * Modern Admin Styler V2 - Admin JavaScript
- * Nowoczesny interfejs z animacjami i live preview
- */
 
-(function($) {
-    "use strict";
-
-    // Główny obiekt aplikacji
-    const MAS = {
-        livePreviewEnabled: true, // Always enabled for instant CSS Variables preview
-        hasChanges: false,
-        autoSaveInterval: null,
-        livePreviewTimeout: null,
-        sliderTimeout: null,
-        colorTimeout: null,
-        
-        // Funkcja pomocnicza dla kompatybilności masV2/masV2Global
-        getMasData: function() {
-            return window.masV2 || window.masV2Global || {};
-        },
-
-        init: function() {
-            this.bindEvents();
-            this.initTabs();
-            this.initColorPickers();
-            this.initSliders();
-            this.initCornerRadius();
-            this.initConditionalFields();
-            this.initFloatingFields();
-            this.initLivePreview();
-            this.checkAutoSave();
-            this.initTooltips();
-            this.updateBodyClasses(); // Ustaw klasy na starcie
-            this.initSystemMonitor(); // Inicjalizuj monitor systemu
-            this.loadCustomTemplates(); // Załaduj własne szablony
-            this.initNewFeatures(); // Inicjalizuj nowe funkcje
-            // this.initLiveEditMode(); // FAZA 1: Inicjalizuj Live Edit Mode
-            // WYŁĄCZONE - używamy LiveEditMode z live-edit-mode.js
-            // Skróty klawiszowe są obsługiwane globalnie w admin-global.js
-        },
 
         bindEvents: function() {
             // NAPRAWKA KRYTYCZNA: Ulepszone zarządzanie event handlerami z zabezpieczeniem przed duplikatami
@@ -8660,7 +8620,7 @@
                         Effects
                     </button>
                     <button class="mas-toolbar-btn" data-action="bulk-preset" title="Apply Preset to Selected">
-                        <span class="dashicons dashicons-admin-customizer"></span>
+                        <span class="dashicons dashicons-admin-appearance"></span>
                         Preset
                     </button>
                 </div>
@@ -9810,30 +9770,152 @@
     window.LiveEditEngine = LiveEditEngine;
 
     // ========================================================================
-    // 🏭 MicroPanelFactory: Bridge between LiveEditEngine and MicroPanel
+    // 🏭 MicroPanelFactory: Builds and manages the lifecycle of micro-panels.
     // ========================================================================
+    // REFACTOR: This is now a stateful singleton with an intelligent positioning
+    // engine. It ensures that only one panel is open at a time, handles closing,
+    // and dynamically calculates the panel's position to keep it within the
+    // viewport, preventing it from being cut off.
     const MicroPanelFactory = {
-        /**
-         * 🏗️ Build a micro panel for the specified element
-         */
+        currentPanel: null,
+        currentTargetId: null,
+        boundClickHandler: null,
+
+        // This handler is bound once and reused for performance.
+        handleClickOutside(event) {
+            if (this.currentPanel && !this.currentPanel.contains(event.target)) {
+                // The click was outside the currently open panel, so we close it.
+                this.close();
+                const targetElement = document.getElementById(this.currentTargetId);
+                // Also check if the click is on the original button, to let the build method handle the toggle
+                if (targetElement && !targetElement.contains(event.target)) {
+                    this.close();
+                }
+            }
+        },
+
         build(elementId) {
-            console.log(`🏗️ MicroPanelFactory: Building panel for ${elementId}`);
-            
-            const element = document.getElementById(elementId);
-            if (!element) {
-                console.warn(`⚠️ MicroPanelFactory: Element ${elementId} not found`);
+            // Feature: If the user clicks the same element again, toggle the panel off.
+            const targetElement = document.getElementById(elementId);
+            if (!targetElement) {
+                console.error(`WOOW! Error: Target element with ID #${elementId} not found.`);
+                return;
+            }
+
+            if (this.currentPanel && this.currentTargetId === elementId) {
+                this.close();
                 return;
             }
             
-            // Get configuration for this element
+            // CRITICAL: Ensure any previously open panel is closed before building a new one.
+            this.close();
+
             const config = this.getElementConfig(elementId);
             if (!config) {
-                console.warn(`⚠️ MicroPanelFactory: No configuration found for ${elementId}`);
+                console.error(`WOOW! Error: No configuration found for element ID: ${elementId}`);
                 return;
             }
             
-            // Create and display the micro panel
-            this.createMicroPanel(element, config);
+            // --- Panel Creation Logic ---
+            const panel = document.createElement('div');
+            panel.className = 'woow-micro-panel';
+            panel.id = `woow-panel-for-${elementId}`;
+            panel.innerHTML = `
+                <div class="woow-panel-header">
+                    <h3>${config.title}</h3>
+                    <button class="woow-panel-close" aria-label="Close">&times;</button>
+                </div>
+                <div class="woow-panel-content"></div>
+            `;
+
+            const panelContent = panel.querySelector('.woow-panel-content');
+            config.options.forEach(option => {
+                const currentValue = window.SettingsManager ? window.SettingsManager.get(option.key) : option.default;
+                const controlElement = this.createControlElement(option, currentValue);
+                if (controlElement) {
+                    panelContent.appendChild(controlElement);
+            }
+            });
+
+            // Add to body but keep it invisible to measure its dimensions
+            panel.style.position = 'fixed';
+            panel.style.zIndex = '999999';
+            panel.style.visibility = 'hidden';
+            panel.style.width = '320px';
+            panel.style.maxWidth = '90vw';
+            panel.style.background = 'white';
+            panel.style.border = '1px solid #ddd';
+            panel.style.borderRadius = '12px';
+            panel.style.boxShadow = '0 8px 32px rgba(0,0,0,0.12)';
+            panel.style.padding = '0';
+            panel.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+            panel.style.fontSize = '14px';
+            panel.style.color = '#333';
+            document.body.appendChild(panel);
+
+            // --- Intelligent Positioning Engine ---
+            const targetRect = targetElement.getBoundingClientRect();
+            const panelRect = panel.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const margin = 10; // Margin from viewport edges
+
+            let top, left;
+
+            // Default position: below the target element
+            top = targetRect.bottom + margin;
+            left = targetRect.left;
+
+            // Adjust horizontal position to stay in viewport
+            if (left + panelRect.width > viewportWidth - margin) {
+                left = viewportWidth - panelRect.width - margin;
+            }
+            if (left < margin) {
+                left = margin;
+            }
+
+            // Adjust vertical position to stay in viewport
+            // If it overflows below, try to place it above
+            if (top + panelRect.height > viewportHeight - margin) {
+                top = targetRect.top - panelRect.height - margin;
+            }
+            // If it still overflows above (e.g., very tall panel or target at top of screen),
+            // place it just inside the viewport top.
+            if (top < margin) {
+                top = margin;
+            }
+
+            panel.style.top = `${top}px`;
+            panel.style.left = `${left}px`;
+            panel.style.visibility = 'visible';
+            // --- End of Positioning Engine ---
+
+            this.currentPanel = panel;
+            this.currentTargetId = elementId;
+
+            // Add a listener to the panel's own close button for explicit closing.
+            panel.querySelector('.woow-panel-close').addEventListener('click', () => this.close());
+
+            // IMPORTANT: Add the "click outside" listener ONLY when the panel is open.
+            // We use a timeout to prevent the same click that opened the panel from immediately closing it.
+            setTimeout(() => {
+                this.boundClickHandler = this.handleClickOutside.bind(this);
+                document.addEventListener('click', this.boundClickHandler, { capture: true });
+            }, 0);
+        },
+
+        close() {
+            if (this.currentPanel) {
+                this.currentPanel.remove();
+                this.currentPanel = null;
+                this.currentTargetId = null;
+
+                // CRITICAL FOR PERFORMANCE: Clean up the global event listener to prevent memory leaks.
+                if (this.boundClickHandler) {
+                    document.removeEventListener('click', this.boundClickHandler, { capture: true });
+                    this.boundClickHandler = null;
+                }
+            }
         },
         
         /**
@@ -9850,130 +9932,75 @@
         },
         
         /**
-         * 🎨 Create and display micro panel
+         * 🎛️ Create control element based on option type
          */
-        createMicroPanel(element, config) {
-            // Remove any existing panels for this element
-            const existingPanels = document.querySelectorAll(`[data-panel-for="${element.id}"]`);
-            existingPanels.forEach(panel => panel.remove());
-            
-            // Create new panel
-            const panel = document.createElement('div');
-            panel.className = 'woow-micro-panel';
-            panel.setAttribute('data-panel-for', element.id);
-            
-            // Style the panel
-            this.stylePanel(panel);
-            
-            // Add content
-            this.addPanelContent(panel, element, config);
-            
-            // Position the panel
-            this.positionPanel(panel, element);
-            
-            // Add to DOM
-            document.body.appendChild(panel);
-            
-            // Setup event listeners
-            this.setupPanelEventListeners(panel, element);
-            
-            console.log(`✅ MicroPanelFactory: Panel created for ${element.id}`);
-        },
-        
-        /**
-         * 🎨 Style the micro panel
-         */
-        stylePanel(panel) {
-            panel.style.cssText = `
-                position: fixed;
-                top: 50px;
-                right: 20px;
-                width: 320px;
-                max-width: 90vw;
-                background: white;
-                border: 1px solid #ddd;
-                border-radius: 12px;
-                box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-                z-index: 999999;
-                padding: 0;
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                font-size: 14px;
-                color: #333;
-                animation: slideIn 0.3s ease-out;
-            `;
-        },
-        
-        /**
-         * 📝 Add content to the panel
-         */
-        addPanelContent(panel, element, config) {
-            const header = document.createElement('div');
-            header.className = 'woow-panel-header';
-            header.innerHTML = `
-                <span>${config.title || 'Edit Element'}</span>
-                <button class="woow-panel-close" aria-label="Close">&times;</button>
-            `;
-            
-            const body = document.createElement('div');
-            body.className = 'woow-panel-body';
-            
-            // Add controls based on configuration
-            if (config.options) {
-                this.addSimpleControls(body, config.options);
-            } else {
-                body.innerHTML = `
-                    <div class="woow-control-group">
-                        <p>Configuration: ${element.tagName}#${element.id}</p>
-                    </div>
-                `;
-            }
-            
-            panel.appendChild(header);
-            panel.appendChild(body);
-        },
-        
-        /**
-         * 🏷️ Add simple controls to panel
-         */
-        addSimpleControls(container, options) {
-            options.forEach(option => {
+        createControlElement(option, currentValue) {
                 const group = document.createElement('div');
                 group.className = 'woow-control-group';
+            group.style.cssText = `
+                margin-bottom: 16px;
+                padding: 0 16px;
+            `;
                 
                 const label = document.createElement('label');
                 label.className = 'woow-control-label';
                 label.textContent = option.label;
+            label.style.cssText = `
+                display: block;
+                font-weight: 500;
+                margin-bottom: 6px;
+                color: #555;
+            `;
                 
-                const input = this.createControlInput(option);
+            const input = this.createControlInput(option, currentValue);
                 
                 group.appendChild(label);
                 group.appendChild(input);
-                container.appendChild(group);
-            });
+            return group;
         },
         
         /**
          * 🎛️ Create control input based on type
          */
-        createControlInput(option) {
+        createControlInput(option, currentValue) {
             const input = document.createElement('input');
             input.className = 'woow-control-input';
             
             switch (option.type) {
                 case 'color':
                     input.type = 'color';
-                    input.className = 'woow-color-input';
-                    input.value = option.default || '#000000';
+                    input.value = currentValue || option.default || '#000000';
+                    input.style.cssText = `
+                        width: 100%;
+                        height: 40px;
+                        border: 1px solid #ddd;
+                        border-radius: 6px;
+                        cursor: pointer;
+                    `;
                     break;
                 case 'slider':
                     input.type = 'range';
                     input.min = option.min || 0;
                     input.max = option.max || 100;
-                    input.value = option.default || 50;
+                    input.value = currentValue || option.default || 50;
+                    input.style.cssText = `
+                        width: 100%;
+                        height: 6px;
+                        border-radius: 3px;
+                        background: #f0f0f0;
+                        outline: none;
+                    `;
                     break;
                 default:
                     input.type = 'text';
-                    input.value = option.default || '';
+                    input.value = currentValue || option.default || '';
+                    input.style.cssText = `
+                        width: 100%;
+                        padding: 8px 12px;
+                        border: 1px solid #ddd;
+                        border-radius: 6px;
+                        font-size: 14px;
+                    `;
             }
             
             // Add event listener for live changes
@@ -10002,49 +10029,6 @@
                     unit: option.unit
                 });
             }
-        },
-        
-        /**
-         * 📍 Position panel relative to element
-         */
-        positionPanel(panel, element) {
-            const rect = element.getBoundingClientRect();
-            const panelWidth = 320;
-            
-            let left = rect.right + 10;
-            let top = rect.top;
-            
-            // Adjust if panel would go off-screen
-            if (left + panelWidth > window.innerWidth) {
-                left = rect.left - panelWidth - 10;
-            }
-            
-            panel.style.left = Math.max(10, left) + 'px';
-            panel.style.top = Math.max(10, top) + 'px';
-        },
-        
-        /**
-         * 🎧 Setup event listeners for the panel
-         */
-        setupPanelEventListeners(panel, element) {
-            // Close button
-            const closeBtn = panel.querySelector('.woow-panel-close');
-            if (closeBtn) {
-                closeBtn.addEventListener('click', () => {
-                    panel.remove();
-                });
-            }
-            
-            // Click outside to close
-            setTimeout(() => {
-                const closeOnClickOutside = (e) => {
-                    if (!panel.contains(e.target) && !element.contains(e.target)) {
-                        panel.remove();
-                        document.removeEventListener('click', closeOnClickOutside);
-                    }
-                };
-                document.addEventListener('click', closeOnClickOutside);
-            }, 100);
         },
         
         /**
@@ -10347,29 +10331,89 @@
                 console.log('✅ WOOW! ConfigManager: Initialized successfully');
             }
 
-            // Inicjalizuj SettingsManager z ustawieniami z PHP
-            if (window.SettingsManager) {
-                // Najpierw spróbuj pobrać ustawienia z PHP
-                let initialSettings = {};
-                
-                if (window.woowV2Global && window.woowV2Global.settings) {
-                    initialSettings = window.woowV2Global.settings;
-                    console.log('✅ WOOW! SettingsManager: Using settings from PHP', initialSettings);
-                } else if (window.woowV2 && window.woowV2.settings) {
-                    initialSettings = window.woowV2.settings;
-                    console.log('✅ WOOW! SettingsManager: Using settings from PHP (woowV2)', initialSettings);
-                } else {
-                    // Fallback to localStorage
-                    const savedSettings = localStorage.getItem('woow_settings');
-                    initialSettings = savedSettings ? JSON.parse(savedSettings) : {};
-                    console.log('⚠️ WOOW! SettingsManager: Using settings from localStorage', initialSettings);
+            // 🚀 Initialize UnifiedSettingsManager (Enterprise-Grade)
+            // Load the UnifiedSettingsManager if available
+            if (window.UnifiedSettingsManager || window.initializeUnifiedSettingsManager) {
+                try {
+                    // Get initial settings from various sources
+                    let initialSettings = {};
+                    
+                    if (window.woowV2Global && window.woowV2Global.settings) {
+                        initialSettings = window.woowV2Global.settings;
+                        console.log('✅ WOOW! UnifiedSettingsManager: Using settings from PHP', initialSettings);
+                    } else if (window.woowV2 && window.woowV2.settings) {
+                        initialSettings = window.woowV2.settings;
+                        console.log('✅ WOOW! UnifiedSettingsManager: Using settings from PHP (woowV2)', initialSettings);
+                    } else {
+                        // Fallback to localStorage
+                        const savedSettings = localStorage.getItem('woow_settings');
+                        initialSettings = savedSettings ? JSON.parse(savedSettings) : {};
+                        console.log('⚠️ WOOW! UnifiedSettingsManager: Using settings from localStorage', initialSettings);
+                    }
+                    
+                    // Initialize UnifiedSettingsManager with initial settings
+                    if (window.initializeUnifiedSettingsManager) {
+                        await window.initializeUnifiedSettingsManager({
+                            initialSettings,
+                            debugMode: window.location.search.includes('debug=true')
+                        });
+                        console.log('✅ WOOW! UnifiedSettingsManager: Initialized successfully');
+                    } else if (window.UnifiedSettingsManager) {
+                        await window.UnifiedSettingsManager.initialize();
+                        console.log('✅ WOOW! UnifiedSettingsManager: Already initialized');
+                    }
+                    
+                    // Restore all settings after page refresh
+                    if (Object.keys(initialSettings).length > 0 && window.SettingsManager) {
+                        window.SettingsManager.restoreAllSettings();
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ WOOW! UnifiedSettingsManager initialization failed:', error);
+                    console.log('⚠️ WOOW! Falling back to legacy SettingsManager');
+                    
+                    // Fallback to legacy SettingsManager
+                    if (window.SettingsManager) {
+                        let initialSettings = {};
+                        
+                        if (window.woowV2Global && window.woowV2Global.settings) {
+                            initialSettings = window.woowV2Global.settings;
+                        } else if (window.woowV2 && window.woowV2.settings) {
+                            initialSettings = window.woowV2.settings;
+                        } else {
+                            const savedSettings = localStorage.getItem('woow_settings');
+                            initialSettings = savedSettings ? JSON.parse(savedSettings) : {};
+                        }
+                        
+                        window.SettingsManager.init(initialSettings);
+                        
+                        if (Object.keys(initialSettings).length > 0) {
+                            window.SettingsManager.restoreAllSettings();
+                        }
+                    }
                 }
-                
-                window.SettingsManager.init(initialSettings);
-                
-                // Przywróć wszystkie ustawienia po odświeżeniu strony
-                if (Object.keys(initialSettings).length > 0) {
-                    window.SettingsManager.restoreAllSettings();
+            } else {
+                // Legacy SettingsManager initialization
+                if (window.SettingsManager) {
+                    let initialSettings = {};
+                    
+                    if (window.woowV2Global && window.woowV2Global.settings) {
+                        initialSettings = window.woowV2Global.settings;
+                        console.log('✅ WOOW! SettingsManager: Using settings from PHP', initialSettings);
+                    } else if (window.woowV2 && window.woowV2.settings) {
+                        initialSettings = window.woowV2.settings;
+                        console.log('✅ WOOW! SettingsManager: Using settings from PHP (woowV2)', initialSettings);
+                    } else {
+                        const savedSettings = localStorage.getItem('woow_settings');
+                        initialSettings = savedSettings ? JSON.parse(savedSettings) : {};
+                        console.log('⚠️ WOOW! SettingsManager: Using settings from localStorage', initialSettings);
+                    }
+                    
+                    window.SettingsManager.init(initialSettings);
+                    
+                    if (Object.keys(initialSettings).length > 0) {
+                        window.SettingsManager.restoreAllSettings();
+                    }
                 }
             }
         
@@ -10392,10 +10436,20 @@
             
         } catch (error) {
             console.error('❌ WOOW! Initialization Error:', error);
+            console.error('❌ Error details:', {
+                message: error.message,
+                stack: error.stack,
+                location: window.location.href,
+                masData: typeof masV2 !== 'undefined' || typeof masV2Global !== 'undefined'
+            });
             
-            // Fallback notification
-            if (window.location.hostname.includes('local') || window.location.hostname === 'localhost') {
-                alert('WOOW! Admin Styler initialization failed. Check console for details.');
+            // Only show alert for critical errors, not missing optional components
+            if (error.message.includes('required') || error.message.includes('critical')) {
+                if (window.location.hostname.includes('local') || window.location.hostname === 'localhost') {
+                    alert('WOOW! Admin Styler initialization failed. Check console for details.');
+                }
+            } else {
+                console.log('ℹ️ WOOW! Non-critical initialization issue - system will continue with available components');
             }
         }
     });
@@ -10975,4 +11029,3 @@ jQuery(document).ready(function($) {
             await ConfigManager.init();
         }
     });
-})(jQuery);

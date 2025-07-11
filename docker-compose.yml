@@ -1,0 +1,426 @@
+version: '3.8'
+
+services:
+  # WordPress Development Environment
+  wordpress:
+    image: wordpress:6.4-php8.1-apache
+    container_name: woow_wordpress
+    depends_on:
+      - db
+      - redis
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DEBUG: 1
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_DEBUG', true);
+        define('WP_DEBUG_LOG', true);
+        define('WP_DEBUG_DISPLAY', false);
+        define('SCRIPT_DEBUG', true);
+        define('WP_REDIS_HOST', 'redis');
+        define('WP_REDIS_PORT', 6379);
+        define('WP_CACHE', true);
+    ports:
+      - "8080:80"
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./:/var/www/html/wp-content/plugins/woow-admin-styler
+      - ./docker/wordpress/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    networks:
+      - woow_network
+    restart: unless-stopped
+
+  # WordPress Testing Environment
+  wordpress_test:
+    image: wordpress:6.4-php8.1-apache
+    container_name: woow_wordpress_test
+    depends_on:
+      - db_test
+      - redis_test
+    environment:
+      WORDPRESS_DB_HOST: db_test
+      WORDPRESS_DB_USER: wordpress_test
+      WORDPRESS_DB_PASSWORD: wordpress_test
+      WORDPRESS_DB_NAME: wordpress_test
+      WORDPRESS_DEBUG: 1
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_DEBUG', true);
+        define('WP_DEBUG_LOG', true);
+        define('WP_DEBUG_DISPLAY', false);
+        define('SCRIPT_DEBUG', true);
+        define('WP_REDIS_HOST', 'redis_test');
+        define('WP_REDIS_PORT', 6379);
+        define('WP_CACHE', true);
+    ports:
+      - "8081:80"
+    volumes:
+      - wordpress_test_data:/var/www/html
+      - ./:/var/www/html/wp-content/plugins/woow-admin-styler
+      - ./docker/wordpress/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    networks:
+      - woow_network
+    restart: unless-stopped
+
+  # E2E Testing Environment
+  wordpress_e2e:
+    image: wordpress:6.4-php8.1-apache
+    container_name: woow_wordpress_e2e
+    depends_on:
+      - db_e2e
+      - redis_e2e
+    environment:
+      WORDPRESS_DB_HOST: db_e2e
+      WORDPRESS_DB_USER: wordpress_e2e
+      WORDPRESS_DB_PASSWORD: wordpress_e2e
+      WORDPRESS_DB_NAME: wordpress_e2e
+      WORDPRESS_DEBUG: 0
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_DEBUG', false);
+        define('WP_DEBUG_LOG', false);
+        define('WP_DEBUG_DISPLAY', false);
+        define('SCRIPT_DEBUG', false);
+        define('WP_REDIS_HOST', 'redis_e2e');
+        define('WP_REDIS_PORT', 6379);
+        define('WP_CACHE', true);
+    ports:
+      - "8082:80"
+    volumes:
+      - wordpress_e2e_data:/var/www/html
+      - ./:/var/www/html/wp-content/plugins/woow-admin-styler
+      - ./docker/wordpress/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    networks:
+      - woow_network
+    restart: unless-stopped
+
+  # MySQL Database - Development
+  db:
+    image: mysql:8.0
+    container_name: woow_mysql
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+      MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+    networks:
+      - woow_network
+    restart: unless-stopped
+
+  # MySQL Database - Testing
+  db_test:
+    image: mysql:8.0
+    container_name: woow_mysql_test
+    environment:
+      MYSQL_DATABASE: wordpress_test
+      MYSQL_USER: wordpress_test
+      MYSQL_PASSWORD: wordpress_test
+      MYSQL_ROOT_PASSWORD: rootpassword_test
+    volumes:
+      - db_test_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3307:3306"
+    networks:
+      - woow_network
+    restart: unless-stopped
+
+  # MySQL Database - E2E
+  db_e2e:
+    image: mysql:8.0
+    container_name: woow_mysql_e2e
+    environment:
+      MYSQL_DATABASE: wordpress_e2e
+      MYSQL_USER: wordpress_e2e
+      MYSQL_PASSWORD: wordpress_e2e
+      MYSQL_ROOT_PASSWORD: rootpassword_e2e
+    volumes:
+      - db_e2e_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3308:3306"
+    networks:
+      - woow_network
+    restart: unless-stopped
+
+  # Redis Cache - Development
+  redis:
+    image: redis:7-alpine
+    container_name: woow_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - woow_network
+    restart: unless-stopped
+
+  # Redis Cache - Testing
+  redis_test:
+    image: redis:7-alpine
+    container_name: woow_redis_test
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_test_data:/data
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - woow_network
+    restart: unless-stopped
+
+  # Redis Cache - E2E
+  redis_e2e:
+    image: redis:7-alpine
+    container_name: woow_redis_e2e
+    ports:
+      - "6381:6379"
+    volumes:
+      - redis_e2e_data:/data
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - woow_network
+    restart: unless-stopped
+
+  # phpMyAdmin for database management
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: woow_phpmyadmin
+    depends_on:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: wordpress
+      PMA_PASSWORD: wordpress
+    ports:
+      - "8090:80"
+    networks:
+      - woow_network
+    restart: unless-stopped
+
+  # Redis Commander for cache management
+  redis_commander:
+    image: rediscommander/redis-commander:latest
+    container_name: woow_redis_commander
+    depends_on:
+      - redis
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8091:8081"
+    networks:
+      - woow_network
+    restart: unless-stopped
+
+  # Node.js Test Runner
+  test_runner:
+    build:
+      context: .
+      dockerfile: docker/test-runner/Dockerfile
+    container_name: woow_test_runner
+    depends_on:
+      - wordpress_test
+      - db_test
+      - redis_test
+    environment:
+      NODE_ENV: testing
+      WP_TEST_URL: http://wordpress_test
+      DB_HOST: db_test
+      DB_USER: wordpress_test
+      DB_PASSWORD: wordpress_test
+      DB_NAME: wordpress_test
+      REDIS_HOST: redis_test
+      REDIS_PORT: 6379
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    working_dir: /app
+    networks:
+      - woow_network
+    command: tail -f /dev/null
+    restart: unless-stopped
+
+  # Performance Monitor
+  performance_monitor:
+    image: nginx:alpine
+    container_name: woow_performance_monitor
+    ports:
+      - "8092:80"
+    volumes:
+      - ./tests/dashboard:/usr/share/nginx/html
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - woow_network
+    restart: unless-stopped
+
+  # Selenium Grid Hub for E2E testing
+  selenium_hub:
+    image: selenium/hub:4.15.0
+    container_name: woow_selenium_hub
+    ports:
+      - "4444:4444"
+    environment:
+      GRID_MAX_SESSION: 16
+      GRID_BROWSER_TIMEOUT: 300
+      GRID_TIMEOUT: 300
+    networks:
+      - woow_network
+    restart: unless-stopped
+
+  # Chrome Node for Selenium
+  chrome:
+    image: selenium/node-chrome:4.15.0
+    container_name: woow_chrome
+    depends_on:
+      - selenium_hub
+    environment:
+      HUB_HOST: selenium_hub
+      HUB_PORT: 4444
+      NODE_MAX_INSTANCES: 4
+      NODE_MAX_SESSION: 4
+    volumes:
+      - /dev/shm:/dev/shm
+    networks:
+      - woow_network
+    restart: unless-stopped
+
+  # Firefox Node for Selenium
+  firefox:
+    image: selenium/node-firefox:4.15.0
+    container_name: woow_firefox
+    depends_on:
+      - selenium_hub
+    environment:
+      HUB_HOST: selenium_hub
+      HUB_PORT: 4444
+      NODE_MAX_INSTANCES: 4
+      NODE_MAX_SESSION: 4
+    volumes:
+      - /dev/shm:/dev/shm
+    networks:
+      - woow_network
+    restart: unless-stopped
+
+  # Edge Node for Selenium
+  edge:
+    image: selenium/node-edge:4.15.0
+    container_name: woow_edge
+    depends_on:
+      - selenium_hub
+    environment:
+      HUB_HOST: selenium_hub
+      HUB_PORT: 4444
+      NODE_MAX_INSTANCES: 4
+      NODE_MAX_SESSION: 4
+    volumes:
+      - /dev/shm:/dev/shm
+    networks:
+      - woow_network
+    restart: unless-stopped
+
+  # Mailhog for email testing
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: woow_mailhog
+    ports:
+      - "8093:8025"  # Web UI
+      - "1025:1025"  # SMTP
+    networks:
+      - woow_network
+    restart: unless-stopped
+
+  # Elasticsearch for advanced logging
+  elasticsearch:
+    image: elasticsearch:8.11.0
+    container_name: woow_elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - woow_network
+    restart: unless-stopped
+
+  # Kibana for log visualization
+  kibana:
+    image: kibana:8.11.0
+    container_name: woow_kibana
+    depends_on:
+      - elasticsearch
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      - woow_network
+    restart: unless-stopped
+
+  # Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: woow_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+    networks:
+      - woow_network
+    restart: unless-stopped
+
+  # Grafana for metrics visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: woow_grafana
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - woow_network
+    restart: unless-stopped
+
+volumes:
+  wordpress_data:
+  wordpress_test_data:
+  wordpress_e2e_data:
+  db_data:
+  db_test_data:
+  db_e2e_data:
+  redis_data:
+  redis_test_data:
+  redis_e2e_data:
+  elasticsearch_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  woow_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16 

@@ -1,33 +1,39 @@
 <?php
 /**
- * Enterprise Asset Loader Service
+ * Modern Admin Styler V2 - Performance-Optimized Asset Loader
  * 
- * STRATEGIC OPTIMIZATION: Uses static CSS files with inline CSS variables
- * for optimal performance and browser caching.
- * 
- * @package ModernAdminStyler\Services
- * @version 2.3.0 - Enterprise Optimization
+ * @package ModernAdminStyler
+ * @version 4.0.0 - Performance Optimized
  */
 
 namespace ModernAdminStyler\Services;
 
 class AssetLoader {
-    
     private $plugin_url;
+    private $plugin_path;
     private $plugin_version;
     private $settings_manager;
     private $css_generator;
+    private $is_production;
+    private $performance_budget;
     
     public function __construct($plugin_url, $plugin_version, $settings_manager = null, $css_generator = null) {
-        $this->plugin_url = $plugin_url;
+        $this->plugin_url = trailingslashit($plugin_url);
+        $this->plugin_path = dirname(dirname(dirname(__FILE__))) . '/';
         $this->plugin_version = $plugin_version;
         $this->settings_manager = $settings_manager;
         $this->css_generator = $css_generator;
+        $this->is_production = !defined('WP_DEBUG') || !WP_DEBUG;
+        $this->performance_budget = [
+            'maxMemory' => 15 * 1024 * 1024, // 15MB
+            'maxLoadTime' => 1500, // 1.5s
+            'maxBundleSize' => 200 * 1024, // 200KB gzipped
+        ];
     }
-    
+
     /**
-     * 🎯 Loads assets for plugin settings pages
-     * ENTERPRISE ARCHITECTURE: Static CSS + Inline variables
+     * 🚀 PERFORMANCE-OPTIMIZED: Loads assets for MAS V2 admin pages
+     * Features: Critical CSS, Lazy Loading, Service Worker, Code Splitting
      */
     public function enqueueAdminAssets($hook) {
         $mas_pages = [
@@ -42,141 +48,357 @@ class AssetLoader {
         if (!in_array($hook, $mas_pages)) {
             return;
         }
+
+        // 🎯 STEP 0: Early performance setup
+        $this->setupPerformanceOptimizations();
         
-        // 🎨 STEP 0: Ensure dashicons are loaded for all admin pages
+        // 🎨 STEP 1: Load critical CSS (above-the-fold)
+        $this->loadCriticalCSS();
+        
+        // 🚀 STEP 2: Load core JavaScript (essential functionality)
+        $this->loadCoreJavaScript();
+        
+        // 📦 STEP 3: Register Service Worker for caching
+        $this->registerServiceWorker();
+        
+        // 🎭 STEP 4: Lazy load advanced features
+        $this->setupLazyLoading();
+        
+        // 📊 STEP 5: Performance monitoring
+        $this->setupPerformanceMonitoring();
+    }
+    
+    /**
+     * 🌐 PERFORMANCE-OPTIMIZED: Loads global assets for all wp-admin pages
+     * Lightweight version with minimal footprint
+     */
+    public function enqueueGlobalAssets($hook) {
+        // Skip login pages but allow all admin pages including MAS pages
+        if (!is_admin() || $this->isLoginPage()) {
+            return;
+        }
+        
+        // Load minimal global assets including theme manager
+        $this->loadMinimalGlobalAssets();
+        
+        // Register Service Worker globally
+        $this->registerServiceWorker();
+    }
+
+    /**
+     * 🎯 Setup performance optimizations
+     */
+    private function setupPerformanceOptimizations() {
+        // Ensure dashicons are loaded
         wp_enqueue_style('dashicons');
         
-        // STEP 1: Load main static CSS file (100% cacheable)
+        // Add early performance hints
+        add_action('wp_head', [$this, 'addPerformanceHints'], 1);
+        
+        // Preload critical resources
+        add_action('wp_head', [$this, 'preloadCriticalResources'], 2);
+    }
+
+    /**
+     * 🎨 Load critical CSS with inlining for performance
+     */
+    private function loadCriticalCSS() {
+        $css_suffix = $this->is_production ? '.min' : '';
+        $css_dir = $this->is_production ? 'dist/' : '';
+        
+        // Load core CSS
         wp_enqueue_style(
-            'mas-v2-main',
-            $this->plugin_url . 'assets/css/woow-main.css',
+            'woow-core',
+            $this->plugin_url . 'assets/css/' . $css_dir . 'woow-core' . $css_suffix . '.css',
             ['dashicons'],
-            $this->plugin_version
+            $this->plugin_version,
+            'all'
         );
         
-        // STEP 1.5: Load WOOW! Semantic Theme Architecture (v3.0.0-beta.1)
-        wp_enqueue_style(
-            'woow-semantic-themes',
-            $this->plugin_url . 'assets/css/woow-semantic-themes.css',
-            ['mas-v2-main'],
-            $this->plugin_version
-        );
+        // Inline critical CSS for above-the-fold content
+        if ($this->is_production) {
+            $critical_css_path = $this->plugin_path . 'assets/css/dist/woow-critical.min.css';
+            if (file_exists($critical_css_path)) {
+                $critical_css = file_get_contents($critical_css_path);
+                if ($critical_css) {
+                    wp_add_inline_style('woow-core', $critical_css);
+                }
+            }
+        }
         
-        // STEP 2: Generate and inject dynamic CSS variables (minimal inline CSS)
+        // Generate and inject dynamic CSS variables
         if ($this->settings_manager && $this->css_generator) {
             $settings = $this->settings_manager->getSettings();
             $dynamic_css = $this->css_generator->generate($settings);
-            wp_add_inline_style('mas-v2-main', $dynamic_css);
+            if ($dynamic_css) {
+                wp_add_inline_style('woow-core', $dynamic_css);
+            }
         }
+    }
+
+    /**
+     * 🚀 Load core JavaScript with optimization
+     */
+    private function loadCoreJavaScript() {
+        $js_suffix = $this->is_production ? '.min' : '';
+        $js_dir = $this->is_production ? 'dist/' : '';
         
-        // Load interface utilities CSS
-        wp_enqueue_style(
-            'mas-v2-utilities',
-            $this->plugin_url . 'assets/css/woow-utilities.css',
-            ['mas-v2-main'],
-            $this->plugin_version
-        );
-        
-        // STEP 3: Load WOOW Admin JavaScript (contains MAS object)
+        // Load UnifiedSettingsManager (essential)
         wp_enqueue_script(
-            'woow-admin',
-            $this->plugin_url . 'assets/js/woow-admin.js',
-            ['jquery', 'wp-color-picker'],
-            $this->plugin_version,
-            true
-        );
-        
-        // Load V3 Data-Driven JavaScript
-        wp_enqueue_script(
-            'mas-v2-admin',
-            $this->plugin_url . 'assets/js/admin-modern-v3.js',
-            ['jquery', 'wp-color-picker', 'woow-admin'],
-            $this->plugin_version,
-            true
-        );
-        
-        // 🎯 LIVE EDIT MODE: Revolutionary contextual editing system
-        wp_enqueue_script(
-            'mas-v2-live-edit',
-            $this->plugin_url . 'assets/js/live-edit-mode.js',
-            ['jquery', 'mas-v2-admin'],
-            $this->plugin_version,
-            true
-        );
-        
-        wp_enqueue_style(
-            'mas-v2-live-edit-css',
-            $this->plugin_url . 'assets/css/live-edit-mode.css',
-            ['mas-v2-main'],
-            $this->plugin_version
-        );
-        
-        // MAS Live Edit Bridge - connects MAS object with Live Edit Mode
-        wp_enqueue_script(
-            'mas-v2-live-edit-bridge',
-            $this->plugin_url . 'assets/js/mas-live-edit-bridge.js',
-            ['woow-admin', 'mas-v2-admin', 'mas-v2-live-edit'],
-            $this->plugin_version,
-            true
-        );
-        
-        // Localize script for Live Edit Mode
-        wp_localize_script('mas-v2-live-edit', 'masLiveEdit', [
-            'ajaxUrl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('mas_live_edit_nonce'),
-            'debug' => defined('WP_DEBUG') && WP_DEBUG,
-            'currentUser' => wp_get_current_user()->display_name,
-            'capabilities' => [
-                'manage_options' => current_user_can('manage_options'),
-                'edit_theme_options' => current_user_can('edit_theme_options')
-            ]
-        ]);
-        
-        // 🎯 Toast Notifications System (Faza 5)
-        wp_enqueue_script(
-            'mas-toast-notifications',
-            $this->plugin_url . 'assets/js/toast-notifications.js',
+            'woow-unified-settings-manager',
+            $this->plugin_url . 'assets/js/' . $js_dir . 'unified-settings-manager' . $js_suffix . '.js',
             ['jquery'],
             $this->plugin_version,
             true
         );
         
-        // 🎨 Preset Manager System (Enterprise Preset System)
+        // 🎨 KRYTYCZNE: Ładuj live-edit-mode.js dla funkcjonalności Live Edit
         wp_enqueue_script(
-            'mas-preset-manager',
-            $this->plugin_url . 'assets/js/preset-manager.js',
-            ['jquery', 'wp-api-fetch'],
+            'woow-live-edit-mode',
+            $this->plugin_url . 'assets/js/live-edit-mode.js',
+            ['jquery'],
             $this->plugin_version,
             true
         );
         
-        // Localize script for Preset Manager
-        wp_localize_script('mas-preset-manager', 'masPresetConfig', [
-            'apiUrl' => rest_url('modern-admin-styler/v2/presets'),
-            'nonce' => wp_create_nonce('wp_rest'),
-            'strings' => [
-                'saveSuccess' => __('Preset saved successfully!', 'woow-admin-styler'),
-                'applySuccess' => __('Preset applied successfully!', 'woow-admin-styler'),
-                'deleteConfirm' => __('Are you sure you want to delete this preset?', 'woow-admin-styler'),
-                'exportSuccess' => __('Preset exported successfully!', 'woow-admin-styler'),
-                'importSuccess' => __('Preset imported successfully!', 'woow-admin-styler'),
-            ]
-        ]);
+        // Load core WOOW functionality
+        wp_enqueue_script(
+            'woow-core',
+            $this->plugin_url . 'assets/js/' . $js_dir . 'woow-core' . $js_suffix . '.js',
+            ['jquery', 'woow-unified-settings-manager', 'woow-live-edit-mode'],
+            $this->plugin_version,
+            true
+        );
         
-        wp_enqueue_style('wp-color-picker');
+        // Localize with optimized data
+        $this->localizeScripts();
     }
-    
+
     /**
-     * 🌐 Loads global assets for all wp-admin pages
-     * ENTERPRISE ARCHITECTURE: Static CSS + Inline variables
+     * 📦 Register Service Worker for aggressive caching
      */
-    public function enqueueGlobalAssets($hook) {
-        // Skip login pages
-        if (!is_admin() || $this->isLoginPage()) {
-            return;
+    private function registerServiceWorker() {
+        $js_suffix = $this->is_production ? '.min' : '';
+        $js_dir = $this->is_production ? 'dist/' : '';
+        
+        // Register service worker script
+        wp_enqueue_script(
+            'woow-service-worker-register',
+            $this->plugin_url . 'assets/js/woow-service-worker-register.js',
+            [],
+            $this->plugin_version,
+            true
+        );
+        
+        // Add service worker registration
+        $sw_script = "
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('" . $this->plugin_url . "assets/js/" . $js_dir . "woow-service-worker" . $js_suffix . ".js')
+                .then(function(registration) {
+                    console.log('🚀 WOOW Service Worker registered:', registration.scope);
+                })
+                .catch(function(error) {
+                    console.log('❌ WOOW Service Worker registration failed:', error);
+                });
+            });
+        }";
+        
+        wp_add_inline_script('woow-service-worker-register', $sw_script);
+    }
+
+    /**
+     * 🎭 Setup lazy loading for advanced features
+     */
+    private function setupLazyLoading() {
+        // Features CSS - lazy loaded
+        wp_register_style(
+            'woow-features',
+            $this->plugin_url . 'assets/css/' . ($this->is_production ? 'dist/' : '') . 'woow-features' . ($this->is_production ? '.min' : '') . '.css',
+            ['woow-core'],
+            $this->plugin_version,
+            'all'
+        );
+        
+        // Add lazy loading script
+        $lazy_loading_script = "
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lazy load features when needed
+            const loadFeatures = function() {
+                if (!document.getElementById('woow-features-css')) {
+                    const link = document.createElement('link');
+                    link.id = 'woow-features-css';
+                    link.rel = 'stylesheet';
+                    link.href = '" . wp_style_is('woow-features', 'registered') ? wp_styles()->registered['woow-features']->src : '' . "';
+                    document.head.appendChild(link);
+                }
+            };
+            
+            // Load features on user interaction or after 3 seconds
+            const events = ['mousedown', 'touchstart', 'keydown'];
+            const loadOnInteraction = function() {
+                loadFeatures();
+                events.forEach(event => document.removeEventListener(event, loadOnInteraction));
+            };
+            
+            events.forEach(event => document.addEventListener(event, loadOnInteraction));
+            setTimeout(loadFeatures, 3000);
+        });";
+        
+        wp_add_inline_script('woow-core', $lazy_loading_script);
+    }
+
+    /**
+     * 📊 Setup performance monitoring
+     */
+    private function setupPerformanceMonitoring() {
+        if (!$this->is_production) {
+            $monitoring_script = "
+            document.addEventListener('DOMContentLoaded', function() {
+                if (window.WOOW && window.WOOW.logger) {
+                    const memory = performance.memory;
+                    if (memory) {
+                        const memoryMB = memory.usedJSHeapSize / 1024 / 1024;
+                        if (memoryMB > 15) {
+                            WOOW.logger.warn('High memory usage detected: ' + memoryMB.toFixed(2) + 'MB');
+                        }
+                    }
+                    
+                    const loadTime = performance.now();
+                    if (loadTime > 1500) {
+                        WOOW.logger.warn('Slow page load detected: ' + loadTime.toFixed(2) + 'ms');
+                    }
+                    
+                    WOOW.logger.info('Performance metrics:', {
+                        loadTime: loadTime.toFixed(2) + 'ms',
+                        memory: memory ? (memory.usedJSHeapSize / 1024 / 1024).toFixed(2) + 'MB' : 'N/A'
+                    });
+                }
+            });";
+            
+            wp_add_inline_script('woow-core', $monitoring_script);
+        }
+    }
+
+    /**
+     * 🌐 Load minimal global assets
+     */
+    private function loadMinimalGlobalAssets() {
+        wp_enqueue_style('dashicons');
+        
+        // Load minimal core CSS for global pages
+        $css_suffix = $this->is_production ? '.min' : '';
+        $css_dir = $this->is_production ? 'dist/' : '';
+        
+        wp_enqueue_style(
+            'woow-core-global',
+            $this->plugin_url . 'assets/css/' . $css_dir . 'woow-core' . $css_suffix . '.css',
+            ['dashicons'],
+            $this->plugin_version,
+            'all'
+        );
+        
+        // 🎨 KRYTYCZNE: Ładuj admin-global.js zawierający ThemeManager dla przełącznika trybu jasny/ciemny
+        wp_enqueue_script(
+            'woow-admin-global',
+            $this->plugin_url . 'assets/js/admin-global.js',
+            ['jquery'],
+            $this->plugin_version,
+            true
+        );
+        
+        // Load core JS with minimal dependencies
+        wp_enqueue_script(
+            'woow-core-global',
+            $this->plugin_url . 'assets/js/' . ($this->is_production ? 'dist/' : '') . 'woow-core' . ($this->is_production ? '.min' : '') . '.js',
+            ['jquery', 'woow-admin-global'],
+            $this->plugin_version,
+            true
+        );
+        
+        // Localize global data
+        wp_localize_script('woow-core-global', 'woowV2Global', [
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'restUrl' => rest_url('woow/v1/'),
+            'restNonce' => wp_create_nonce('wp_rest'),
+            'ajaxNonce' => wp_create_nonce('mas_live_edit_nonce'),
+            'debug' => !$this->is_production,
+            'version' => $this->plugin_version,
+            'globalMode' => true,
+            'pluginUrl' => $this->plugin_url,
+            'isProduction' => $this->is_production
+        ]);
+    }
+
+    /**
+     * 🎯 Localize scripts with optimized data
+     */
+    private function localizeScripts() {
+        $localize_data = [
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'restUrl' => rest_url('woow/v1/'),
+            'restNonce' => wp_create_nonce('wp_rest'),
+            'ajaxNonce' => wp_create_nonce('mas_live_edit_nonce'),
+            'debug' => !$this->is_production,
+            'version' => $this->plugin_version,
+            'pluginUrl' => $this->plugin_url,
+            'isProduction' => $this->is_production,
+            'currentUser' => wp_get_current_user()->display_name,
+            'capabilities' => [
+                'manage_options' => current_user_can('manage_options'),
+                'edit_theme_options' => current_user_can('edit_theme_options')
+            ],
+            'performance' => [
+                'budget' => $this->performance_budget,
+                'monitoring' => !$this->is_production
+            ]
+        ];
+        
+        // Add settings only if available
+        if ($this->settings_manager) {
+            $localize_data['settings'] = $this->settings_manager->getSettings();
         }
         
-        // Avoid double loading on settings pages
+        wp_localize_script('woow-core', 'woowV2Global', $localize_data);
+        wp_localize_script('woow-unified-settings-manager', 'woowV2Global', $localize_data);
+    }
+
+    /**
+     * 🔗 Add performance hints for better loading
+     */
+    public function addPerformanceHints() {
+        // DNS prefetch for external resources
+        echo '<link rel="dns-prefetch" href="//fonts.googleapis.com">' . "\n";
+        echo '<link rel="dns-prefetch" href="//fonts.gstatic.com">' . "\n";
+        
+        // Preconnect to critical origins
+        echo '<link rel="preconnect" href="' . admin_url() . '" crossorigin>' . "\n";
+        
+        // Resource hints for better performance
+        echo '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">' . "\n";
+    }
+
+    /**
+     * 📦 Preload critical resources
+     */
+    public function preloadCriticalResources() {
+        $css_suffix = $this->is_production ? '.min' : '';
+        $css_dir = $this->is_production ? 'dist/' : '';
+        $js_suffix = $this->is_production ? '.min' : '';
+        $js_dir = $this->is_production ? 'dist/' : '';
+        
+        // Preload critical CSS
+        echo '<link rel="preload" href="' . $this->plugin_url . 'assets/css/' . $css_dir . 'woow-core' . $css_suffix . '.css" as="style">' . "\n";
+        
+        // Preload critical JS
+        echo '<link rel="preload" href="' . $this->plugin_url . 'assets/js/' . $js_dir . 'woow-core' . $js_suffix . '.js" as="script">' . "\n";
+        echo '<link rel="preload" href="' . $this->plugin_url . 'assets/js/' . $js_dir . 'unified-settings-manager' . $js_suffix . '.js" as="script">' . "\n";
+    }
+
+    /**
+     * 🎯 Check if current page is a MAS page
+     */
+    private function isMASPage($hook) {
         $mas_pages = [
             'toplevel_page_mas-v2-general',
             'modern-admin_page_mas-v2-general',
@@ -186,247 +408,103 @@ class AssetLoader {
             'modern-admin_page_mas-v2-advanced'
         ];
         
-        if (in_array($hook, $mas_pages)) {
-            return; // CSS will be loaded by enqueueAdminAssets()
-        }
-        
-        // 🎨 STEP 0: Ensure dashicons are loaded for all admin pages
-        wp_enqueue_style('dashicons');
-        
-        // STEP 1: Load main static CSS file (100% cacheable)
-        wp_enqueue_style(
-            'mas-v2-main',
-            $this->plugin_url . 'assets/css/woow-main.css',
-            ['dashicons'],
-            $this->plugin_version
-        );
-        
-        // STEP 1.5: Load WOOW! Semantic Theme Architecture (v3.0.0-beta.1)
-        wp_enqueue_style(
-            'woow-semantic-themes',
-            $this->plugin_url . 'assets/css/woow-semantic-themes.css',
-            ['mas-v2-main'],
-            $this->plugin_version
-        );
-        
-        // STEP 2: Generate and inject dynamic CSS variables (minimal inline CSS)
-        if ($this->settings_manager && $this->css_generator) {
-            $settings = $this->settings_manager->getSettings();
-            $dynamic_css = $this->css_generator->generate($settings);
-            wp_add_inline_style('mas-v2-main', $dynamic_css);
-        }
-        
-        // STEP 3: Load WOOW Admin JavaScript (contains MAS object)
-        wp_enqueue_script(
-            'woow-admin-global',
-            $this->plugin_url . 'assets/js/woow-admin.js',
-            ['jquery'],
-            $this->plugin_version,
-            true
-        );
-        
-        // Load global JavaScript
-        wp_enqueue_script(
-            'mas-v2-global',
-            $this->plugin_url . 'assets/js/admin-global.js',
-            ['jquery', 'woow-admin-global'],
-            $this->plugin_version,
-            true
-        );
-        
-        // 🎯 LIVE EDIT MODE: Load globally for ALL admin pages
-        wp_enqueue_script(
-            'mas-v2-live-edit-global',
-            $this->plugin_url . 'assets/js/live-edit-mode.js',
-            ['jquery', 'mas-v2-global'],
-            $this->plugin_version,
-            true
-        );
-        
-        wp_enqueue_style(
-            'mas-v2-live-edit-css-global',
-            $this->plugin_url . 'assets/css/live-edit-mode.css',
-            ['mas-v2-main'],
-            $this->plugin_version
-        );
-        
-        // MAS Live Edit Bridge - global availability
-        wp_enqueue_script(
-            'mas-v2-live-edit-bridge-global',
-            $this->plugin_url . 'assets/js/mas-live-edit-bridge.js',
-            ['woow-admin-global', 'mas-v2-global', 'mas-v2-live-edit-global'],
-            $this->plugin_version,
-            true
-        );
-        
-        // Toast Notifications System - global availability
-        wp_enqueue_script(
-            'mas-v2-toast-notifications-global',
-            $this->plugin_url . 'assets/js/toast-notifications.js',
-            [],
-            $this->plugin_version,
-            true
-        );
-        
-        // 🔧 WOOW! Compatibility Layer (v3.0.0-beta.1) - Global availability
-        // Ensures 100% compatibility between mas-* and woow-* variables
-        wp_enqueue_script(
-            'woow-compatibility-layer-global',
-            $this->plugin_url . 'assets/js/woow-compatibility-layer.js',
-            ['jquery'],
-            $this->plugin_version,
-            true
-        );
-        
-        // Localize script for Live Edit Mode - global context
-        wp_localize_script('mas-v2-live-edit-global', 'masLiveEdit', [
-            'ajaxUrl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('mas_live_edit_nonce'),
-            'debug' => defined('WP_DEBUG') && WP_DEBUG,
-            'currentUser' => wp_get_current_user()->display_name,
-            'globalMode' => true, // Flag to indicate global mode
-            'capabilities' => [
-                'manage_options' => current_user_can('manage_options'),
-                'edit_theme_options' => current_user_can('edit_theme_options')
-            ],
-            'settings' => $this->settings_manager ? $this->settings_manager->getSettings() : []
-        ]);
-        
-        // NAPRAWKA: Dodaj zmienne dla Live Edit Mode
-        wp_localize_script('mas-v2-live-edit-global', 'masNonce', wp_create_nonce('mas_live_edit_nonce'));
-        wp_localize_script('mas-v2-live-edit-global', 'masV2Debug', defined('WP_DEBUG') && WP_DEBUG);
-        wp_localize_script('mas-v2-live-edit-global', 'ajaxurl', admin_url('admin-ajax.php'));
+        return in_array($hook, $mas_pages);
     }
-    
+
     /**
-     * 🔧 Sets dependencies for AssetLoader
-     * Called by ServiceFactory to inject required services
+     * 🔒 Check if current page is login page
+     */
+    private function isLoginPage() {
+        return in_array($GLOBALS['pagenow'], ['wp-login.php', 'wp-register.php']);
+    }
+
+    /**
+     * 🔧 Set dependencies
      */
     public function setDependencies($settings_manager, $css_generator) {
         $this->settings_manager = $settings_manager;
         $this->css_generator = $css_generator;
     }
-    
+
     /**
-     * 🔒 Check if we're on login page
-     */
-    private function isLoginPage() {
-        return in_array($GLOBALS['pagenow'], ['wp-login.php', 'wp-register.php']);
-    }
-    
-    /**
-     * 🛡️ Early loading protection to prevent visual glitches
+     * 🛡️ Add early loading protection to prevent FOUC
      */
     public function addEarlyLoadingProtection() {
-        ?>
-        <style>
-        .mas-loading,
-        .mas-loading * {
-            transition: none !important;
-            animation: none !important;
-        }
-        
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
+        $protection_css = '
+        <style id="woow-loading-protection">
+            body.wp-admin {
+                visibility: hidden;
+                opacity: 0;
+                transition: opacity 0.3s ease-in-out;
             }
-        }
+            body.wp-admin.woow-loaded {
+                visibility: visible;
+                opacity: 1;
+            }
         </style>
         <script>
-        (function() {
-            'use strict';
-            
-            // Add loading class immediately
-            document.documentElement.classList.add('mas-loading');
-            if (document.body) {
-                document.body.classList.add('mas-loading');
-            } else {
-                document.addEventListener('DOMContentLoaded', function() {
-                    document.body.classList.add('mas-loading');
-                });
-            }
-            
-            // Remove loading class after DOM is ready and styles are applied
-            function removeLoadingClass() {
+            document.addEventListener("DOMContentLoaded", function() {
+                document.body.classList.add("woow-loaded");
                 setTimeout(function() {
-                    document.documentElement.classList.remove('mas-loading');
-                    if (document.body) {
-                        document.body.classList.remove('mas-loading');
+                    var protectionStyle = document.getElementById("woow-loading-protection");
+                    if (protectionStyle) {
+                        protectionStyle.remove();
                     }
-                    
-                    // Trigger custom event for other scripts
-                    if (window.CustomEvent) {
-                        document.dispatchEvent(new CustomEvent('masLoadingComplete'));
-                    }
-                }, 300); // Small delay to ensure CSS is processed
-            }
-            
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', removeLoadingClass);
-            } else {
-                removeLoadingClass();
-            }
-        })();
-        </script>
-        <?php
+                }, 300);
+            });
+        </script>';
+        
+        echo $protection_css;
     }
-    
+
     /**
-     * 📊 Get asset loading statistics
-     * Useful for debugging and performance monitoring
+     * 📊 Get loading statistics
      */
     public function getLoadingStats() {
+        global $wp_scripts, $wp_styles;
+        
         $stats = [
-            'css_files_loaded' => 0,
-            'js_files_loaded' => 0,
-            'inline_css_size' => 0,
-            'total_assets' => 0,
-            'cache_strategy' => 'static_css_with_inline_variables',
-            'optimization_level' => 'enterprise'
+            'css_files' => 0,
+            'js_files' => 0,
+            'total_size' => 0,
+            'performance_budget' => $this->performance_budget,
+            'is_production' => $this->is_production
         ];
         
-        // Count loaded assets
-        global $wp_styles, $wp_scripts;
-        
-        if ($wp_styles) {
-            foreach ($wp_styles->queue as $handle) {
-                if (strpos($handle, 'mas-v2') !== false) {
-                    $stats['css_files_loaded']++;
+        // Count CSS files
+        if (isset($wp_styles->done)) {
+            foreach ($wp_styles->done as $handle) {
+                if (strpos($handle, 'woow') !== false || strpos($handle, 'mas') !== false) {
+                    $stats['css_files']++;
                 }
             }
         }
         
-        if ($wp_scripts) {
-            foreach ($wp_scripts->queue as $handle) {
-                if (strpos($handle, 'mas-v2') !== false) {
-                    $stats['js_files_loaded']++;
+        // Count JS files
+        if (isset($wp_scripts->done)) {
+            foreach ($wp_scripts->done as $handle) {
+                if (strpos($handle, 'woow') !== false || strpos($handle, 'mas') !== false) {
+                    $stats['js_files']++;
                 }
             }
         }
-        
-        $stats['total_assets'] = $stats['css_files_loaded'] + $stats['js_files_loaded'];
         
         return $stats;
     }
-}
 
-/**
- * 🚀 ENTERPRISE ASSET LOADING COMPLETE
- * 
- * PERFORMANCE OPTIMIZATIONS:
- * ✅ Static CSS files (100% browser cacheable)
- * ✅ Minimal inline CSS variables (10-20 lines max)
- * ✅ Eliminated dynamic CSS file generation
- * ✅ wp_add_inline_style for optimal WordPress integration
- * ✅ Early loading protection against FOUC
- * ✅ Reduced motion support for accessibility
- * 
- * ARCHITECTURE BENEFITS:
- * ✅ Clean separation of static vs dynamic content
- * ✅ Enterprise-grade caching strategy
- * ✅ Zero server-side CSS generation overhead
- * ✅ Lightning-fast subsequent page loads
- * ✅ Professional asset management
- */ 
+    /**
+     * 🚀 Get performance metrics
+     */
+    public function getPerformanceMetrics() {
+        $metrics = [
+            'memory_usage' => memory_get_usage(true),
+            'memory_peak' => memory_get_peak_usage(true),
+            'execution_time' => microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'],
+            'performance_budget' => $this->performance_budget,
+            'is_production' => $this->is_production,
+            'optimization_level' => $this->is_production ? 'production' : 'development'
+        ];
+        
+        return $metrics;
+    }
+} 

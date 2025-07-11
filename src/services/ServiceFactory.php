@@ -4,9 +4,10 @@
  * 
  * Implementuje Factory Pattern + Dependency Injection
  * Centralne zarządzanie wszystkimi serwisami wtyczki
+ * UPDATED: Consolidated architecture with 8 core services
  * 
  * @package ModernAdminStyler
- * @version 2.0
+ * @version 2.2.0
  */
 
 namespace ModernAdminStyler\Services;
@@ -16,6 +17,11 @@ class ServiceFactory {
     private static $instance = null;
     private $services = [];
     private $config = [];
+    
+    /**
+     * @var array Tracks services currently being resolved to detect circular dependencies
+     */
+    private $resolving = [];
     
     /**
      * 🏭 Singleton Pattern
@@ -33,131 +39,255 @@ class ServiceFactory {
             'plugin_version' => MAS_V2_VERSION,
             'plugin_dir' => MAS_V2_PLUGIN_DIR
         ];
+        
+        // Enable external service management for CoreEngine
+        if (!defined('MAS_V2_EXTERNAL_SERVICE_MANAGEMENT')) {
+            define('MAS_V2_EXTERNAL_SERVICE_MANAGEMENT', true);
+        }
     }
     
     /**
      * 🔧 Tworzy lub zwraca instancję serwisu
+     * 🛡️ ENHANCED: Circular dependency detection
      */
     public function get($service_name) {
-        if (!isset($this->services[$service_name])) {
+        // Return existing service if already created
+        if (isset($this->services[$service_name])) {
+            return $this->services[$service_name];
+        }
+        
+        // Check for circular dependency before attempting to create the service
+        if (isset($this->resolving[$service_name])) {
+            $resolutionPath = implode(' -> ', array_keys($this->resolving));
+            throw new \Exception(sprintf(
+                'Circular dependency detected while resolving service "%s". Resolution path: %s -> %s',
+                $service_name,
+                $resolutionPath,
+                $service_name
+            ));
+        }
+        
+        // Add the service to the resolving stack
+        $this->resolving[$service_name] = true;
+        
+        try {
+            // Create the service
             $this->services[$service_name] = $this->create($service_name);
+            
+            // Register service with CoreEngine if it's a core service
+            $this->registerServiceWithCoreEngine($service_name, $this->services[$service_name]);
+            
+        } finally {
+            // CRITICAL: Always remove the service from the resolving stack
+            unset($this->resolving[$service_name]);
         }
         
         return $this->services[$service_name];
     }
     
     /**
+     * 🔗 Register service with CoreEngine
+     */
+    private function registerServiceWithCoreEngine($service_name, $service_instance) {
+        // Only register if CoreEngine exists and service is a core service
+        if (isset($this->services['core_engine']) && $this->isCoreService($service_name)) {
+            $this->services['core_engine']->registerService($service_name, $service_instance);
+        }
+    }
+    
+    /**
+     * 🔍 Check if service is a core service
+     */
+    private function isCoreService($service_name) {
+        $core_services = [
+            'settings_manager',
+            'cache_manager',
+            'metrics_collector',
+            'style_generator',
+            'security_manager',
+            'admin_interface',
+            'api_manager',
+            'ajax_handler',
+            'asset_loader',
+            'preset_manager'
+        ];
+        
+        return in_array($service_name, $core_services);
+    }
+    
+    /**
      * 🏗️ Factory Method - tworzy serwisy z dependency injection
+     * UPDATED: New consolidated architecture
      */
     private function create($service_name) {
         switch ($service_name) {
+            
+            // === CORE ENGINE (ORCHESTRATOR) ===
+            case 'core_engine':
+                $coreEngine = CoreEngine::getInstance();
+                // Don't initialize immediately - services will be registered first
+                return $coreEngine;
+                
+            // === CACHE MANAGEMENT ===
+            case 'cache_manager':
+                return new CacheManager(
+                    $this->get('core_engine')
+                );
+                
+            // === PERFORMANCE MONITORING ===
+            case 'metrics_collector':
+                return new MetricsCollector(
+                    $this->get('core_engine')
+                );
+                
+            // === STYLE GENERATION ===
+            case 'style_generator':
+                return new StyleGenerator(
+                    $this->get('core_engine')
+                );
+                
+            // === SECURITY MANAGEMENT ===
+            case 'security_manager':
+                return new SecurityManager(
+                    $this->get('core_engine')
+                );
+                
+            // === ADMIN INTERFACE ===
+            case 'admin_interface':
+                return new AdminInterface(
+                    $this->get('core_engine')
+                );
+                
+            // === API MANAGEMENT ===
+            case 'api_manager':
+                return new APIManager(
+                    $this->get('cache_manager'),
+                    $this->get('security_manager'),
+                    $this->get('metrics_collector'),
+                    $this->get('settings_manager'),
+                    $this->get('preset_manager')
+                );
+                
+            // === SETTINGS MANAGEMENT ===
             case 'settings_manager':
-                return new SettingsManager();
+                // ComponentAdapter integrated into SettingsManager
+                return new SettingsManager(
+                    $this->get('core_engine')
+                );
+                
+            // === AUXILIARY SERVICES ===
+            case 'ajax_handler':
+                return new AjaxHandler(
+                    $this->get('settings_manager')
+                );
                 
             case 'asset_loader':
-                // Enterprise AssetLoader with CSS optimization dependencies
                 return new AssetLoader(
                     $this->config['plugin_url'],
                     $this->config['plugin_version'],
                     $this->get('settings_manager'),
-                    $this->get('css_generator')
+                    $this->get('style_generator')
                 );
                 
-            case 'ajax_handler':
-                return new AjaxHandler(
-                    $this->get('settings_manager') // Dependency Injection
-                );
-                
-            case 'cache_manager':
-                return new CacheManager(
-                    $this->get('settings_manager')
-                );
-                
-            case 'css_generator':
-                // Optimized CSSGenerator - only generates CSS variables now
-                return new CSSGenerator(
-                    $this->get('settings_manager')
-                );
-                
-            case 'security_service':
-                return new SecurityService();
-                
-            case 'metrics_collector':
-                return new MetricsCollector(
-                    $this->get('cache_manager')
-                );
-                
-            // ❌ DEPRECATED: CustomizerIntegration removed in Phase 6
-            // All visual editing unified into Live Edit Mode
-            case 'customizer_integration':
-                error_log("MAS: CustomizerIntegration deprecated - use Live Edit Mode instead");
-                return null;
-                
-            case 'settings_api':
-                return new SettingsAPI(
-                    $this->get('settings_manager')
-                );
-                
-            case 'rest_api':
-                return new RestAPI(
-                    $this->get('cache_manager'),
-                    $this->get('security_service'),
-                    $this->get('metrics_collector'),
-                    $this->get('preset_manager')
-                );
-                
-            // 🎨 NOWY SERWIS FAZY 2: Component Adapter
-            case 'component_adapter':
-                return new ComponentAdapter(
-                    $this->get('settings_manager')
-                );
-                
-            // 🔗 NOWE SERWISY FAZY 3: Ecosystem Integration
-            case 'hooks_manager':
-                return new HooksManager(
-                    $this->get('settings_manager')
-                );
-                
-            case 'gutenberg_manager':
-                return new GutenbergManager(
-                    $this->get('settings_manager')
-                );
-                
-            // 🚀 NOWE SERWISY FAZY 5: Advanced Performance & UX
-            case 'lazy_loader':
-                return new LazyLoader($this);
-                
-            case 'advanced_cache_manager':
-                return new AdvancedCacheManager($this);
-                
-            case 'css_variables_generator':
-                return new CSSVariablesGenerator($this);
-                
-            // 🎯 NOWE SERWISY FAZY 6: Enterprise Integration & Analytics
-            case 'analytics_engine':
-                return new AnalyticsEngine($this);
-                
-            case 'integration_manager':
-                return new IntegrationManager($this);
-                
-            case 'enterprise_security_manager':
-                // TEMPORARY FIX: Return null to prevent memory exhaustion
-                // The service will be available again after optimization
-                error_log("MAS: EnterpriseSecurityManager requested but disabled due to memory concerns");
-                return null;
-                
-            case 'memory_optimizer':
-                return new MemoryOptimizer($this);
-                
-            // 🎨 NOWY SERWIS: Preset Manager (Enterprise Preset System)
             case 'preset_manager':
                 return new PresetManager(
                     $this->get('settings_manager')
                 );
                 
+            // === LEGACY COMPATIBILITY (DEPRECATED) ===
+            case 'css_generator':
+                error_log("MAS V2: css_generator deprecated - use style_generator instead");
+                return $this->get('style_generator');
+                
+            case 'security_service':
+                error_log("MAS V2: security_service deprecated - use security_manager instead");
+                return $this->get('security_manager');
+                
+            case 'rest_api':
+                error_log("MAS V2: rest_api deprecated - use api_manager instead");
+                return $this->get('api_manager');
+                
+            case 'settings_api':
+                error_log("MAS V2: settings_api deprecated - use api_manager instead");
+                return $this->get('api_manager');
+                
+            case 'component_adapter':
+                error_log("MAS V2: component_adapter deprecated - integrated into settings_manager");
+                return null;
+                
+            case 'hooks_manager':
+                error_log("MAS V2: hooks_manager deprecated - integrated into admin_interface");
+                return $this->get('admin_interface');
+                
+            case 'gutenberg_manager':
+                error_log("MAS V2: gutenberg_manager deprecated - integrated into admin_interface");
+                return $this->get('admin_interface');
+                
+            case 'lazy_loader':
+                error_log("MAS V2: lazy_loader deprecated - functionality moved to cache_manager");
+                return null;
+                
+            case 'advanced_cache_manager':
+                error_log("MAS V2: advanced_cache_manager deprecated - use cache_manager instead");
+                return $this->get('cache_manager');
+                
+            case 'css_variables_generator':
+                error_log("MAS V2: css_variables_generator deprecated - use style_generator instead");
+                return $this->get('style_generator');
+                
+            case 'analytics_engine':
+                error_log("MAS V2: analytics_engine deprecated - use metrics_collector instead");
+                return $this->get('metrics_collector');
+                
+            case 'integration_manager':
+                error_log("MAS V2: integration_manager deprecated - functionality distributed to other services");
+                return null;
+                
+            case 'enterprise_security_manager':
+                error_log("MAS V2: enterprise_security_manager deprecated - use security_manager instead");
+                return $this->get('security_manager');
+                
+            case 'memory_optimizer':
+                error_log("MAS V2: memory_optimizer deprecated - use cache_manager instead");
+                return $this->get('cache_manager');
+                
+            // customizer_integration removed - use Live Edit Mode instead
+                
             default:
                 throw new \InvalidArgumentException("Unknown service: {$service_name}");
         }
+    }
+    
+    /**
+     * 🚀 Initialize Core Services
+     * Creates all core services in proper dependency order
+     */
+    public function initializeCoreServices() {
+        $core_services = [
+            'core_engine',
+            'settings_manager',
+            'cache_manager',
+            'metrics_collector',
+            'style_generator',
+            'security_manager',
+            'admin_interface',
+            'api_manager'
+        ];
+        
+        // Phase 1: Create all services (CoreEngine not initialized yet)
+        foreach ($core_services as $service) {
+            $this->get($service);
+        }
+        
+        // Phase 2: Initialize CoreEngine now that all services are registered
+        if (isset($this->services['core_engine'])) {
+            $this->services['core_engine']->initialize();
+        }
+        
+        // Phase 3: Trigger the services ready event for lazy initialization
+        do_action('mas_core_services_ready');
+        
+        error_log("MAS V2: Initialized " . count($core_services) . " core services");
     }
     
     /**
@@ -199,102 +329,62 @@ class ServiceFactory {
         return $this->config["{$service_name}_config"] ?? [];
     }
     
-    // 🎯 FAZA 5: Metody pomocnicze dla nowych serwisów
-    
     /**
-     * 🚀 Lazy Loader Service
-     */
-    public function getLazyLoader() {
-        return $this->get('lazy_loader');
-    }
-    
-    /**
-     * 💾 Advanced Cache Manager Service
-     */
-    public function getAdvancedCacheManager() {
-        return $this->get('advanced_cache_manager');
-    }
-    
-    /**
-     * 🎨 CSS Variables Generator Service
-     */
-    public function getCSSVariablesGenerator() {
-        return $this->get('css_variables_generator');
-    }
-    
-    /**
-     * 📊 Analytics Engine Service
-     */
-    public function getAnalyticsEngine() {
-        return $this->get('analytics_engine');
-    }
-    
-    /**
-     * 🔌 Integration Manager Service
-     */
-    public function getIntegrationManager() {
-        return $this->get('integration_manager');
-    }
-    
-    /**
-     * 🛡️ Enterprise Security Manager Service
-     */
-    public function getEnterpriseSecurityManager() {
-        // TEMPORARY FIX: Return null to prevent memory exhaustion
-        // The service will be available again after optimization
-        error_log("MAS: EnterpriseSecurityManager requested but disabled due to memory concerns");
-        return null;
-        
-        // Original code commented out:
-        // return $this->get('enterprise_security_manager');
-    }
-    
-    /**
-     * 💾 Memory Optimizer Service
-     */
-    public function getMemoryOptimizer() {
-        return $this->get('memory_optimizer');
-    }
-    
-    /**
-     * 🎨 Preset Manager Service - Enterprise Preset System
-     */
-    public function getPresetManager() {
-        return $this->get('preset_manager');
-    }
-    
-    /**
-     * 📊 Pobierz wszystkie statystyki performance
+     * 📈 Get Performance Statistics
      */
     public function getPerformanceStats() {
-        return [
-            'lazy_loader' => $this->getLazyLoader()->getPerformanceStats(),
-            'cache_manager' => $this->getAdvancedCacheManager()->getStats(),
-            'css_generator' => $this->getCSSVariablesGenerator()->getStats(),
-            'timestamp' => current_time('mysql')
+        $stats = [
+            'total_services' => count($this->services),
+            'core_services' => 8,
+            'auxiliary_services' => count($this->services) - 8,
+            'memory_usage' => memory_get_usage(true),
+            'peak_memory' => memory_get_peak_usage(true),
+            'services_list' => array_keys($this->services)
         ];
+        
+        return $stats;
     }
     
     /**
-     * 🔧 Convert memory limit string to bytes
+     * 🎯 Get Service Status
      */
-    private function convertToBytes($memory_limit) {
-        if ($memory_limit == '-1') {
-            return PHP_INT_MAX;
+    public function getServiceStatus() {
+        $status = [];
+        
+        $core_services = [
+            'core_engine', 'settings_manager', 'cache_manager', 'metrics_collector',
+            'style_generator', 'security_manager', 'admin_interface', 'api_manager'
+        ];
+        
+        foreach ($core_services as $service) {
+            $status[$service] = [
+                'initialized' => $this->has($service),
+                'type' => 'core',
+                'dependencies' => $this->getServiceDependencies($service)
+            ];
         }
         
-        $unit = strtolower(substr($memory_limit, -1));
-        $value = (int) substr($memory_limit, 0, -1);
+        return $status;
+    }
+    
+    /**
+     * 🔗 Get Service Dependencies
+     */
+    private function getServiceDependencies($service_name) {
+        $dependencies = [
+            'core_engine' => [],
+            'settings_manager' => [],
+            'cache_manager' => ['settings_manager'],
+            'metrics_collector' => ['cache_manager'],
+            'style_generator' => ['settings_manager', 'cache_manager'],
+            'security_manager' => ['settings_manager', 'cache_manager', 'metrics_collector'],
+            'admin_interface' => ['settings_manager', 'security_manager'],
+            'api_manager' => ['cache_manager', 'security_manager', 'metrics_collector', 'settings_manager', 'preset_manager'],
+            'ajax_handler' => ['settings_manager'],
+            'asset_loader' => ['settings_manager', 'style_generator'],
+            'preset_manager' => ['settings_manager']
+        ];
         
-        switch ($unit) {
-            case 'g':
-                $value *= 1024;
-            case 'm':
-                $value *= 1024;
-            case 'k':
-                $value *= 1024;
-        }
-        
-        return $value;
+        return $dependencies[$service_name] ?? [];
     }
 } 
