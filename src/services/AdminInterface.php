@@ -613,10 +613,10 @@ class AdminInterface {
      * 🎨 Enqueue Block Assets (Frontend)
      */
     public function enqueueBlockAssets() {
-        // Frontend block styles
+        // Frontend block styles - now included in woow-main.css
         wp_enqueue_style(
             'mas-v2-blocks-style',
-            MAS_V2_PLUGIN_URL . 'assets/css/blocks.css',
+            MAS_V2_PLUGIN_URL . 'assets/css/woow-main.css',
             [],
             MAS_V2_VERSION
         );

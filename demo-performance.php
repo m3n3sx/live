@@ -52,8 +52,7 @@ class WoowPerformanceDemo {
         
         // Before optimization
         $originalAssets = [
-            'css' => ['woow-main.css', 'woow-semantic-themes.css', 'woow-utilities.css', 
-                     'live-edit-mode.css', 'woow-dark-mode.css', 'woow-responsive.css', 'woow-animations.css'],
+            'css' => ['woow-main.css', 'woow-live-edit.css', 'woow-utilities.css'],
             'js' => ['woow-admin.js', 'unified-live-edit.js', 'admin-global.js']
         ];
         
