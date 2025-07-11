@@ -1,0 +1,214 @@
+/**
+ * WOOW! Variables - Centralized Design System
+ * Consolidated from multiple files to eliminate duplicates
+ * 
+ * @package ModernAdminStyler
+ * @version 4.0.0
+ * @note Single source of truth for all CSS variables
+ */
+
+/* ========================================================================
+   🎨 DESIGN TOKENS - CORE VARIABLES
+   ======================================================================== */
+
+:root {
+    /* === COLOR PALETTE === */
+    --woow-accent-primary: #6366f1;
+    --woow-accent-primary-hover: #4f46e5;
+    --woow-accent-secondary: #ec4899;
+    --woow-accent-tertiary: #06b6d4;
+    --woow-accent-success: #10b981;
+    --woow-accent-warning: #f59e0b;
+    --woow-accent-error: #ef4444;
+    
+    /* === BACKGROUND SYSTEM === */
+    --woow-bg-primary: #ffffff;
+    --woow-bg-secondary: #f8fafc;
+    --woow-bg-tertiary: #e2e8f0;
+    --woow-bg-inverse: #1e1e1e;
+    --woow-bg-overlay: rgba(0, 0, 0, 0.5);
+    
+    /* === TEXT SYSTEM === */
+    --woow-text-primary: #1e293b;
+    --woow-text-secondary: #64748b;
+    --woow-text-tertiary: #94a3b8;
+    --woow-text-inverse: #ffffff;
+    --woow-text-link: #0073aa;
+    --woow-text-link-hover: #005a87;
+    --woow-text-accent: #0f172a;
+    
+    /* === BORDER SYSTEM === */
+    --woow-border-primary: #e2e8f0;
+    --woow-border-secondary: #cbd5e1;
+    --woow-border-accent: #6366f1;
+    --woow-border-focus: #0073aa;
+    
+    /* === GLASSMORPHISM SYSTEM === */
+    --woow-glass-bg: rgba(255, 255, 255, 0.08);
+    --woow-glass-border: rgba(255, 255, 255, 0.2);
+    --woow-glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    --woow-glass-hover: rgba(255, 255, 255, 0.12);
+    
+    /* === GRADIENTS === */
+    --woow-gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --woow-gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --woow-gradient-accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --woow-gradient-success: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    --woow-gradient-warm: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    --woow-gradient-cool: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    
+    /* === TYPOGRAPHY === */
+    --woow-font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+    --woow-font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    --woow-font-size-xs: 0.75rem;
+    --woow-font-size-sm: 0.875rem;
+    --woow-font-size-base: 1rem;
+    --woow-font-size-lg: 1.125rem;
+    --woow-font-size-xl: 1.25rem;
+    --woow-font-size-2xl: 1.5rem;
+    --woow-font-size-3xl: 1.875rem;
+    --woow-font-size-4xl: 2.25rem;
+    
+    /* === SPACING === */
+    --woow-space-xs: 0.25rem;
+    --woow-space-sm: 0.5rem;
+    --woow-space-md: 0.75rem;
+    --woow-space-lg: 1rem;
+    --woow-space-xl: 1.25rem;
+    --woow-space-2xl: 1.5rem;
+    --woow-space-3xl: 2rem;
+    --woow-space-4xl: 2.5rem;
+    --woow-space-5xl: 3rem;
+    --woow-space-6xl: 4rem;
+    --woow-space-8xl: 5rem;
+    
+    /* === BORDER RADIUS === */
+    --woow-radius-sm: 0.375rem;
+    --woow-radius-md: 0.5rem;
+    --woow-radius-lg: 0.75rem;
+    --woow-radius-xl: 1rem;
+    --woow-radius-2xl: 1.5rem;
+    --woow-radius-3xl: 2rem;
+    --woow-radius-full: 9999px;
+    
+    /* === SHADOWS === */
+    --woow-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --woow-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --woow-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --woow-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --woow-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    --woow-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+    
+    /* === BACKDROP BLUR === */
+    --woow-blur-sm: blur(4px);
+    --woow-blur-md: blur(8px);
+    --woow-blur-lg: blur(16px);
+    --woow-blur-xl: blur(24px);
+    --woow-blur-2xl: blur(40px);
+    --woow-blur-3xl: blur(64px);
+    
+    /* === TRANSITIONS === */
+    --woow-transition-fast: 0.15s ease;
+    --woow-transition-normal: 0.3s ease;
+    --woow-transition-slow: 0.5s ease;
+    --woow-ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --woow-ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --woow-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* === Z-INDEX SYSTEM === */
+    --woow-z-base: 1;
+    --woow-z-dropdown: 10;
+    --woow-z-sticky: 20;
+    --woow-z-fixed: 30;
+    --woow-z-modal-backdrop: 40;
+    --woow-z-modal: 50;
+    --woow-z-panel: 999999;
+    --woow-z-toast: 1000000;
+    
+    /* === LEGACY COMPATIBILITY === */
+    --mas-global-border-radius: var(--woow-radius-lg);
+    --mas-font-size-base: var(--woow-font-size-base);
+    --mas-space-10: var(--woow-space-4xl);
+    --mas-space-12: var(--woow-space-5xl);
+    --mas-space-16: var(--woow-space-6xl);
+    --mas-space-20: var(--woow-space-8xl);
+    --mas-radius-3xl: var(--woow-radius-3xl);
+    --mas-blur-2xl: var(--woow-blur-2xl);
+    --mas-blur-3xl: var(--woow-blur-3xl);
+}
+
+/* ========================================================================
+   🌙 DARK MODE THEME OVERRIDES
+   ======================================================================== */
+
+body.mas-theme-dark,
+[data-theme="dark"] {
+    --woow-bg-primary: #0f172a;
+    --woow-bg-secondary: #1e293b;
+    --woow-bg-tertiary: #334155;
+    --woow-text-primary: #f1f5f9;
+    --woow-text-secondary: #cbd5e1;
+    --woow-text-tertiary: #94a3b8;
+    --woow-border-primary: #334155;
+    --woow-border-secondary: #475569;
+    --woow-glass-bg: rgba(15, 23, 42, 0.8);
+    --woow-glass-border: rgba(255, 255, 255, 0.1);
+    --woow-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --woow-glass-hover: rgba(30, 41, 59, 0.9);
+}
+
+/* ========================================================================
+   🎨 SEMANTIC THEME PALETTES
+   ======================================================================== */
+
+/* Modern Theme (default) */
+[data-theme-palette="modern"] {
+    --woow-accent-primary: #667eea;
+    --woow-accent-secondary: #764ba2;
+    --woow-accent-tertiary: #f093fb;
+    --woow-gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --woow-gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+/* White Minimal Theme */
+[data-theme-palette="white"] {
+    --woow-accent-primary: #1f2937;
+    --woow-accent-secondary: #374151;
+    --woow-accent-tertiary: #059669;
+    --woow-bg-primary: #ffffff;
+    --woow-bg-secondary: #f8fafc;
+    --woow-text-primary: #111827;
+    --woow-text-secondary: #6b7280;
+    --woow-border-primary: #e5e7eb;
+    --woow-glass-bg: rgba(255, 255, 255, 0.8);
+    --woow-glass-border: rgba(0, 0, 0, 0.1);
+    --woow-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --woow-gradient-primary: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+    --woow-gradient-secondary: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    
+    /* Larger fonts for white theme */
+    --woow-font-size-xs: 14px;
+    --woow-font-size-sm: 16px;
+    --woow-font-size-base: 18px;
+    --woow-font-size-lg: 22px;
+    --woow-font-size-xl: 28px;
+    --woow-font-size-2xl: 36px;
+    --woow-font-size-3xl: 48px;
+}
+
+/* Soothing Green Theme */
+[data-theme-palette="green"] {
+    --woow-accent-primary: #10b981;
+    --woow-accent-secondary: #34d399;
+    --woow-accent-tertiary: #059669;
+    --woow-bg-primary: #f0fdf4;
+    --woow-bg-secondary: #ecfdf5;
+    --woow-text-primary: #064e3b;
+    --woow-text-secondary: #065f46;
+    --woow-border-primary: #a7f3d0;
+    --woow-glass-bg: rgba(220, 252, 231, 0.7);
+    --woow-glass-border: rgba(16, 185, 129, 0.2);
+    --woow-glass-shadow: 0 8px 32px rgba(16, 185, 129, 0.15);
+    --woow-gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    --woow-gradient-secondary: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+} 

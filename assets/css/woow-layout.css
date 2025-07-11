@@ -1,0 +1,329 @@
+/**
+ * WOOW! Layout - Core Layout Components
+ * Extracted from woow-main.css for better modularity
+ * 
+ * @package ModernAdminStyler
+ * @version 4.0.0
+ */
+
+/* ========================================================================
+   🏗️ ADMIN WRAPPER - Modern Glass Container
+   ======================================================================== */
+
+.mas-v2-admin-wrapper {
+    min-height: 100vh;
+    background: linear-gradient(135deg, 
+        #667eea 0%, 
+        #764ba2 25%, 
+        #f093fb 50%, 
+        #f5576c 75%, 
+        #4facfe 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    position: relative;
+    font-family: var(--woow-font-family);
+    overflow-x: hidden;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.mas-v2-admin-wrapper::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 200, 255, 0.3) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.mas-v2-admin-wrapper > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* ========================================================================
+   📊 HEADER - Modern Glassmorphism
+   ======================================================================== */
+
+.mas-v2-header {
+    background: var(--woow-glass-bg);
+    backdrop-filter: var(--woow-blur-xl);
+    -webkit-backdrop-filter: var(--woow-blur-xl);
+    border: 1px solid var(--woow-glass-border);
+    border-radius: var(--woow-radius-2xl);
+    box-shadow: var(--woow-glass-shadow);
+    margin: var(--woow-space-2xl);
+    padding: var(--woow-space-2xl) var(--woow-space-3xl);
+    position: relative;
+    overflow: hidden;
+}
+
+.mas-v2-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--woow-space-2xl);
+}
+
+.mas-v2-title {
+    font-size: var(--woow-font-size-3xl);
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+    letter-spacing: -0.025em;
+}
+
+.mas-v2-subtitle {
+    font-size: var(--woow-font-size-lg);
+    color: rgba(255, 255, 255, 0.8);
+    margin: var(--woow-space-sm) 0 0 0;
+    font-weight: 500;
+}
+
+/* ========================================================================
+   📊 METRICS GRID - Modern Dashboard Cards
+   ======================================================================== */
+
+.mas-v2-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--woow-space-2xl);
+    margin: 0 var(--woow-space-2xl) var(--woow-space-2xl) var(--woow-space-2xl);
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.mas-v2-metric-card {
+    background: var(--woow-glass-bg);
+    backdrop-filter: var(--woow-blur-xl);
+    -webkit-backdrop-filter: var(--woow-blur-xl);
+    border: 1px solid var(--woow-glass-border);
+    border-radius: var(--woow-radius-2xl);
+    padding: var(--woow-space-3xl);
+    box-shadow: var(--woow-glass-shadow);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.mas-v2-metric-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(31, 38, 135, 0.4);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ========================================================================
+   🧭 NAVIGATION - Modern Tab System
+   ======================================================================== */
+
+.mas-v2-nav {
+    margin: 0 var(--woow-space-2xl) var(--woow-space-2xl) var(--woow-space-2xl);
+}
+
+.mas-v2-nav-container {
+    background: var(--woow-glass-bg);
+    backdrop-filter: var(--woow-blur-lg);
+    -webkit-backdrop-filter: var(--woow-blur-lg);
+    border: 1px solid var(--woow-glass-border);
+    border-radius: var(--woow-radius-2xl);
+    padding: var(--woow-space-sm);
+    box-shadow: var(--woow-shadow-lg);
+}
+
+.mas-v2-nav-tabs {
+    display: flex;
+    gap: var(--woow-space-sm);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.mas-v2-nav-tab {
+    background: transparent;
+    border: none;
+    border-radius: var(--woow-radius-xl);
+    color: rgba(255, 255, 255, 0.7);
+    padding: var(--woow-space-md) var(--woow-space-xl);
+    font-size: var(--woow-font-size-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.mas-v2-nav-tab::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, var(--woow-accent-primary), var(--woow-accent-secondary));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mas-v2-nav-tab:hover {
+    color: white;
+    transform: translateY(-2px);
+}
+
+.mas-v2-nav-tab:hover::before {
+    opacity: 0.1;
+}
+
+.mas-v2-nav-tab.active {
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--woow-shadow-lg);
+}
+
+.mas-v2-nav-tab.active::before {
+    opacity: 1;
+}
+
+.mas-v2-nav-tab span {
+    position: relative;
+    z-index: 1;
+}
+
+/* Tab Content */
+.mas-v2-tab-content {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mas-v2-tab-content.active {
+    display: block;
+    opacity: 1;
+}
+
+/* ========================================================================
+   📄 CONTENT LAYOUT - Grid System
+   ======================================================================== */
+
+.mas-v2-content {
+    padding: 0 var(--woow-space-2xl) var(--woow-space-2xl) var(--woow-space-2xl);
+}
+
+.mas-v2-content-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--woow-space-2xl);
+    margin: 0 var(--woow-space-2xl) var(--woow-space-2xl) var(--woow-space-2xl);
+}
+
+.mas-v2-main-content {
+    width: 100%;
+}
+
+.mas-v2-settings-columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: var(--woow-space-2xl);
+    max-width: none;
+}
+
+/* ========================================================================
+   📱 RESPONSIVE DESIGN
+   ======================================================================== */
+
+@media (max-width: 768px) {
+    .mas-v2-header-content {
+        flex-direction: column;
+        gap: var(--woow-space-lg);
+        text-align: center;
+    }
+    
+    .mas-v2-content-grid {
+        margin: 0 var(--woow-space-lg) var(--woow-space-lg) var(--woow-space-lg);
+    }
+    
+    .mas-v2-metrics-grid {
+        grid-template-columns: 1fr;
+        margin: 0 var(--woow-space-lg) var(--woow-space-lg) var(--woow-space-lg);
+    }
+    
+    .mas-v2-nav {
+        margin: 0 var(--woow-space-lg) var(--woow-space-lg) var(--woow-space-lg);
+    }
+    
+    .mas-v2-content {
+        padding: 0 var(--woow-space-lg) var(--woow-space-lg) var(--woow-space-lg);
+    }
+    
+    .mas-v2-settings-columns {
+        grid-template-columns: 1fr;
+        gap: var(--woow-space-lg);
+    }
+}
+
+@media (max-width: 480px) {
+    .mas-v2-header,
+    .mas-v2-nav-container {
+        margin: var(--woow-space-lg);
+        padding: var(--woow-space-lg);
+    }
+    
+    .mas-v2-title {
+        font-size: var(--woow-font-size-2xl);
+    }
+    
+    .mas-v2-nav-tab {
+        padding: var(--woow-space-sm) var(--woow-space-md);
+        font-size: var(--woow-font-size-xs);
+    }
+}
+
+/* ========================================================================
+   🎨 ANIMATIONS
+   ======================================================================== */
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInScale {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+} 
