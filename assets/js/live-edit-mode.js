@@ -3022,3 +3022,63 @@ console.log('- woowDebug.forceCreateToggle() - Force create emergency toggle');
 console.log('- woowDebug.checkToggles() - Check all toggle selectors');
 console.log('- woowDebug.initLiveEdit() - Manual LiveEditEngine init');
 console.log('- woowDebug.showState() - Show current state');
+
+// 🔧 NAPRAWKA: Poprawny mapping CSS variables
+function getCSSVariable(key) {
+    const cssVariableMap = {
+        // Admin Bar
+        'admin_bar_background': '--woow-surface-bar',
+        'admin_bar_text_color': '--woow-surface-bar-text',
+        'admin_bar_hover_color': '--woow-surface-bar-hover',
+        'admin_bar_height': '--woow-surface-bar-height',
+        'wpadminbar_bg_color': '--woow-surface-bar',
+        'wpadminbar_text_color': '--woow-surface-bar-text',
+        'wpadminbar_height': '--woow-surface-bar-height',
+        // Menu
+        'menu_background': '--woow-surface-menu',
+        'menu_text_color': '--woow-surface-menu-text',
+        'menu_width': '--woow-surface-menu-width',
+        // Typography & Colors
+        'primary_color': '--woow-accent-primary',
+        'secondary_color': '--woow-accent-secondary'
+    };
+    return cssVariableMap[key] || null;
+}
+
+// Zaktualizowana funkcja handleOptionChange
+async function handleOptionChange(e) {
+    const input = e.target;
+    if (!input.dataset.optionId) return;
+    const key = input.dataset.optionId;
+    const value = input.type === 'checkbox' ? input.checked : input.value;
+    // 1. Zastosuj CSS natychmiast
+    const cssVar = getCSSVariable(key);
+    if (cssVar) {
+        const unit = input.dataset.unit || '';
+        const cssValue = value + unit;
+        document.documentElement.style.setProperty(cssVar, cssValue);
+        console.log(`🎨 Applied: ${cssVar} = ${cssValue}`);
+    }
+    // 2. Zapisz do backend z error handling
+    if (window.ajaxurl) {
+        try {
+            const response = await fetch(window.ajaxurl, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: new URLSearchParams({
+                    action: 'mas_save_live_settings',
+                    nonce: window.masNonce || '',
+                    [key]: value
+                })
+            });
+            const data = await response.json();
+            if (data.success) {
+                console.log(`💾 Saved: ${key} = ${value}`);
+            } else {
+                console.error('❌ Save failed:', data.message);
+            }
+        } catch (error) {
+            console.error('❌ Network error:', error);
+        }
+    }
+}

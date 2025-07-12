@@ -3161,6 +3161,32 @@ class ModernAdminStylerV2 {
      * Live Edit Mode provides superior UX with instant preview and
      * direct admin page editing without needing separate Customizer interface.
      */
+
+    /**
+     * AJAX handler for saving live settings (alias for compatibility)
+     */
+    public function ajaxSaveLiveSettings() {
+        if (!isset($this->coreEngine)) return;
+        $communicationManager = $this->coreEngine->getCommunicationManager();
+        return $communicationManager->handleSaveSettings();
+    }
+
+    /**
+     * AJAX handler for getting live settings (for micro-panels compatibility)
+     */
+    public function ajaxGetLiveSettings() {
+        if (!isset($this->coreEngine)) return;
+        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'mas_v2_nonce')) {
+            wp_send_json_error(['message' => 'Security error']);
+            return;
+        }
+        $settingsManager = $this->coreEngine->getSettingsManager();
+        $settings = $settingsManager->getSettings();
+        wp_send_json_success([
+            'settings' => $settings,
+            'timestamp' => current_time('mysql')
+        ]);
+    }
 }
 
 ModernAdminStylerV2::getInstance();
