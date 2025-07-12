@@ -327,6 +327,23 @@ class SettingsRestorer {
         }
     }
     
+    // 🔧 NAPRAWIONE: Dodano brakującą metodę applyAllSettingsToUI
+    applyAllSettingsToUI(settings) {
+        if (!settings || typeof settings !== 'object') {
+            console.warn('⚠️ WOOW! Invalid settings object passed to applyAllSettingsToUI');
+            return;
+        }
+        
+        Object.entries(settings).forEach(([key, value]) => {
+            this.applySettingToCSS(key, value);
+        });
+        
+        LiveEditDebugger.log('✅ Applied all settings to UI', {
+            settingsCount: Object.keys(settings).length,
+            settings: Object.keys(settings)
+        });
+    }
+    
     mapSettingToCSSVar(key) {
         const mapping = {
             'admin_bar_background': '--woow-surface-bar',
@@ -342,7 +359,20 @@ class SettingsRestorer {
             'menu_border_radius': '--woow-radius-menu',
             'accent_color': '--woow-accent-primary'
         };
-        return mapping[key] || null;
+        
+        const cssVar = mapping[key] || null;
+        
+        // 🔍 DEBUG: Log mapping results
+        if (window.masV2Debug || window.woowDebug) {
+            if (cssVar) {
+                console.log(`🎨 WOOW! Debug: Mapped setting "${key}" → CSS variable "${cssVar}"`);
+            } else {
+                console.warn(`⚠️ WOOW! Debug: No CSS variable mapping found for setting "${key}"`);
+                console.log(`🔍 WOOW! Debug: Available mappings:`, Object.keys(mapping));
+            }
+        }
+        
+        return cssVar;
     }
     
     restoreFromLocalStorage() {
@@ -1046,54 +1076,262 @@ class LiveEditEngine {
      */
     createToggleButton() {
         console.log('🔍 WOOW! Live Edit: Creating toggle button...');
+        console.log('🔍 WOOW! DOM Ready State:', document.readyState);
+        console.log('🔍 WOOW! Current URL:', window.location.href);
         
-        // Check if toggle already exists in HTML
-        const existingToggle = document.getElementById('mas-v2-edit-mode-switch');
-        const existingHeroToggle = document.getElementById('mas-v2-edit-mode-switch-hero');
+        // ===== ENHANCED SELECTOR VERIFICATION =====
+        // Check all possible toggle selectors with detailed logging
+        const selectors = {
+            primary: '#mas-v2-edit-mode-switch',
+            hero: '#mas-v2-edit-mode-switch-hero', 
+            floating: '.mas-live-edit-toggle',
+            fallback: '.woow-live-edit-toggle'
+        };
         
-        console.log('🔍 WOOW! Live Edit: Checking existing toggles:', {
-            existingToggle: !!existingToggle,
-            existingHeroToggle: !!existingHeroToggle
+        console.log('🔍 WOOW! Checking for existing toggle elements...');
+        
+        const existingToggles = {};
+        Object.entries(selectors).forEach(([key, selector]) => {
+            const element = document.querySelector(selector);
+            existingToggles[key] = element;
+            console.log(`🔍 WOOW! Toggle check [${key}]: "${selector}" =>`, {
+                found: !!element,
+                element: element,
+                visible: element ? this.isElementVisible(element) : false,
+                inDOM: element ? document.contains(element) : false
+            });
         });
         
-        if (existingToggle) {
-            console.log('✅ WOOW! Live Edit: Using existing HTML toggle');
-            // Use existing toggle from HTML
-            existingToggle.addEventListener('change', () => {
-                this.isActive = existingToggle.checked;
-                this.handleToggleChange();
-            });
+        // Try to use existing HTML toggle first
+        if (existingToggles.primary && this.isElementVisible(existingToggles.primary)) {
+            console.log('✅ WOOW! Live Edit: Using existing primary HTML toggle');
+            this.setupToggleEvents(existingToggles.primary, 'primary');
             
             // Sync hero toggle if it exists
-            if (existingHeroToggle) {
-                existingHeroToggle.addEventListener('change', () => {
-                    existingToggle.checked = existingHeroToggle.checked;
-                    existingToggle.dispatchEvent(new Event('change'));
-                });
+            if (existingToggles.hero && this.isElementVisible(existingToggles.hero)) {
+                console.log('✅ WOOW! Live Edit: Syncing with hero toggle');
+                this.setupToggleEvents(existingToggles.hero, 'hero', existingToggles.primary);
             }
-            
-            return; // Don't create duplicate button
+            return existingToggles.primary;
         }
         
-        // Fallback: Create floating toggle if HTML toggle doesn't exist
-        console.log('🔄 WOOW! Live Edit: Creating floating toggle button');
-        
-        // Check if floating toggle already exists
-        if (document.querySelector('.mas-live-edit-toggle')) {
-            console.log('⚠️ WOOW! Live Edit: Floating toggle already exists, skipping');
-            return;
+        // Check for existing floating toggle
+        if (existingToggles.floating && this.isElementVisible(existingToggles.floating)) {
+            console.log('✅ WOOW! Live Edit: Using existing floating toggle');
+            this.setupToggleEvents(existingToggles.floating, 'floating');
+            return existingToggles.floating;
         }
         
-        const button = document.createElement('div');
-        button.className = 'mas-live-edit-toggle';
-        button.innerHTML = `
-            <span class="dashicons dashicons-edit"></span>
+        // ===== EMERGENCY FALLBACK BUTTON CREATION =====
+        console.log('🚨 WOOW! Live Edit: No suitable toggle found - Creating EMERGENCY floating toggle');
+        
+        const emergencyToggle = this.createEmergencyToggle();
+        if (emergencyToggle) {
+            console.log('✅ WOOW! Live Edit: Emergency toggle created successfully');
+            return emergencyToggle;
+        } else {
+            console.error('❌ WOOW! Live Edit: CRITICAL - Failed to create emergency toggle');
+            return null;
+        }
+    }
+    
+    /**
+     * 🔧 Helper: Check if element is visible and interactable
+     */
+    isElementVisible(element) {
+        if (!element) return false;
+        
+        const rect = element.getBoundingClientRect();
+        const style = window.getComputedStyle(element);
+        
+        return (
+            rect.width > 0 && 
+            rect.height > 0 && 
+            style.display !== 'none' && 
+            style.visibility !== 'hidden' && 
+            style.opacity !== '0'
+        );
+    }
+    
+    /**
+     * 🎛️ Setup event listeners for toggle elements
+     */
+    setupToggleEvents(toggleElement, type, syncTarget = null) {
+        console.log(`🎛️ WOOW! Setting up events for ${type} toggle:`, toggleElement);
+        
+        // Remove existing listeners to prevent duplicates
+        const newElement = toggleElement.cloneNode(true);
+        toggleElement.parentNode.replaceChild(newElement, toggleElement);
+        
+        if (type === 'primary' || type === 'hero') {
+            // Checkbox/switch element
+            newElement.addEventListener('change', (e) => {
+                this.isActive = e.target.checked;
+                console.log(`🔄 WOOW! ${type} toggle changed:`, this.isActive);
+                this.handleToggleChange();
+                this.validateToggleFunction();
+            });
+        } else {
+            // Button element
+            newElement.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.toggle();
+                console.log(`🔄 WOOW! ${type} toggle clicked:`, this.isActive);
+                this.validateToggleFunction();
+            });
+        }
+        
+        // Sync with target if provided
+        if (syncTarget && type === 'hero') {
+            newElement.addEventListener('change', () => {
+                syncTarget.checked = newElement.checked;
+                syncTarget.dispatchEvent(new Event('change'));
+            });
+        }
+        
+        // Add visual feedback
+        newElement.classList.add('woow-toggle-enhanced');
+        
+        return newElement;
+    }
+    
+    /**
+     * 🚨 Create emergency floating toggle button
+     */
+    createEmergencyToggle() {
+        console.log('🚨 WOOW! Creating emergency floating toggle...');
+        
+        // Check if emergency toggle already exists
+        const existing = document.querySelector('.woow-emergency-toggle');
+        if (existing) {
+            console.log('⚠️ WOOW! Emergency toggle already exists, enhancing it');
+            existing.remove();
+        }
+        
+        const emergencyToggle = document.createElement('div');
+        emergencyToggle.className = 'woow-emergency-toggle mas-live-edit-toggle';
+        emergencyToggle.setAttribute('data-toggle-type', 'emergency');
+        emergencyToggle.setAttribute('title', 'WOOW! Live Edit Mode Toggle');
+        emergencyToggle.style.cssText = `
+            position: fixed !important;
+            top: 50px !important;
+            right: 20px !important;
+            z-index: 999999 !important;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 12px !important;
+            padding: 12px 16px !important;
+            cursor: pointer !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+            transition: all 0.3s ease !important;
+            user-select: none !important;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+        `;
+        
+        emergencyToggle.innerHTML = `
+            <span class="dashicons dashicons-edit" style="margin-right: 8px; font-size: 16px; vertical-align: middle;"></span>
             <span class="label">Live Edit</span>
         `;
-        button.addEventListener('click', () => this.toggle());
-        document.body.appendChild(button);
         
-        console.log('✅ WOOW! Live Edit: Floating toggle button created and added to body');
+        // Enhanced hover effects
+        emergencyToggle.addEventListener('mouseenter', () => {
+            emergencyToggle.style.transform = 'scale(1.05) translateY(-2px)';
+            emergencyToggle.style.boxShadow = '0 6px 20px rgba(0,0,0,0.3)';
+        });
+        
+        emergencyToggle.addEventListener('mouseleave', () => {
+            emergencyToggle.style.transform = 'scale(1) translateY(0)';
+            emergencyToggle.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+        });
+        
+        // Add to DOM
+        document.body.appendChild(emergencyToggle);
+        
+        // Setup events
+        this.setupToggleEvents(emergencyToggle, 'emergency');
+        
+        // Verify creation
+        const verification = document.querySelector('.woow-emergency-toggle');
+        console.log('🔍 WOOW! Emergency toggle verification:', {
+            created: !!verification,
+            visible: verification ? this.isElementVisible(verification) : false,
+            position: verification ? verification.getBoundingClientRect() : null
+        });
+        
+        return verification;
+    }
+    
+    /**
+     * ✅ Validate toggle functionality (for manual UI testing)
+     */
+    validateToggleFunction() {
+        const validation = {
+            timestamp: new Date().toISOString(),
+            toggleState: this.isActive,
+            bodyClasses: {
+                'mas-live-edit-active': document.body.classList.contains('mas-live-edit-active'),
+                'mas-edit-mode-active': document.body.classList.contains('mas-edit-mode-active'),
+                'woow-live-edit-enabled': document.body.classList.contains('woow-live-edit-enabled')
+            },
+            editableElements: document.querySelectorAll('[data-woow-editable="true"]').length,
+            microPanels: document.querySelectorAll('.mas-micro-panel').length
+        };
+        
+        console.log('✅ WOOW! Toggle Function Validation:', validation);
+        
+        // UI Test feedback
+        if (this.isActive) {
+            this.showValidationToast('✅ Live Edit ACTIVATED - Click elements to edit', 'success');
+        } else {
+            this.showValidationToast('❌ Live Edit DEACTIVATED', 'info');
+        }
+        
+        return validation;
+    }
+    
+    /**
+     * 📝 Show validation toast for UI testing
+     */
+    showValidationToast(message, type = 'info') {
+        // Remove existing validation toast
+        const existing = document.querySelector('.woow-validation-toast');
+        if (existing) existing.remove();
+        
+        const toast = document.createElement('div');
+        toast.className = `woow-validation-toast woow-toast-${type}`;
+        toast.style.cssText = `
+            position: fixed !important;
+            top: 120px !important;
+            right: 20px !important;
+            z-index: 999998 !important;
+            background: ${type === 'success' ? '#10b981' : '#6b7280'} !important;
+            color: white !important;
+            padding: 12px 20px !important;
+            border-radius: 8px !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+            transform: translateX(100%) !important;
+            transition: transform 0.3s ease !important;
+            max-width: 300px !important;
+        `;
+        
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        // Animate in
+        setTimeout(() => {
+            toast.style.transform = 'translateX(0)';
+        }, 100);
+        
+        // Auto remove
+        setTimeout(() => {
+            toast.style.transform = 'translateX(100%)';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
     }
 
     /**
@@ -1600,7 +1838,8 @@ class LiveEditEngine {
         // ✅ ENTERPRISE: Track pending changes for beforeunload protection
         BeforeUnloadProtection.addPendingChange(key);
         
-        this.debouncedBatchSave();
+        // 🔧 NAPRAWIONE: Wywołanie poprawnej funkcji
+        this.debouncedSave();
     }
 
     /**
@@ -1634,7 +1873,19 @@ class LiveEditEngine {
             'accent_color': '--woow-accent-primary'
         };
         
-        return mapping[key] || null;
+        const cssVar = mapping[key] || null;
+        
+        // 🔍 DEBUG: Log mapping results
+        if (window.masV2Debug || window.woowDebug) {
+            if (cssVar) {
+                console.log(`🎨 WOOW! Debug: Mapped setting "${key}" → CSS variable "${cssVar}"`);
+            } else {
+                console.warn(`⚠️ WOOW! Debug: No CSS variable mapping found for setting "${key}"`);
+                console.log(`🔍 WOOW! Debug: Available mappings:`, Object.keys(mapping));
+            }
+        }
+        
+        return cssVar;
     }
     
     /**
@@ -2332,25 +2583,82 @@ function setupUnifiedOptionEvents() {
     document.addEventListener('change', handleOptionChange, true);
 }
 
+/**
+ * 🔄 Handle option changes in micro panels
+ * NAPRAWIONE: Używa bezpośredniego ustawiania CSS zamiast nieistniejącej funkcji
+ * @param {Event} e The input or change event.
+ */
 async function handleOptionChange(e) {
     const input = e.target;
-    const optionId = input.dataset.optionId;
-    if (!optionId) return;
-    let value;
-    if (input.type === 'checkbox' || input.type === 'toggle') {
-        value = input.checked ? 1 : 0;
+    if (!input.dataset.optionId) {
+        return;
+    }
+
+    const key = input.dataset.optionId;
+    const value = input.value;
+
+    // 🔍 DEBUG: Log the change event
+    if (window.masV2Debug || window.woowDebug) {
+        console.log(`🔄 WOOW! Debug: handleOptionChange triggered`, {
+            key: key,
+            value: value,
+            inputType: input.type,
+            element: input,
+            timestamp: new Date().toISOString()
+        });
+    }
+
+    // 🔧 NAPRAWKA: Zastosuj zmianę bezpośrednio i wydajnie
+    // 1. Pobierz nazwę zmiennej CSS i jednostkę z atrybutów data elementu
+    const cssVar = input.dataset.cssVar;
+    const unit = input.dataset.unit || '';
+
+    // 2. Zastosuj styl do root elementu dokumentu dla natychmiastowego podglądu
+    if (cssVar) {
+        const cssValue = value + unit;
+        document.documentElement.style.setProperty(cssVar, cssValue);
+        
+        // 🔍 DEBUG: Log CSS variable application
+        if (window.masV2Debug || window.woowDebug) {
+            console.log(`🎨 WOOW! Debug: CSS variable applied`, {
+                cssVar: cssVar,
+                value: cssValue,
+                element: input,
+                computed: getComputedStyle(document.documentElement).getPropertyValue(cssVar)
+            });
+        }
+        
+        console.log(`🎨 Style Applied: ${cssVar} -> ${cssValue}`);
     } else {
-        value = input.value;
+        console.warn(`⚠️ No CSS variable found for setting key: ${key}`);
+        
+        // 🔍 DEBUG: Log missing CSS variable mapping
+        if (window.masV2Debug || window.woowDebug) {
+            console.warn(`🔍 WOOW! Debug: Missing CSS variable mapping for "${key}"`, {
+                availableDataAttributes: Object.keys(input.dataset),
+                element: input
+            });
+        }
     }
-    // Zapisz i zsynchronizuj zmianę
+
+    // 3. Zapisz ustawienie do bazy danych i rozgłoś do innych kart
     if (window.liveEditInstance) {
-        window.liveEditInstance.saveSetting(optionId, value);
+        window.liveEditInstance.saveSetting(key, value);
+        
+        // 🔍 DEBUG: Log database save attempt
+        if (window.masV2Debug || window.woowDebug) {
+            console.log(`💾 WOOW! Debug: Database save initiated for "${key}" = "${value}"`);
+        }
+    } else {
+        console.warn(`⚠️ WOOW! liveEditInstance not available for saving setting: ${key}`);
     }
-    // Natychmiastowa synchronizacja UI (CSS variables, klasy, widoczność)
-    if (window.settingsRestorer) {
-        const settings = Object.fromEntries(window.liveEditInstance.settingsCache);
-        settings[optionId] = value;
-        window.settingsRestorer.applyAllSettingsToUI(settings);
+
+    // 4. Dodaj wizualny wskaźnik że ustawienie zostało zapisane
+    console.log(`💾 Setting saved: ${key} = ${value}`);
+    
+    // 🔍 DEBUG: Log completion
+    if (window.masV2Debug || window.woowDebug) {
+        console.log(`✅ WOOW! Debug: handleOptionChange completed successfully for "${key}"`);
     }
 }
 
@@ -2443,10 +2751,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         console.log('✅ Core modules initialization complete.');
 
-        // --- Phase 4: Conditional UI Modules (Defensive Initialization) ---
-        console.log('🔍 Checking for UI components...');
+        // --- Phase 4: LiveEditEngine Initialization (MOVED UP) ---
+        console.log('🔍 Initializing LiveEditEngine...');
 
-        // Initialize Live Edit Engine - it will create its own toggle button if needed
+        // Initialize Live Edit Engine FIRST - it will create its own toggle button if needed
         const isAdminPage = window.location.pathname.includes('/wp-admin/');
         const isMainWOOWPage = window.location.pathname.includes('admin.php') && 
                               window.location.search.includes('page=woow-admin-styler');
@@ -2467,6 +2775,89 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log('ℹ️ LiveEditEngine skipped (not in admin area).');
         }
 
+        // --- Phase 5: Emergency Toggle Button Verification (AFTER LiveEditEngine) ---
+        console.log('🚨 Emergency Toggle Button Verification...');
+        
+        // Wait for LiveEditEngine to create its toggle, then verify
+        setTimeout(() => {
+            const emergencyVerification = {
+                selectors: [
+                    '#mas-v2-edit-mode-switch',
+                    '#mas-v2-edit-mode-switch-hero', 
+                    '.mas-live-edit-toggle',
+                    '.woow-live-edit-toggle',
+                    '.woow-emergency-toggle'
+                ],
+                found: [],
+                visible: []
+            };
+            
+            emergencyVerification.selectors.forEach(selector => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    emergencyVerification.found.push(selector);
+                    
+                    // Check visibility
+                    const rect = element.getBoundingClientRect();
+                    const style = window.getComputedStyle(element);
+                    const isVisible = (
+                        rect.width > 0 && 
+                        rect.height > 0 && 
+                        style.display !== 'none' && 
+                        style.visibility !== 'hidden' && 
+                        style.opacity !== '0'
+                    );
+                    
+                    if (isVisible) {
+                        emergencyVerification.visible.push(selector);
+                    }
+                }
+            });
+            
+            console.log('🔍 Emergency Toggle Verification Results:', emergencyVerification);
+            
+            // If no visible toggle found, create emergency toggle
+            if (emergencyVerification.visible.length === 0) {
+                console.log('🚨 EMERGENCY: No visible toggle buttons found! Creating emergency fallback...');
+                
+                if (window.liveEditInstance && typeof window.liveEditInstance.createEmergencyToggle === 'function') {
+                    const emergencyToggle = window.liveEditInstance.createEmergencyToggle();
+                    
+                    if (emergencyToggle) {
+                        console.log('✅ Emergency toggle created successfully');
+                        
+                        // Add emergency notification
+                        const emergencyNotification = document.createElement('div');
+                        emergencyNotification.style.cssText = `
+                            position: fixed !important;
+                            top: 10px !important;
+                            right: 20px !important;
+                            z-index: 999997 !important;
+                            background: #f59e0b !important;
+                            color: white !important;
+                            padding: 8px 12px !important;
+                            border-radius: 6px !important;
+                            font-size: 12px !important;
+                            font-weight: 500 !important;
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+                            max-width: 200px !important;
+                        `;
+                        emergencyNotification.textContent = 'Emergency toggle active';
+                        document.body.appendChild(emergencyNotification);
+                        
+                        // Remove notification after 5 seconds
+                        setTimeout(() => emergencyNotification.remove(), 5000);
+                    }
+                } else {
+                    console.error('❌ CRITICAL: Could not create emergency toggle - liveEditInstance not available');
+                }
+            } else {
+                console.log(`✅ Found ${emergencyVerification.visible.length} visible toggle(s):`, emergencyVerification.visible);
+            }
+        }, 1500); // Wait 1.5 seconds for LiveEditEngine to create toggle
+
+        // --- Phase 6: Additional UI Components ---
+
         // Initialize Advanced Toolbar only if its container exists
         const advancedToolbar = document.querySelector('.mas-advanced-toolbar') ||
                                document.querySelector('.woow-advanced-toolbar') ||
@@ -2483,7 +2874,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         setupUnifiedOptionEvents();
         console.log('✅ Global event handlers initialized.');
 
-        // --- Phase 5: Cleanup Handlers ---
+        // --- Phase 7: Cleanup Handlers ---
         window.addEventListener('beforeunload', () => {
             SyncManager.destroy();
             BeforeUnloadProtection.disable();
@@ -2532,3 +2923,102 @@ document.addEventListener('DOMContentLoaded', async () => {
  * intuitive, context-aware editing experience that rivals premium
  * design tools while maintaining WordPress integration.
  */ 
+
+// 🔧 DEBUG FUNCTIONS - Global functions for testing/debugging
+window.woowDebug = {
+    /**
+     * Force create emergency toggle button
+     */
+    forceCreateToggle: function() {
+        console.log('🔧 DEBUG: Force creating toggle...');
+        
+        if (!window.liveEditInstance) {
+            console.error('❌ LiveEditEngine not available');
+            return false;
+        }
+        
+        const toggle = window.liveEditInstance.createEmergencyToggle();
+        if (toggle) {
+            console.log('✅ Emergency toggle force-created');
+            return true;
+        } else {
+            console.error('❌ Failed to create emergency toggle');
+            return false;
+        }
+    },
+
+    /**
+     * Check toggle status
+     */
+    checkToggles: function() {
+        const selectors = [
+            '#mas-v2-edit-mode-switch',
+            '#mas-v2-edit-mode-switch-hero', 
+            '.mas-live-edit-toggle',
+            '.woow-live-edit-toggle',
+            '.woow-emergency-toggle'
+        ];
+        
+        console.log('🔍 DEBUG: Checking all toggle selectors...');
+        
+        selectors.forEach(selector => {
+            const element = document.querySelector(selector);
+            console.log(`${selector}:`, {
+                found: !!element,
+                visible: element ? window.liveEditInstance?.isElementVisible?.(element) : false,
+                element: element
+            });
+        });
+        
+        return selectors.map(selector => ({
+            selector,
+            element: document.querySelector(selector)
+        })).filter(item => item.element);
+    },
+
+    /**
+     * Initialize LiveEditEngine manually
+     */
+    initLiveEdit: function() {
+        console.log('🔧 DEBUG: Manual LiveEditEngine initialization...');
+        
+        if (window.liveEditInstance) {
+            console.log('⚠️ LiveEditEngine already exists, reinitializing...');
+        }
+        
+        try {
+            window.liveEditInstance = new LiveEditEngine();
+            window.liveEditInstance.init();
+            console.log('✅ LiveEditEngine manually initialized');
+            return true;
+        } catch (error) {
+            console.error('❌ Manual initialization failed:', error);
+            return false;
+        }
+    },
+
+    /**
+     * Show current Live Edit state
+     */
+    showState: function() {
+        const state = {
+            liveEditInstance: !!window.liveEditInstance,
+            bodyClasses: Array.from(document.body.classList).filter(cls => 
+                cls.includes('live-edit') || cls.includes('edit-mode') || cls.includes('woow')
+            ),
+            editableElements: document.querySelectorAll('[data-woow-editable="true"]').length,
+            microPanels: document.querySelectorAll('.mas-micro-panel').length,
+            currentURL: window.location.href,
+            isAdmin: window.location.href.includes('/wp-admin/')
+        };
+        
+        console.log('📊 DEBUG: Current Live Edit state:', state);
+        return state;
+    }
+};
+
+console.log('🔧 WOOW Debug functions available:');
+console.log('- woowDebug.forceCreateToggle() - Force create emergency toggle');
+console.log('- woowDebug.checkToggles() - Check all toggle selectors');
+console.log('- woowDebug.initLiveEdit() - Manual LiveEditEngine init');
+console.log('- woowDebug.showState() - Show current state');

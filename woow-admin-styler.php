@@ -100,21 +100,16 @@ class ModernAdminStylerV2 {
          * directly on admin pages, eliminating the need for a separate Customizer interface.
          */
         
-        add_action('wp_ajax_mas_v2_save_settings', [$this->ajax_handler, 'handleSaveSettings']);
-        add_action('wp_ajax_mas_v2_reset_settings', [$this->ajax_handler, 'handleResetSettings']);
-        add_action('wp_ajax_mas_v2_export_settings', [$this->ajax_handler, 'handleExportSettings']);
-        add_action('wp_ajax_mas_v2_import_settings', [$this->ajax_handler, 'handleImportSettings']);
-        add_action('wp_ajax_mas_v2_db_check', [$this->ajax_handler, 'handleDatabaseCheck']);
-        
-        add_action('wp_ajax_mas_v2_cache_flush', [$this->ajax_handler, 'handleCacheFlush']);
-        add_action('wp_ajax_mas_v2_cache_stats', [$this->ajax_handler, 'handleCacheStats']);
-        add_action('wp_ajax_mas_v2_metrics_report', [$this->ajax_handler, 'handleMetricsReport']);
-        add_action('wp_ajax_mas_v2_security_scan', [$this->ajax_handler, 'handleSecurityScan']);
-        add_action('wp_ajax_mas_v2_performance_benchmark', [$this->ajax_handler, 'handlePerformanceBenchmark']);
-        add_action('wp_ajax_mas_v2_css_regenerate', [$this->ajax_handler, 'handleCSSRegenerate']);
-        
-        add_action('wp_ajax_mas_v2_memory_stats', [$this->ajax_handler, 'handleMemoryStats']);
-        add_action('wp_ajax_mas_v2_force_memory_optimization', [$this->ajax_handler, 'handleForceMemoryOptimization']);
+        /*
+         * 🎯 AJAX HANDLERS REMOVED FROM MAIN INIT
+         * Reason: After consolidation, all AJAX handlers are automatically registered 
+         * by CommunicationManager in its init() method (lines 48-66).
+         * Manual registration here caused conflicts and double-registration.
+         * 
+         * All these handlers are now managed by:
+         * - CommunicationManager->init() for automatic registration
+         * - CoreEngine->getCommunicationManager() for service access
+         */
         
         add_action('wp_ajax_mas_v2_clear_cache', [$this, 'ajaxClearCache']);
         

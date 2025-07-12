@@ -1574,6 +1574,52 @@ class AdminInterface {
     }
     
     /**
+     * 🎨 Add Live Edit toggle to admin bar
+     */
+    public function addAdminBarLiveEditToggle($wp_admin_bar) {
+        if (!$this->isEnabled) return;
+        
+        // Only show on admin pages
+        if (!is_admin()) return;
+        
+        // Check if user has proper capabilities
+        if (!current_user_can('edit_theme_options')) return;
+        
+        // Add Live Edit toggle button
+        $wp_admin_bar->add_node([
+            'id' => 'woow-live-edit-toggle',
+            'title' => '<span class="ab-icon dashicons dashicons-edit"></span><span class="ab-label">Live Edit</span>',
+            'href' => '#',
+            'meta' => [
+                'class' => 'woow-live-edit-admin-bar-toggle',
+                'title' => __('Toggle Live Edit Mode', 'modern-admin-styler'),
+                'onclick' => 'if(window.liveEditInstance) { window.liveEditInstance.toggle(); } else if(window.LiveEditToggle) { window.LiveEditToggle.toggleState(); } return false;'
+            ]
+        ]);
+        
+        // Add submenu with quick actions
+        $wp_admin_bar->add_node([
+            'id' => 'woow-live-edit-status',
+            'parent' => 'woow-live-edit-toggle',
+            'title' => '📊 Status: <span id="woow-live-edit-status-text">Ready</span>',
+            'href' => '#',
+            'meta' => [
+                'class' => 'woow-live-edit-status'
+            ]
+        ]);
+        
+        $wp_admin_bar->add_node([
+            'id' => 'woow-live-edit-settings',
+            'parent' => 'woow-live-edit-toggle',
+            'title' => '⚙️ Settings',
+            'href' => admin_url('admin.php?page=woow-v2-general'),
+            'meta' => [
+                'class' => 'woow-live-edit-settings-link'
+            ]
+        ]);
+    }
+
+    /**
      * 📊 Add admin bar performance item
      */
     public function addAdminBarPerformanceItem($wp_admin_bar) {
@@ -2141,6 +2187,9 @@ class AdminInterface {
         
         // Add admin bar items
         add_action('admin_bar_menu', [$this, 'addAdminBarPerformanceItem'], 100);
+        
+        // 🎨 KRITYCZNE: Add Live Edit toggle to admin bar
+        add_action('admin_bar_menu', [$this, 'addAdminBarLiveEditToggle'], 99);
         
         // Add footer elements
         add_action('admin_footer', [$this, 'addDashboardHTML']);

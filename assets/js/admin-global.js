@@ -130,8 +130,8 @@
                 // this.createGlobalLiveEditToggle(); // ✅ PRZYWRÓCONO: Przełącznik Live Edit
                 // WYŁĄCZONE - używamy tylko systemu mikropaneli
                 
-                // 🎨 NEW: Color palette overrides from HTML attributes
-                this.checkForPaletteAttribute();
+                // 🎨 NAPRAWIONE: Usunięto wywołanie nieistniejącej funkcji checkForPaletteAttribute()
+                // Color palette overrides are now handled automatically via CSS variables
             }
 
             /**

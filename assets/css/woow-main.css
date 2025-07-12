@@ -156,41 +156,41 @@ body.mas-theme-dark,
 }
 
 body.woow-admin {
-    font-family: var(--woow-font-family);
+    font-family: var(--woow-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
     line-height: 1.6;
-    color: var(--woow-text-primary);
-    background: var(--woow-bg-primary);
+    color: var(--woow-text-primary, #1e293b);
+    background: var(--woow-bg-primary, #ffffff);
 }
 
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
-    font-family: var(--woow-font-family);
+    font-family: var(--woow-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
     font-weight: 600;
     line-height: 1.2;
-    margin: 0 0 var(--woow-space-lg) 0;
-    color: var(--woow-text-primary);
+    margin: 0 0 var(--woow-space-lg, 1rem) 0;
+    color: var(--woow-text-primary, #1e293b);
 }
 
-h1 { font-size: var(--woow-font-size-4xl); }
-h2 { font-size: var(--woow-font-size-3xl); }
-h3 { font-size: var(--woow-font-size-2xl); }
-h4 { font-size: var(--woow-font-size-xl); }
-h5 { font-size: var(--woow-font-size-lg); }
-h6 { font-size: var(--woow-font-size-base); }
+h1 { font-size: var(--woow-font-size-4xl, 2.25rem); }
+h2 { font-size: var(--woow-font-size-3xl, 1.875rem); }
+h3 { font-size: var(--woow-font-size-2xl, 1.5rem); }
+h4 { font-size: var(--woow-font-size-xl, 1.25rem); }
+h5 { font-size: var(--woow-font-size-lg, 1.125rem); }
+h6 { font-size: var(--woow-font-size-base, 1rem); }
 
 p {
-    margin: 0 0 var(--woow-space-lg) 0;
-    color: var(--woow-text-secondary);
+    margin: 0 0 var(--woow-space-lg, 1rem) 0;
+    color: var(--woow-text-secondary, #64748b);
 }
 
 a {
-    color: var(--woow-text-link);
+    color: var(--woow-text-link, #0073aa);
     text-decoration: none;
-    transition: color var(--woow-transition-fast);
+    transition: color var(--woow-transition-fast, 0.15s ease);
 }
 
 a:hover {
-    color: var(--woow-text-link-hover);
+    color: var(--woow-text-link-hover, #005a87);
 }
 
 /* WordPress Admin Integration */
@@ -199,8 +199,8 @@ body.wp-admin #wpcontent,
 body.wp-admin #wpbody,
 body.wp-admin #wpbody-content,
 body.wp-admin .wrap {
-    background-color: var(--woow-bg-primary);
-    color: var(--woow-text-primary);
+    background-color: var(--woow-bg-primary, #ffffff);
+    color: var(--woow-text-primary, #1e293b);
 }
 
 /* ========================================================================
@@ -250,14 +250,14 @@ body.wp-admin .wrap {
 
 /* Header */
 .mas-v2-header {
-    background: var(--woow-glass-bg);
-    backdrop-filter: var(--woow-blur-xl);
-    -webkit-backdrop-filter: var(--woow-blur-xl);
-    border: 1px solid var(--woow-glass-border);
-    border-radius: var(--woow-radius-2xl);
-    box-shadow: var(--woow-glass-shadow);
-    margin: var(--woow-space-2xl);
-    padding: var(--woow-space-2xl) var(--woow-space-3xl);
+    background: var(--woow-glass-bg, rgba(255, 255, 255, 0.08));
+    backdrop-filter: var(--woow-blur-xl, blur(24px));
+    -webkit-backdrop-filter: var(--woow-blur-xl, blur(24px));
+    border: 1px solid var(--woow-glass-border, rgba(255, 255, 255, 0.2));
+    border-radius: var(--woow-radius-2xl, 1.5rem);
+    box-shadow: var(--woow-glass-shadow, 0 8px 32px rgba(31, 38, 135, 0.37));
+    margin: var(--woow-space-2xl, 1.5rem);
+    padding: var(--woow-space-2xl, 1.5rem) var(--woow-space-3xl, 2rem);
     position: relative;
     overflow: hidden;
 }
@@ -266,11 +266,11 @@ body.wp-admin .wrap {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--woow-space-2xl);
+    gap: var(--woow-space-2xl, 1.5rem);
 }
 
 .mas-v2-title {
-    font-size: var(--woow-font-size-3xl);
+    font-size: var(--woow-font-size-3xl, 1.875rem);
     font-weight: 800;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     -webkit-background-clip: text;
@@ -281,30 +281,30 @@ body.wp-admin .wrap {
 }
 
 .mas-v2-subtitle {
-    font-size: var(--woow-font-size-lg);
+    font-size: var(--woow-font-size-lg, 1.125rem);
     color: rgba(255, 255, 255, 0.8);
-    margin: var(--woow-space-sm) 0 0 0;
+    margin: var(--woow-space-sm, 0.5rem) 0 0 0;
     font-weight: 500;
 }
 
 /* Navigation */
 .mas-v2-nav {
-    margin: 0 var(--woow-space-2xl) var(--woow-space-2xl) var(--woow-space-2xl);
+    margin: 0 var(--woow-space-2xl, 1.5rem) var(--woow-space-2xl, 1.5rem) var(--woow-space-2xl, 1.5rem);
 }
 
 .mas-v2-nav-container {
-    background: var(--woow-glass-bg);
-    backdrop-filter: var(--woow-blur-lg);
-    -webkit-backdrop-filter: var(--woow-blur-lg);
-    border: 1px solid var(--woow-glass-border);
-    border-radius: var(--woow-radius-2xl);
-    padding: var(--woow-space-sm);
-    box-shadow: var(--woow-shadow-lg);
+    background: var(--woow-glass-bg, rgba(255, 255, 255, 0.08));
+    backdrop-filter: var(--woow-blur-lg, blur(16px));
+    -webkit-backdrop-filter: var(--woow-blur-lg, blur(16px));
+    border: 1px solid var(--woow-glass-border, rgba(255, 255, 255, 0.2));
+    border-radius: var(--woow-radius-2xl, 1.5rem);
+    padding: var(--woow-space-sm, 0.5rem);
+    box-shadow: var(--woow-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
 }
 
 .mas-v2-nav-tabs {
     display: flex;
-    gap: var(--woow-space-sm);
+    gap: var(--woow-space-sm, 0.5rem);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -313,10 +313,10 @@ body.wp-admin .wrap {
 .mas-v2-nav-tab {
     background: transparent;
     border: none;
-    border-radius: var(--woow-radius-xl);
+    border-radius: var(--woow-radius-xl, 1rem);
     color: rgba(255, 255, 255, 0.7);
-    padding: var(--woow-space-md) var(--woow-space-xl);
-    font-size: var(--woow-font-size-sm);
+    padding: var(--woow-space-md, 0.75rem) var(--woow-space-xl, 1.25rem);
+    font-size: var(--woow-font-size-sm, 0.875rem);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -333,7 +333,7 @@ body.wp-admin .wrap {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, var(--woow-accent-primary), var(--woow-accent-secondary));
+    background: linear-gradient(135deg, var(--woow-accent-primary, #6366f1), var(--woow-accent-secondary, #ec4899));
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -350,7 +350,7 @@ body.wp-admin .wrap {
 .mas-v2-nav-tab.active {
     color: white;
     transform: translateY(-2px);
-    box-shadow: var(--woow-shadow-lg);
+    box-shadow: var(--woow-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
 }
 
 .mas-v2-nav-tab.active::before {
@@ -846,7 +846,148 @@ body.wp-admin .wrap {
 }
 
 /* ========================================================================
-   📦 SECTION 8: RESPONSIVE DESIGN - Mobile First
+   📦 SECTION 8: ADMIN MENU & CONTENT IMPLEMENTATION - Full Pattern Support
+   ======================================================================== */
+
+/* Admin Menu Styling with CSS Variables */
+body.wp-admin #adminmenuwrap {
+    background-color: var(--woow-surface-menu, #ffffff) !important;
+    width: var(--woow-surface-menu-width, 160px) !important;
+    transition: all var(--woow-transition-normal, 0.3s ease);
+}
+
+body.wp-admin #adminmenu {
+    background-color: var(--woow-surface-menu, #ffffff) !important;
+    border-radius: var(--woow-radius-menu, 0px);
+}
+
+body.wp-admin #adminmenu li a {
+    color: var(--woow-surface-menu-text, #1e293b) !important;
+    font-size: var(--woow-surface-menu-font-size, 14px) !important;
+    padding: var(--woow-surface-menu-item-padding, 8px) var(--woow-surface-menu-item-padding, 8px) !important;
+    transition: all var(--woow-transition-fast, 0.15s ease);
+}
+
+body.wp-admin #adminmenu li:hover a,
+body.wp-admin #adminmenu li a:hover {
+    color: var(--woow-surface-menu-hover, #6366f1) !important;
+    background-color: var(--woow-surface-menu-hover-bg, rgba(99, 102, 241, 0.1)) !important;
+}
+
+body.wp-admin #adminmenu li.wp-has-current-submenu > a,
+body.wp-admin #adminmenu li.current a {
+    color: var(--woow-surface-menu-active, #6366f1) !important;
+    background-color: var(--woow-surface-menu-active-bg, rgba(99, 102, 241, 0.15)) !important;
+}
+
+/* Menu Spacing Options */
+body.wp-admin #adminmenuwrap {
+    margin-top: var(--woow-space-menu-top, 10px);
+    margin-right: var(--woow-space-menu-right, 10px);
+    margin-bottom: var(--woow-space-menu-bottom, 10px);
+    margin-left: var(--woow-space-menu-left, 10px);
+}
+
+/* Menu Border Radius for All Elements */
+body.wp-admin #adminmenu,
+body.wp-admin #adminmenu li a,
+body.wp-admin #adminmenu .wp-submenu {
+    border-radius: var(--woow-radius-menu-all, 0px);
+}
+
+/* Content Area Styling with CSS Variables */
+body.wp-admin #wpcontent,
+body.wp-admin #wpbody,
+body.wp-admin #wpbody-content,
+body.wp-admin .wrap {
+    background-color: var(--woow-bg-primary, #ffffff) !important;
+    color: var(--woow-text-primary, #1e293b) !important;
+    transition: all var(--woow-transition-normal, 0.3s ease);
+}
+
+/* Content Cards/Postboxes */
+body.wp-admin .wrap .postbox,
+body.wp-admin .wrap .stuffbox {
+    background-color: var(--woow-bg-card, #ffffff) !important;
+    border-color: var(--woow-border-primary, #e2e8f0) !important;
+    border-radius: var(--woow-radius-card, 0.5rem) !important;
+    box-shadow: var(--woow-shadow-card, 0 1px 3px rgba(0, 0, 0, 0.1)) !important;
+    transition: all var(--woow-transition-normal, 0.3s ease);
+}
+
+body.wp-admin .wrap .postbox:hover,
+body.wp-admin .wrap .stuffbox:hover {
+    box-shadow: var(--woow-shadow-card-hover, 0 4px 12px rgba(0, 0, 0, 0.15)) !important;
+    transform: translateY(-2px);
+}
+
+/* Content Links */
+body.wp-admin .wrap a {
+    color: var(--woow-text-link, #0073aa) !important;
+    transition: color var(--woow-transition-fast, 0.15s ease);
+}
+
+body.wp-admin .wrap a:hover {
+    color: var(--woow-text-link-hover, #005a87) !important;
+}
+
+/* Content Typography */
+body.wp-admin .wrap h1,
+body.wp-admin .wrap h2,
+body.wp-admin .wrap h3,
+body.wp-admin .wrap h4,
+body.wp-admin .wrap h5,
+body.wp-admin .wrap h6 {
+    color: var(--woow-text-primary, #1e293b) !important;
+    font-family: var(--woow-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif) !important;
+}
+
+/* Content Spacing */
+body.wp-admin .wrap {
+    padding: var(--woow-content-padding, 20px) !important;
+    max-width: var(--woow-content-max-width, none) !important;
+}
+
+/* Form Elements in Content */
+body.wp-admin .wrap input[type="text"],
+body.wp-admin .wrap input[type="email"],
+body.wp-admin .wrap input[type="password"],
+body.wp-admin .wrap textarea,
+body.wp-admin .wrap select {
+    border-color: var(--woow-border-primary, #e2e8f0) !important;
+    border-radius: var(--woow-radius-input, 0.375rem) !important;
+    transition: border-color var(--woow-transition-fast, 0.15s ease);
+}
+
+body.wp-admin .wrap input[type="text"]:focus,
+body.wp-admin .wrap input[type="email"]:focus,
+body.wp-admin .wrap input[type="password"]:focus,
+body.wp-admin .wrap textarea:focus,
+body.wp-admin .wrap select:focus {
+    border-color: var(--woow-border-focus, #0073aa) !important;
+    box-shadow: 0 0 0 2px var(--woow-border-focus-shadow, rgba(0, 115, 170, 0.2)) !important;
+}
+
+/* Buttons in Content */
+body.wp-admin .wrap .button,
+body.wp-admin .wrap .button-primary,
+body.wp-admin .wrap .button-secondary {
+    border-radius: var(--woow-radius-button, 0.375rem) !important;
+    transition: all var(--woow-transition-fast, 0.15s ease);
+}
+
+body.wp-admin .wrap .button-primary {
+    background-color: var(--woow-accent-primary, #0073aa) !important;
+    border-color: var(--woow-accent-primary, #0073aa) !important;
+}
+
+body.wp-admin .wrap .button-primary:hover {
+    background-color: var(--woow-accent-primary-hover, #005a87) !important;
+    border-color: var(--woow-accent-primary-hover, #005a87) !important;
+}
+
+/* ========================================================================
+   📦 SECTION 9: RESPONSIVE DESIGN FOR MENU & CONTENT
    ======================================================================== */
 
 @media (max-width: 768px) {
@@ -889,6 +1030,14 @@ body.wp-admin .wrap {
         min-width: auto;
         max-width: none;
     }
+
+    body.wp-admin #adminmenuwrap {
+        width: var(--woow-surface-menu-width-mobile, 50px) !important;
+    }
+    
+    body.wp-admin .wrap {
+        padding: var(--woow-content-padding-mobile, 10px) !important;
+    }
 }
 
 @media (max-width: 480px) {
@@ -909,6 +1058,11 @@ body.wp-admin .wrap {
     
     .mas-v2-card {
         padding: var(--woow-space-2xl);
+    }
+
+    body.wp-admin .wrap .postbox,
+    body.wp-admin .wrap .stuffbox {
+        margin: var(--woow-space-xs, 0.25rem) 0 !important;
     }
 }
 

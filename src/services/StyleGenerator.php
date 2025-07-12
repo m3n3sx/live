@@ -45,24 +45,28 @@ class StyleGenerator {
     const MODE_HYBRID = 'hybrid';       // Best of both (default)
     
     /**
-     * 📋 Complete CSS Variables Mapping (43 Enterprise Options)
-     * Migrated from CSSGenerator with enhanced capabilities
+     * 🎨 CSS Variable Mapping - WOOW Unified Naming Convention
+     * 
+     * Maps setting keys to CSS variables with consistent --woow- prefix
+     * Each entry defines: variable name, type, unit (if applicable)
+     * 
+     * @var array CSS variable mapping with unified naming
      */
     private const CSS_VAR_MAP = [
         // === GLOBAL SETTINGS ===
-        'color_scheme' => ['name' => '--mas-color-scheme', 'type' => self::TYPE_SCALE],
-        'color_palette' => ['name' => '--mas-color-palette', 'type' => self::TYPE_SCALE],
-        'enable_animations' => ['name' => '--mas-animations-enabled', 'type' => self::TYPE_SCALE],
-        'performance_mode' => ['name' => '--mas-performance-mode', 'type' => self::TYPE_SCALE],
+        'color_scheme' => ['name' => '--woow-color-scheme', 'type' => self::TYPE_SCALE],
+        'color_palette' => ['name' => '--woow-color-palette', 'type' => self::TYPE_SCALE],
+        'enable_animations' => ['name' => '--woow-animations-enabled', 'type' => self::TYPE_SCALE],
+        'performance_mode' => ['name' => '--woow-performance-mode', 'type' => self::TYPE_SCALE],
         
         // === ADMIN BAR (Original) ===
-        'admin_bar_height' => ['name' => '--mas-admin-bar-height', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'admin_bar_height' => ['name' => '--woow-admin-bar-height', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
         'admin_bar_background' => ['name' => '--woow-surface-bar', 'type' => self::TYPE_COLOR],
-        'admin_bar_text_color' => ['name' => '--mas-admin-bar-text-color', 'type' => self::TYPE_COLOR],
-        'admin_bar_hover_color' => ['name' => '--mas-admin-bar-hover-color', 'type' => self::TYPE_COLOR],
-        'admin_bar_floating' => ['name' => '--mas-admin-bar-floating', 'type' => self::TYPE_SCALE],
-        'admin_bar_glossy' => ['name' => '--mas-admin-bar-glossy', 'type' => self::TYPE_SCALE],
-        'admin_bar_margin' => ['name' => '--mas-admin-bar-margin', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'admin_bar_text_color' => ['name' => '--woow-admin-bar-text-color', 'type' => self::TYPE_COLOR],
+        'admin_bar_hover_color' => ['name' => '--woow-admin-bar-hover-color', 'type' => self::TYPE_COLOR],
+        'admin_bar_floating' => ['name' => '--woow-admin-bar-floating', 'type' => self::TYPE_SCALE],
+        'admin_bar_glossy' => ['name' => '--woow-admin-bar-glossy', 'type' => self::TYPE_SCALE],
+        'admin_bar_margin' => ['name' => '--woow-admin-bar-margin', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
         
         // === ADMIN BAR (Micro-panel options) ===
         'wpadminbar_bg_color' => ['name' => '--woow-surface-bar', 'type' => self::TYPE_COLOR],
@@ -72,14 +76,14 @@ class StyleGenerator {
         'wpadminbar_height' => ['name' => '--woow-surface-bar-height', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
         'wpadminbar_font_size' => ['name' => '--woow-surface-bar-font-size', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
         'wpadminbar_border_radius' => ['name' => '--woow-radius-bar', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
-        'wpadminbar_glassmorphism' => ['name' => '--mas-admin-bar-glassmorphism', 'type' => self::TYPE_SCALE],
-        'wpadminbar_floating' => ['name' => '--mas-admin-bar-floating', 'type' => self::TYPE_SCALE],
-        'wpadminbar_shadow' => ['name' => '--mas-admin-bar-shadow', 'type' => self::TYPE_SHADOW],
-        'wpadminbar_gradient' => ['name' => '--mas-admin-bar-gradient', 'type' => self::TYPE_COLOR],
-        'wpadminbar_hide_wp_logo' => ['name' => '--mas-admin-bar-hide-logo', 'type' => self::TYPE_SCALE],
-        'wpadminbar_hide_howdy' => ['name' => '--mas-admin-bar-hide-howdy', 'type' => self::TYPE_SCALE],
-        'wpadminbar_hide_update_notices' => ['name' => '--mas-admin-bar-hide-updates', 'type' => self::TYPE_SCALE],
-        'wpadminbar_hide_comments' => ['name' => '--mas-admin-bar-hide-comments', 'type' => self::TYPE_SCALE],
+        'wpadminbar_glassmorphism' => ['name' => '--woow-admin-bar-glassmorphism', 'type' => self::TYPE_SCALE],
+        'wpadminbar_floating' => ['name' => '--woow-admin-bar-floating', 'type' => self::TYPE_SCALE],
+        'wpadminbar_shadow' => ['name' => '--woow-admin-bar-shadow', 'type' => self::TYPE_SHADOW],
+        'wpadminbar_gradient' => ['name' => '--woow-admin-bar-gradient', 'type' => self::TYPE_COLOR],
+        'wpadminbar_hide_wp_logo' => ['name' => '--woow-admin-bar-hide-logo', 'type' => self::TYPE_SCALE],
+        'wpadminbar_hide_howdy' => ['name' => '--woow-admin-bar-hide-howdy', 'type' => self::TYPE_SCALE],
+        'wpadminbar_hide_update_notices' => ['name' => '--woow-admin-bar-hide-updates', 'type' => self::TYPE_SCALE],
+        'wpadminbar_hide_comments' => ['name' => '--woow-admin-bar-hide-comments', 'type' => self::TYPE_SCALE],
         
         // === ADMIN BAR (New schema mappings) ===
         'surface_bar' => ['name' => '--woow-surface-bar', 'type' => self::TYPE_COLOR],
@@ -91,14 +95,14 @@ class StyleGenerator {
         'surface_bar_blur' => ['name' => '--woow-surface-bar-blur', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
         
         // === MENU (Original) ===
-        'menu_width' => ['name' => '--mas-menu-width', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'menu_width' => ['name' => '--woow-menu-width', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
         'menu_background' => ['name' => '--woow-surface-menu', 'type' => self::TYPE_COLOR],
         'menu_text_color' => ['name' => '--woow-surface-menu-text', 'type' => self::TYPE_COLOR],
-        'menu_hover_color' => ['name' => '--mas-menu-hover-color', 'type' => self::TYPE_COLOR],
-        'menu_floating' => ['name' => '--mas-menu-floating', 'type' => self::TYPE_SCALE],
-        'menu_glassmorphism' => ['name' => '--mas-menu-glassmorphism', 'type' => self::TYPE_SCALE],
-        'menu_radius' => ['name' => '--mas-menu-radius', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
-        'menu_margin' => ['name' => '--mas-menu-margin', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'menu_hover_color' => ['name' => '--woow-menu-hover-color', 'type' => self::TYPE_COLOR],
+        'menu_floating' => ['name' => '--woow-menu-floating', 'type' => self::TYPE_SCALE],
+        'menu_glassmorphism' => ['name' => '--woow-menu-glassmorphism', 'type' => self::TYPE_SCALE],
+        'menu_radius' => ['name' => '--woow-menu-radius', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'menu_margin' => ['name' => '--woow-menu-margin', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
         
         // === MENU (Micro-panel options) ===
         'adminmenuwrap_bg_color' => ['name' => '--woow-surface-menu', 'type' => self::TYPE_COLOR],
@@ -107,7 +111,7 @@ class StyleGenerator {
         'adminmenuwrap_active_color' => ['name' => '--woow-surface-menu-active', 'type' => self::TYPE_COLOR],
         'adminmenuwrap_width' => ['name' => '--woow-surface-menu-width', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
         'adminmenuwrap_border_radius' => ['name' => '--woow-radius-menu', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
-        'adminmenuwrap_floating' => ['name' => '--mas-menu-floating', 'type' => self::TYPE_SCALE],
+        'adminmenuwrap_floating' => ['name' => '--woow-menu-floating', 'type' => self::TYPE_SCALE],
         
         // === MENU (New schema mappings) ===
         'surface_menu' => ['name' => '--woow-surface-menu', 'type' => self::TYPE_COLOR],
@@ -118,13 +122,13 @@ class StyleGenerator {
         
         // === CONTENT AREA (Micro-panel options) ===
         'wpwrap_bg_color' => ['name' => '--woow-bg-primary', 'type' => self::TYPE_COLOR],
-        'wpwrap_max_width' => ['name' => '--mas-content-max-width', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'wpwrap_max_width' => ['name' => '--woow-content-max-width', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
         
         // === FOOTER (Micro-panel options) ===
         'wpfooter_bg_color' => ['name' => '--woow-footer-bg', 'type' => self::TYPE_COLOR],
         'wpfooter_text_color' => ['name' => '--woow-footer-text', 'type' => self::TYPE_COLOR],
-        'wpfooter_hide_version' => ['name' => '--mas-footer-hide-version', 'type' => self::TYPE_SCALE],
-        'wpfooter_hide_thanks' => ['name' => '--mas-footer-hide-thanks', 'type' => self::TYPE_SCALE],
+        'wpfooter_hide_version' => ['name' => '--woow-footer-hide-version', 'type' => self::TYPE_SCALE],
+        'wpfooter_hide_thanks' => ['name' => '--woow-footer-hide-thanks', 'type' => self::TYPE_SCALE],
         
         // === POST BOXES (Micro-panel options) ===
         'postbox_bg_color' => ['name' => '--woow-postbox-bg', 'type' => self::TYPE_COLOR],
@@ -136,48 +140,113 @@ class StyleGenerator {
         'postbox_padding' => ['name' => '--woow-postbox-padding', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
         'postbox_margin' => ['name' => '--woow-postbox-margin', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
         'postbox_shadow' => ['name' => '--woow-postbox-shadow', 'type' => self::TYPE_SHADOW],
-        'postbox_glassmorphism' => ['name' => '--mas-postbox-glassmorphism', 'type' => self::TYPE_SCALE],
-        'postbox_hover_lift' => ['name' => '--mas-postbox-hover-lift', 'type' => self::TYPE_SCALE],
-        'postbox_animation' => ['name' => '--mas-postbox-animation', 'type' => self::TYPE_ANIMATION],
+        'postbox_glassmorphism' => ['name' => '--woow-postbox-glassmorphism', 'type' => self::TYPE_SCALE],
+        'postbox_hover_lift' => ['name' => '--woow-postbox-hover-lift', 'type' => self::TYPE_SCALE],
+        'postbox_animation' => ['name' => '--woow-postbox-animation', 'type' => self::TYPE_ANIMATION],
         
         // === TYPOGRAPHY ===
-        'body_font' => ['name' => '--mas-body-font', 'type' => self::TYPE_FONT],
-        'heading_font' => ['name' => '--mas-heading-font', 'type' => self::TYPE_FONT],
-        'global_font_size' => ['name' => '--mas-global-font-size', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
-        'global_line_height' => ['name' => '--mas-global-line-height', 'type' => self::TYPE_SCALE],
-        'headings_scale' => ['name' => '--mas-headings-scale', 'type' => self::TYPE_SCALE],
-        'headings_weight' => ['name' => '--mas-headings-weight', 'type' => self::TYPE_SCALE],
-        'headings_spacing' => ['name' => '--mas-headings-spacing', 'unit' => 'em', 'type' => self::TYPE_DIMENSION],
+        'body_font' => ['name' => '--woow-body-font', 'type' => self::TYPE_FONT],
+        'heading_font' => ['name' => '--woow-heading-font', 'type' => self::TYPE_FONT],
+        'global_font_size' => ['name' => '--woow-global-font-size', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'global_line_height' => ['name' => '--woow-global-line-height', 'type' => self::TYPE_SCALE],
+        'headings_scale' => ['name' => '--woow-headings-scale', 'type' => self::TYPE_SCALE],
+        'headings_weight' => ['name' => '--woow-headings-weight', 'type' => self::TYPE_SCALE],
+        'headings_spacing' => ['name' => '--woow-headings-spacing', 'unit' => 'em', 'type' => self::TYPE_DIMENSION],
         
         // === LAYOUT ===
-        'global_border_radius' => ['name' => '--mas-global-border-radius', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
-        'global_spacing' => ['name' => '--mas-global-spacing', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
-        'compact_mode' => ['name' => '--mas-compact-mode', 'type' => self::TYPE_SCALE],
-        'full_width_mode' => ['name' => '--mas-full-width-mode', 'type' => self::TYPE_SCALE],
+        'global_border_radius' => ['name' => '--woow-global-border-radius', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'global_spacing' => ['name' => '--woow-global-spacing', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'compact_mode' => ['name' => '--woow-compact-mode', 'type' => self::TYPE_SCALE],
+        'full_width_mode' => ['name' => '--woow-full-width-mode', 'type' => self::TYPE_SCALE],
         
         // === EFFECTS ===
-        'enable_shadows' => ['name' => '--mas-shadows-enabled', 'type' => self::TYPE_SCALE],
-        'shadow_color' => ['name' => '--mas-shadow-color', 'type' => self::TYPE_COLOR],
-        'shadow_blur' => ['name' => '--mas-shadow-blur', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
-        'shadow_opacity' => ['name' => '--mas-shadow-opacity', 'type' => self::TYPE_SCALE],
-        'enable_glassmorphism' => ['name' => '--mas-glassmorphism-enabled', 'type' => self::TYPE_SCALE],
+        'enable_shadows' => ['name' => '--woow-shadows-enabled', 'type' => self::TYPE_SCALE],
+        'shadow_color' => ['name' => '--woow-shadow-color', 'type' => self::TYPE_COLOR],
+        'shadow_blur' => ['name' => '--woow-shadow-blur', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'shadow_opacity' => ['name' => '--woow-shadow-opacity', 'type' => self::TYPE_SCALE],
+        'enable_glassmorphism' => ['name' => '--woow-glassmorphism-enabled', 'type' => self::TYPE_SCALE],
         
         // === PERFORMANCE ===
-        'hardware_acceleration' => ['name' => '--mas-hardware-acceleration', 'type' => self::TYPE_SCALE],
-        'respect_reduced_motion' => ['name' => '--mas-respect-reduced-motion', 'type' => self::TYPE_SCALE],
-        'mobile_3d_optimization' => ['name' => '--mas-mobile-optimization', 'type' => self::TYPE_SCALE],
+        'hardware_acceleration' => ['name' => '--woow-hardware-acceleration', 'type' => self::TYPE_SCALE],
+        'respect_reduced_motion' => ['name' => '--woow-respect-reduced-motion', 'type' => self::TYPE_SCALE],
+        'mobile_3d_optimization' => ['name' => '--woow-mobile-optimization', 'type' => self::TYPE_SCALE],
         
         // === ADVANCED ===
-        'transition_speed' => ['name' => '--mas-transition-speed', 'unit' => 's', 'type' => self::TYPE_ANIMATION],
-        'animation_easing' => ['name' => '--mas-animation-easing', 'type' => self::TYPE_ANIMATION],
-        'z_index_base' => ['name' => '--mas-z-index-base', 'type' => self::TYPE_SCALE],
-        'enable_debug_mode' => ['name' => '--mas-debug-mode', 'type' => self::TYPE_SCALE],
+        'transition_speed' => ['name' => '--woow-transition-speed', 'unit' => 's', 'type' => self::TYPE_ANIMATION],
+        'animation_easing' => ['name' => '--woow-animation-easing', 'type' => self::TYPE_ANIMATION],
+        'z_index_base' => ['name' => '--woow-z-index-base', 'type' => self::TYPE_SCALE],
+        'enable_debug_mode' => ['name' => '--woow-debug-mode', 'type' => self::TYPE_SCALE],
         
         // === CONTENT AREAS ===
         'content_background' => ['name' => '--woow-bg-primary', 'type' => self::TYPE_COLOR],
-        'content_text_color' => ['name' => '--mas-content-text-color', 'type' => self::TYPE_COLOR],
-        'content_padding' => ['name' => '--mas-content-padding', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
-        'content_max_width' => ['name' => '--mas-content-max-width', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'content_text_color' => ['name' => '--woow-content-text-color', 'type' => self::TYPE_COLOR],
+        'content_padding' => ['name' => '--woow-content-padding', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'content_max_width' => ['name' => '--woow-content-max-width', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        
+        // === MISSING MAPPINGS - Added from Implementation Pattern Audit ===
+        
+        // Menu Item Options
+        'menu_item_padding' => ['name' => '--woow-surface-menu-item-padding', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'menu_item_font_size' => ['name' => '--woow-surface-menu-font-size', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'menu_border_radius_all' => ['name' => '--woow-radius-menu-all', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'menu_spacing' => ['name' => '--woow-space-menu', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'menu_spacing_top' => ['name' => '--woow-space-menu-top', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'menu_spacing_right' => ['name' => '--woow-space-menu-right', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'menu_spacing_bottom' => ['name' => '--woow-space-menu-bottom', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'menu_spacing_left' => ['name' => '--woow-space-menu-left', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        
+        // Additional Surface Options
+        'surface_elevated' => ['name' => '--woow-surface-elevated', 'type' => self::TYPE_COLOR],
+        'surface_card' => ['name' => '--woow-surface-card', 'type' => self::TYPE_COLOR],
+        'surface_overlay' => ['name' => '--woow-surface-overlay', 'type' => self::TYPE_COLOR],
+        
+        // Extended Border Options
+        'border_secondary' => ['name' => '--woow-border-secondary', 'type' => self::TYPE_COLOR],
+        'border_accent' => ['name' => '--woow-border-accent', 'type' => self::TYPE_COLOR],
+        'border_focus' => ['name' => '--woow-border-focus', 'type' => self::TYPE_COLOR],
+        
+        // Extended Text Options
+        'text_muted' => ['name' => '--woow-text-muted', 'type' => self::TYPE_COLOR],
+        'text_disabled' => ['name' => '--woow-text-disabled', 'type' => self::TYPE_COLOR],
+        'text_brand' => ['name' => '--woow-text-brand', 'type' => self::TYPE_COLOR],
+        
+        // Extended Accent Options
+        'accent_info' => ['name' => '--woow-accent-info', 'type' => self::TYPE_COLOR],
+        'accent_warning_hover' => ['name' => '--woow-accent-warning-hover', 'type' => self::TYPE_COLOR],
+        'accent_error_hover' => ['name' => '--woow-accent-error-hover', 'type' => self::TYPE_COLOR],
+        'accent_success_hover' => ['name' => '--woow-accent-success-hover', 'type' => self::TYPE_COLOR],
+        
+        // Extended Radius Options
+        'radius_card' => ['name' => '--woow-radius-card', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'radius_button' => ['name' => '--woow-radius-button', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'radius_input' => ['name' => '--woow-radius-input', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        
+        // Extended Shadow Options
+        'shadow_button' => ['name' => '--woow-shadow-button', 'type' => self::TYPE_SHADOW],
+        'shadow_card' => ['name' => '--woow-shadow-card', 'type' => self::TYPE_SHADOW],
+        'shadow_modal' => ['name' => '--woow-shadow-modal', 'type' => self::TYPE_SHADOW],
+        
+        // Extended Spacing Options
+        'space_component' => ['name' => '--woow-space-component', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'space_section' => ['name' => '--woow-space-section', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'space_layout' => ['name' => '--woow-space-layout', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        
+        // Extended Animation Options
+        'animation_duration_micro' => ['name' => '--woow-duration-micro', 'unit' => 'ms', 'type' => self::TYPE_ANIMATION],
+        'animation_duration_macro' => ['name' => '--woow-duration-macro', 'unit' => 'ms', 'type' => self::TYPE_ANIMATION],
+        'animation_ease_bounce' => ['name' => '--woow-ease-bounce', 'type' => self::TYPE_ANIMATION],
+        'animation_ease_elastic' => ['name' => '--woow-ease-elastic', 'type' => self::TYPE_ANIMATION],
+        
+        // Extended Blur Options
+        'blur_subtle' => ['name' => '--woow-blur-subtle', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'blur_strong' => ['name' => '--woow-blur-strong', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        'blur_extreme' => ['name' => '--woow-blur-extreme', 'unit' => 'px', 'type' => self::TYPE_DIMENSION],
+        
+        // Extended Z-index Options
+        'z_dropdown' => ['name' => '--woow-z-dropdown', 'type' => self::TYPE_SCALE],
+        'z_modal' => ['name' => '--woow-z-modal', 'type' => self::TYPE_SCALE],
+        'z_tooltip' => ['name' => '--woow-z-tooltip', 'type' => self::TYPE_SCALE],
+        'z_notification' => ['name' => '--woow-z-notification', 'type' => self::TYPE_SCALE],
     ];
     
     public function __construct($coreEngine) {
@@ -678,11 +747,11 @@ class StyleGenerator {
         
         // Computed hover variants (migrated from CSSGenerator)
         if (!empty($settings['admin_bar_background'])) {
-            $computed[] = "    --mas-admin-bar-background-hover: " . $this->adjustBrightness($settings['admin_bar_background'], 10) . ";";
+            $computed[] = "    --woow-admin-bar-background-hover: " . $this->adjustBrightness($settings['admin_bar_background'], 10) . ";";
         }
         
         if (!empty($settings['menu_background'])) {
-            $computed[] = "    --mas-menu-background-hover: " . $this->adjustBrightness($settings['menu_background'], 10) . ";";
+            $computed[] = "    --woow-menu-background-hover: " . $this->adjustBrightness($settings['menu_background'], 10) . ";";
         }
         
         if (!empty($settings['wpadminbar_bg_color'])) {
@@ -702,16 +771,16 @@ class StyleGenerator {
             $shadow_opacity = $settings['shadow_opacity'] ?? 0.2;
             $shadow_blur = $settings['shadow_blur'] ?? 10;
             $rgb = $this->hexToRgb($settings['shadow_color']);
-            $computed[] = "    --mas-box-shadow: 0 2px {$shadow_blur}px rgba({$rgb}, {$shadow_opacity});";
+            $computed[] = "    --woow-box-shadow: 0 2px {$shadow_blur}px rgba({$rgb}, {$shadow_opacity});";
         }
         
         // Computed spacing scale
         $base_spacing = $settings['global_spacing'] ?? 16;
-        $computed[] = "    --mas-spacing-xs: " . ($base_spacing * 0.25) . "px;";
-        $computed[] = "    --mas-spacing-sm: " . ($base_spacing * 0.5) . "px;";
-        $computed[] = "    --mas-spacing-md: " . $base_spacing . "px;";
-        $computed[] = "    --mas-spacing-lg: " . ($base_spacing * 1.5) . "px;";
-        $computed[] = "    --mas-spacing-xl: " . ($base_spacing * 2) . "px;";
+        $computed[] = "    --woow-spacing-xs: " . ($base_spacing * 0.25) . "px;";
+        $computed[] = "    --woow-spacing-sm: " . ($base_spacing * 0.5) . "px;";
+        $computed[] = "    --woow-spacing-md: " . $base_spacing . "px;";
+        $computed[] = "    --woow-spacing-lg: " . ($base_spacing * 1.5) . "px;";
+        $computed[] = "    --woow-spacing-xl: " . ($base_spacing * 2) . "px;";
         
         // Computed transition speeds
         $base_speed = (isset($settings['performance_mode']) && $settings['performance_mode']) ? 0.15 : ($settings['transition_speed'] ?? 0.3);

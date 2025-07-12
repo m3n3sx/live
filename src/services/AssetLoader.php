@@ -42,7 +42,14 @@ class AssetLoader {
             'modern-admin_page_mas-v2-admin-bar',
             'modern-admin_page_mas-v2-menu',
             'modern-admin_page_mas-v2-typography',
-            'modern-admin_page_mas-v2-advanced'
+            'modern-admin_page_mas-v2-advanced',
+            // 🎯 KRYTYCZNE: Dodaj obsługę WOOW pages
+            'toplevel_page_woow-v2-general',
+            'modern-admin_page_woow-v2-general',
+            'modern-admin_page_woow-v2-admin-bar',
+            'modern-admin_page_woow-v2-menu',
+            'modern-admin_page_woow-v2-typography',
+            'modern-admin_page_woow-v2-advanced'
         ];
         
         if (!in_array($hook, $mas_pages)) {
@@ -330,7 +337,7 @@ class AssetLoader {
     }
 
     /**
-     * 🌐 Load minimal global assets
+     * 🌐 Load minimal global assets for all admin pages
      */
     private function loadMinimalGlobalAssets() {
         wp_enqueue_style('dashicons');
@@ -357,11 +364,47 @@ class AssetLoader {
             true
         );
         
+        // 🎯 KRYTYCZNE: Ładuj live-edit-mode.js globalnie dla dostępności na wszystkich stronach admin
+        wp_enqueue_script(
+            'woow-live-edit-mode-global',
+            $this->plugin_url . 'assets/js/live-edit-mode.js',
+            ['jquery'],
+            $this->plugin_version,
+            true
+        );
+        
         // Lokalizacja skryptów z ustawieniami
         wp_localize_script('woow-admin-global', 'woowGlobal', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('woow_global_nonce'),
             'pluginUrl' => $this->plugin_url
+        ]);
+        
+        // Lokalizacja dla live-edit-mode
+        wp_localize_script('woow-live-edit-mode-global', 'woowLiveEditGlobal', [
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('woow_live_edit_nonce'),
+            'pluginUrl' => $this->plugin_url,
+            'isMainPage' => !isset($_GET['page']) || empty($_GET['page']),
+            'currentPage' => $_GET['page'] ?? 'dashboard'
+        ]);
+        
+        // 🎯 KRYTYCZNE: Dodaj woowV2Global dla live-edit-mode-global (wymagane przez live-edit-mode.js)
+        wp_localize_script('woow-live-edit-mode-global', 'woowV2Global', [
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'restUrl' => rest_url('woow/v1/'),
+            'restNonce' => wp_create_nonce('wp_rest'),
+            'ajaxNonce' => wp_create_nonce('mas_live_edit_nonce'),
+            'debug' => !$this->is_production,
+            'version' => $this->plugin_version,
+            'pluginUrl' => $this->plugin_url,
+            'isProduction' => $this->is_production,
+            'currentUser' => wp_get_current_user()->display_name,
+            'capabilities' => [
+                'manage_options' => current_user_can('manage_options'),
+                'edit_theme_options' => current_user_can('edit_theme_options')
+            ],
+            'settings' => $this->settings_manager->getSettings()
         ]);
     }
 
