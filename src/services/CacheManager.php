@@ -575,7 +575,7 @@ class CacheManager {
             ],
             'transient_cache' => [
                 'items' => (int) $transient_count,
-                'total_size_bytes' => (int) $total_size,
+            'total_size_bytes' => (int) $total_size,
                 'total_size_human' => size_format($total_size ?: 0)
             ],
             'memory_usage' => [
@@ -1233,7 +1233,7 @@ class CacheManager {
     }
     
     private function analyzePerformance() {
-        return [
+            return [
             'overall_score' => $this->calculatePerformanceScore(microtime(true) - $this->start_time, memory_get_usage(true)),
             'bottlenecks' => [],
             'recommendations' => []
