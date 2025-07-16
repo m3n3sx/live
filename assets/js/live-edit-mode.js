@@ -200,6 +200,16 @@ class LiveEditDebugger {
     static trackCSSVariable(cssVar, value) {
         this.log(`🎨 CSS Variable applied: ${cssVar} = ${value}`);
     }
+
+    static logSettings(settings) {
+        if (window.masV2Debug) {
+            console.log(`🔍 WOOW! Debug - Settings:`, settings);
+        }
+    }
+    static logAll(a, b, c) {
+        if (window.masV2Debug) { console.log(a, b, c); }
+        }
+    }
 }
 
 // Toast notifications
@@ -2580,86 +2590,68 @@ class MicroPanel {
 // Ujednolicona obsługa eventów i synchronizacji dla wszystkich typów opcji
 function setupUnifiedOptionEvents() {
     document.addEventListener('input', handleOptionChange, true);
-    document.addEventListener('change', handleOptionChange, true);
-}
-
-/**
- * 🔄 Handle option changes in micro panels
- * NAPRAWIONE: Używa bezpośredniego ustawiania CSS zamiast nieistniejącej funkcji
- * @param {Event} e The input or change event.
- */
-async function handleOptionChange(e) {
-    const input = e.target;
-    if (!input.dataset.optionId) {
-        return;
-    }
-
-    const key = input.dataset.optionId;
-    const value = input.value;
-
-    // 🔍 DEBUG: Log the change event
-    if (window.masV2Debug || window.woowDebug) {
-        console.log(`🔄 WOOW! Debug: handleOptionChange triggered`, {
-            key: key,
-            value: value,
-            inputType: input.type,
-            element: input,
-            timestamp: new Date().toISOString()
-        });
-    }
-
-    // 🔧 NAPRAWKA: Zastosuj zmianę bezpośrednio i wydajnie
-    // 1. Pobierz nazwę zmiennej CSS i jednostkę z atrybutów data elementu
-    const cssVar = input.dataset.cssVar;
-    const unit = input.dataset.unit || '';
-
-    // 2. Zastosuj styl do root elementu dokumentu dla natychmiastowego podglądu
-    if (cssVar) {
-        const cssValue = value + unit;
-        document.documentElement.style.setProperty(cssVar, cssValue);
-        
-        // 🔍 DEBUG: Log CSS variable application
+    document.addEventListener("input", (e) => {
+        const input = e.target;
+        if (!input.dataset.optionId) {
+            return;
+        }
+        const key = input.dataset.optionId;
+        const value = input.value;
+        // 🔍 DEBUG: Log the change event
         if (window.masV2Debug || window.woowDebug) {
-            console.log(`🎨 WOOW! Debug: CSS variable applied`, {
-                cssVar: cssVar,
-                value: cssValue,
+            console.log(`🔄 WOOW! Input Change Event`, {
+                key: key,
+                value: value,
+                inputType: input.type,
                 element: input,
-                computed: getComputedStyle(document.documentElement).getPropertyValue(cssVar)
+                timestamp: new Date().toISOString()
             });
         }
-        
-        console.log(`🎨 Style Applied: ${cssVar} -> ${cssValue}`);
-    } else {
-        console.warn(`⚠️ No CSS variable found for setting key: ${key}`);
-        
-        // 🔍 DEBUG: Log missing CSS variable mapping
-        if (window.masV2Debug || window.woowDebug) {
-            console.warn(`🔍 WOOW! Debug: Missing CSS variable mapping for "${key}"`, {
-                availableDataAttributes: Object.keys(input.dataset),
-                element: input
-            });
+        // 1. Pobierz nazwę zmiennej CSS i jednostkę z atrybutów data elementu
+        const cssVar = input.dataset.cssVar;
+        const unit = input.dataset.unit || '';
+        // 2. Zastosuj styl do root elementu dokumentu dla natychmiastowego podglądu
+        if (cssVar) {
+            const cssValue = value + unit;
+            document.documentElement.style.setProperty(cssVar, cssValue);
+            // 🔍 DEBUG: Log CSS variable application
+            if (window.masV2Debug || window.woowDebug) {
+                console.log(`🎨 WOOW! CSS variable applied`, {
+                    cssVar: cssVar,
+                    value: cssValue,
+                    element: input,
+                    computed: getComputedStyle(document.documentElement).getPropertyValue(cssVar)
+                });
+            }
+            console.log(`🎨 Style Applied: ${cssVar} -> ${cssValue}`);
+        } else {
+            console.warn(`⚠️ No CSS variable found for setting key: ${key}`);
+            // 🔍 DEBUG: Log missing CSS variable mapping
+            if (window.masV2Debug || window.woowDebug) {
+                console.warn(`🔍 WOOW! Missing CSS variable mapping for "${key}"`, {
+                    availableDataAttributes: Object.keys(input.dataset),
+                    element: input
+                });
+            }
         }
-    }
-
-    // 3. Zapisz ustawienie do bazy danych i rozgłoś do innych kart
-    if (window.liveEditInstance) {
-        window.liveEditInstance.saveSetting(key, value);
-        
-        // 🔍 DEBUG: Log database save attempt
-        if (window.masV2Debug || window.woowDebug) {
-            console.log(`💾 WOOW! Debug: Database save initiated for "${key}" = "${value}"`);
+        // 3. Zapisz ustawienie do bazy danych i rozgłoś do innych kart
+        if (window.liveEditInstance) {
+            window.liveEditInstance.saveSetting(key, value);
+            // 🔍 DEBUG: Log database save attempt
+            if (window.masV2Debug || window.woowDebug) {
+                console.log(`💾 WOOW! Database save initiated for "${key}" = "${value}"`);
+            }
+        } else {
+            console.warn(`⚠️ WOOW! liveEditInstance not available for saving setting: ${key}`);
         }
-    } else {
-        console.warn(`⚠️ WOOW! liveEditInstance not available for saving setting: ${key}`);
-    }
-
-    // 4. Dodaj wizualny wskaźnik że ustawienie zostało zapisane
-    console.log(`💾 Setting saved: ${key} = ${value}`);
-    
-    // 🔍 DEBUG: Log completion
-    if (window.masV2Debug || window.woowDebug) {
-        console.log(`✅ WOOW! Debug: handleOptionChange completed successfully for "${key}"`);
-    }
+        // 4. Dodaj wizualny wskaźnik że ustawienie zostało zapisane
+        console.log(`💾 Setting saved: ${key} = ${value}`);
+        // 🔍 DEBUG: Log completion
+        if (window.masV2Debug || window.woowDebug) {
+            console.log(`✅ WOOW! handleOptionChange completed successfully for "${key}"`);
+        }
+    });
+    document.addEventListener('change', handleOptionChange, true);
 }
 
 // Wywołaj po inicjalizacji

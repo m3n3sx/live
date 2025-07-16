@@ -139,7 +139,6 @@ class ModernAdminStylerV2 {
         
         add_action('wp_ajax_mas_save_live_settings', [$this, 'ajaxSaveLiveSettings']);
         add_action('wp_ajax_mas_get_live_settings', [$this, 'ajaxGetLiveSettings']);
-        add_action('wp_ajax_mas_get_live_settings', [$this, 'ajaxGetLiveSettings']);
         add_action('wp_ajax_mas_reset_live_setting', [$this, 'ajaxResetLiveSetting']);
         
         add_action('wp_ajax_save_mas_v2_settings', [$this, 'ajaxSaveSettings']);
@@ -2759,92 +2758,24 @@ class ModernAdminStylerV2 {
      * 🎯 LIVE EDIT MODE: Save settings via AJAX
      */
     public function ajaxSaveLiveSettings() {
-        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'mas_live_edit_nonce') || !current_user_can('manage_options')) {
-            wp_send_json_error(['message' => 'Security check failed']);
-            return;
-        }
-        
-        try {
-            $settings_json = $_POST['settings'] ?? '';
-            $new_settings = json_decode(stripslashes($settings_json), true);
-            
-            if (!is_array($new_settings)) {
-                wp_send_json_error(['message' => 'Invalid settings format']);
-                return;
-            }
-            
-            $current_settings = $this->getSettings();
-            
-            $updated_settings = array_merge($current_settings, $new_settings);
-            
-            $sanitized_settings = $this->sanitizeSettings($updated_settings);
-            
-            $result = update_option('mas_v2_settings', $sanitized_settings);
-            
-            if ($result) {
-                $this->clearCache();
-                
-                wp_send_json_success([
-                    'message' => 'Settings saved successfully',
-                    'updated_count' => count($new_settings),
-                    'total_settings' => count($sanitized_settings),
-                    'timestamp' => current_time('mysql')
-                ]);
-            } else {
-                wp_send_json_error(['message' => 'Failed to save settings to database']);
-            }
-            
-        } catch (Exception $e) {
-            wp_send_json_error(['message' => 'Error saving settings: ' . $e->getMessage()]);
-        }
+        // Przekieruj do nowej funkcji
+        $coreEngine = \ModernAdminStyler\Services\CoreEngine::getInstance();
+        $communicationManager = $coreEngine->getCommunicationManager();
+        return $communicationManager->handleSaveSettings();
     }
     
     /**
      * 🎯 LIVE EDIT MODE: Get current settings via AJAX
      */
     public function ajaxGetLiveSettings() {
-        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'mas_live_edit_nonce') || !current_user_can('manage_options')) {
-            wp_send_json_error(['message' => 'Security check failed']);
+        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'woow_v2_nonce')) {
+            wp_send_json_error(['message' => 'Security error']);
             return;
         }
-        
-        try {
-            $settings = $this->getSettings();
-            
-            // Filtruj tylko ustawienia związane z Live Edit
-            $live_edit_settings = [];
-            $live_edit_keys = [
-                'admin_bar_background',
-                'admin_bar_text_color', 
-                'admin_bar_hover_color',
-                'admin_bar_height',
-                'admin_bar_font_size',
-                'admin_bar_border_radius',
-                'menu_background',
-                'menu_text_color',
-                'menu_hover_color',
-                'menu_width',
-                'menu_border_radius',
-                'accent_color'
-            ];
-            
-            foreach ($live_edit_keys as $key) {
-                if (isset($settings[$key])) {
-                    $live_edit_settings[$key] = $settings[$key];
-                }
-            }
-            
-            wp_send_json_success([
-                'settings' => $live_edit_settings,
-                'count' => count($live_edit_settings),
-                'last_modified' => get_option('mas_v2_settings_modified', 'Unknown'),
-                'cache_status' => wp_using_ext_object_cache() ? 'External cache' : 'WordPress default',
-                'timestamp' => current_time('mysql')
-            ]);
-            
-        } catch (Exception $e) {
-            wp_send_json_error(['message' => 'Error loading settings: ' . $e->getMessage()]);
-        }
+        $coreEngine = \ModernAdminStyler\Services\CoreEngine::getInstance();
+        $settingsManager = $coreEngine->getSettingsManager();
+        $settings = $settingsManager->getSettings();
+        wp_send_json_success(['settings' => $settings, 'timestamp' => current_time('mysql')]);
     }
     
     /**

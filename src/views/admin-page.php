@@ -84,7 +84,7 @@ if ($current_page !== 'mas-v2-settings') {
                         📤 <?php esc_html_e('Export', 'woow-admin-styler'); ?>
                     </button>
                     <button type="submit" form="mas-v2-settings-form" id="mas-v2-save-btn" class="mas-v2-btn mas-v2-btn-primary">
-                        💾 <?php esc_html_e('Save Settings', 'woow-admin-styler'); ?>
+                        �� <?php esc_html_e('💾 Zapisz zmiany', 'woow-admin-styler'); ?>
                     </button>
                 </div>
             </div>
