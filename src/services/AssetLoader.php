@@ -235,6 +235,42 @@ class AssetLoader {
             true
         );
         
+        // 🎯 NEW: Load EventManager for robust event handling
+        wp_enqueue_script(
+            'woow-event-manager',
+            $this->plugin_url . 'assets/js/event-manager.js',
+            ['jquery'],
+            $this->plugin_version,
+            true
+        );
+        
+        // 🎯 NEW: Load CSS Variable Mapper for comprehensive mapping system
+        wp_enqueue_script(
+            'woow-css-variable-mapper',
+            $this->plugin_url . 'assets/js/css-variable-mapper.js',
+            ['jquery', 'woow-event-manager'],
+            $this->plugin_version,
+            true
+        );
+        
+        // 🎯 NEW: Load MicroPanelFactory for micro-panel functionality
+        wp_enqueue_script(
+            'woow-micro-panel-factory',
+            $this->plugin_url . 'assets/js/micro-panel-factory.js',
+            ['jquery', 'woow-live-edit-mode', 'woow-css-variable-mapper'],
+            $this->plugin_version,
+            true
+        );
+        
+        // 🎯 NEW: Load AjaxManager for unified AJAX communication
+        wp_enqueue_script(
+            'woow-ajax-manager',
+            $this->plugin_url . 'assets/js/ajax-manager.js',
+            ['jquery'],
+            $this->plugin_version,
+            true
+        );
+        
         // Load core WOOW functionality
         wp_enqueue_script(
             'woow-core',
@@ -368,6 +404,42 @@ class AssetLoader {
         wp_enqueue_script(
             'woow-live-edit-mode-global',
             $this->plugin_url . 'assets/js/live-edit-mode.js',
+            ['jquery'],
+            $this->plugin_version,
+            true
+        );
+        
+        // 🎯 NEW: Load EventManager globally for robust event handling
+        wp_enqueue_script(
+            'woow-event-manager-global',
+            $this->plugin_url . 'assets/js/event-manager.js',
+            ['jquery'],
+            $this->plugin_version,
+            true
+        );
+        
+        // 🎯 NEW: Load CSS Variable Mapper globally for comprehensive mapping system
+        wp_enqueue_script(
+            'woow-css-variable-mapper-global',
+            $this->plugin_url . 'assets/js/css-variable-mapper.js',
+            ['jquery', 'woow-event-manager-global'],
+            $this->plugin_version,
+            true
+        );
+        
+        // 🎯 NEW: Load MicroPanelFactory globally for micro-panel functionality
+        wp_enqueue_script(
+            'woow-micro-panel-factory-global',
+            $this->plugin_url . 'assets/js/micro-panel-factory.js',
+            ['jquery', 'woow-live-edit-mode-global', 'woow-css-variable-mapper-global'],
+            $this->plugin_version,
+            true
+        );
+        
+        // 🎯 NEW: Load AjaxManager globally for unified AJAX communication
+        wp_enqueue_script(
+            'woow-ajax-manager-global',
+            $this->plugin_url . 'assets/js/ajax-manager.js',
             ['jquery'],
             $this->plugin_version,
             true

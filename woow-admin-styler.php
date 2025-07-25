@@ -57,6 +57,7 @@ class ModernAdminStylerV2 {
     private $asset_loader;
     private $ajax_handler;
     private $settings_manager;
+    private $input_validator;
     
     private $cache_manager;
     private $css_generator;
@@ -111,7 +112,12 @@ class ModernAdminStylerV2 {
          * - CoreEngine->getCommunicationManager() for service access
          */
         
-        add_action('wp_ajax_mas_v2_clear_cache', [$this, 'ajaxClearCache']);
+        // AJAX handlers are now centrally managed by UnifiedAjaxManager
+        // All AJAX endpoints are registered through the unified system for:
+        // - Consistent security validation
+        // - Standardized response formatting  
+        // - Performance monitoring
+        // - Error handling and logging
         
         add_action('admin_head', [$this, 'outputCustomStyles']);
         add_action('admin_head', [$this, 'addThemeLoaderScript'], 1); // Priority 1 - Execute early
@@ -132,17 +138,19 @@ class ModernAdminStylerV2 {
         
         add_action('init', [$this, 'allowFramingForLocalhostViewer']);
         
-        add_action('wp_ajax_mas_database_check', [$this, 'ajaxDatabaseCheck']);
-        add_action('wp_ajax_mas_options_test', [$this, 'ajaxOptionsTest']);
-        add_action('wp_ajax_mas_cache_check', [$this, 'ajaxCacheCheck']);
-        add_action('wp_ajax_mas_clear_cache', [$this, 'ajaxClearCache']);
-        
-        add_action('wp_ajax_mas_save_live_settings', [$this, 'ajaxSaveLiveSettings']);
-        add_action('wp_ajax_mas_get_live_settings', [$this, 'ajaxGetLiveSettings']);
-        add_action('wp_ajax_mas_reset_live_setting', [$this, 'ajaxResetLiveSetting']);
-        
-        add_action('wp_ajax_save_mas_v2_settings', [$this, 'ajaxSaveSettings']);
-        add_action('wp_ajax_mas_live_preview', [$this, 'ajaxLivePreview']);
+        // NOTE: All AJAX handlers have been moved to UnifiedAjaxManager for centralized management
+        // The following endpoints are now handled by UnifiedAjaxManager:
+        // - mas_v2_database_check: Database connectivity and integrity checks
+        // - mas_v2_cache_check: Cache system status checks  
+        // - mas_v2_clear_cache: Cache clearing operations
+        // - mas_v2_save_settings: Bulk settings save operations
+        // - mas_live_preview: Live preview generation
+        // - mas_save_live_settings: Individual live setting saves
+        // - mas_get_live_settings: Live settings retrieval
+        // - mas_reset_live_setting: Individual setting resets
+        //
+        // Legacy handlers maintained for backward compatibility (deprecated):
+        add_action('wp_ajax_mas_options_test', [$this, 'ajaxOptionsTest']); // DEPRECATED: Use mas_v2_database_check
         
         // 🚀 ENTERPRISE FEATURE: Dynamic UI Configuration REST API
         add_action('rest_api_init', [$this, 'registerRestRoutes']);
@@ -775,7 +783,11 @@ class ModernAdminStylerV2 {
         // === REMOVED/DEPRECATED SERVICES ===
         $this->integration_manager = null; // Removed - functionality distributed
         
-        error_log('🎯 MAS V2: New consolidated architecture initialized - 8 strategic services');
+        // Initialize input validator for enhanced security
+        require_once MAS_V2_PLUGIN_DIR . 'src/services/InputValidator.php';
+        $this->input_validator = new \ModernAdminStyler\Services\InputValidator();
+        
+        error_log('🎯 MAS V2: New consolidated architecture initialized - 9 strategic services');
     }
     
     /**
@@ -983,7 +995,7 @@ class ModernAdminStylerV2 {
         if (in_array($hook, $woow_pages)) {
         wp_localize_script('woow-v2-admin', 'woowV2', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('woow_v2_nonce'),
+            'nonce' => wp_create_nonce('mas_v2_ajax_nonce'), // Use unified nonce
             'restUrl' => rest_url('woow/v1/'),
             'restNonce' => wp_create_nonce('wp_rest'),
             'settings' => $this->getSettings(),
@@ -1042,10 +1054,18 @@ class ModernAdminStylerV2 {
                 // 🎯 NAPRAWKA: Używaj poprawnego handle skryptu (woow-core-global zamiast woow-v2-global)
                 wp_localize_script('woow-core-global', 'woowV2Global', [
                     'ajaxUrl' => admin_url('admin-ajax.php'),
-                    'nonce' => wp_create_nonce('woow_v2_nonce'),
+                    'nonce' => wp_create_nonce('mas_v2_ajax_nonce'), // Use unified nonce
                     'restUrl' => rest_url('woow/v1/'),
                     'restNonce' => wp_create_nonce('wp_rest'),
                     'settings' => $settings
+                ]);
+                
+                // Add dedicated AJAX object for micro-panel system
+                wp_localize_script('woow-core-global', 'mas_ajax_object', [
+                    'ajax_url' => admin_url('admin-ajax.php'),
+                    'nonce' => wp_create_nonce('mas_v2_ajax_nonce'),
+                    'version' => MAS_V2_VERSION,
+                    'debug' => WP_DEBUG
                 ]);
             }
         }
@@ -1272,171 +1292,9 @@ class ModernAdminStylerV2 {
     }
     
     /**
-     * Generuje zmienne CSS dla dynamicznego zarządzania layoutem
+     * REMOVED: Duplicate method - using newer implementation below
+     * This entire method was causing a syntax error and has been properly removed.
      */
-    private function generateCSSVariables($settings) {
-        $css = ':root {';
-        
-        $colorScheme = $settings['color_scheme'] ?? 'light';
-        
-        $colorPalettes = $this->getAdaptiveColorPalettes();
-        $currentPalette = $settings['color_palette'] ?? 'modern';
-        
-        $lightColors = $colorPalettes[$currentPalette]['light'] ?? $colorPalettes['modern-blue']['light'];
-        $darkColors = $colorPalettes[$currentPalette]['dark'] ?? $colorPalettes['modern-blue']['dark'];
-        
-        if ($colorScheme === 'light') {
-            $activeColors = $lightColors;
-        } elseif ($colorScheme === 'dark') {
-            $activeColors = $darkColors;
-        } else {
-            $activeColors = $lightColors;
-        }
-        
-        $css .= "--woow-accent-primary: {$activeColors['primary']};";
-        $css .= "--woow-accent-secondary: {$activeColors['secondary']};";
-        $css .= "--woow-accent-primary: {$activeColors['accent']};";
-        $css .= "--woow-bg-primary: {$activeColors['background']};";
-        $css .= "--woow-bg-secondary: {$activeColors['surface']};";
-        $css .= "--woow-text-primary: {$activeColors['text']};";
-        $css .= "--woow-text-secondary: {$activeColors['text_secondary']};";
-        $css .= "--woow-border-primary: {$activeColors['border']};";
-        
-        $css .= "--woow-glass-bg: " . $this->hexToRgba($activeColors['surface'], 0.85) . ";";
-        $css .= "--woow-glass-bg: " . $this->hexToRgba($activeColors['surface'], 0.6) . ";";
-        $css .= "--woow-glass-border: " . $this->hexToRgba($activeColors['text'], 0.2) . ";";
-        
-        $css .= "--woow-gradient-start: {$activeColors['primary']};";
-        $css .= "--woow-gradient-end: {$activeColors['secondary']};";
-        $css .= "--woow-accent-glow: " . $this->hexToRgba($activeColors['primary'], 0.6) . ";";
-        
-        $menuWidth = isset($settings['menu_width']) ? $settings['menu_width'] : 160;
-        $css .= "--woow-surface-menu-width: {$menuWidth}px;";
-        $css .= "--woow-surface-menu-width-collapsed: 36px;";
-        
-        $adminBarHeight = isset($settings['admin_bar_height']) ? $settings['admin_bar_height'] : 32;
-        $css .= "--woow-surface-bar-height: {$adminBarHeight}px;";
-        
-        $marginType = $settings['menu_margin_type'] ?? 'all';
-        if ($marginType === 'all') {
-            $marginAll = $settings['menu_margin_all'] ?? $settings['menu_margin'] ?? 20;
-            $css .= "--woow-space-menu-top: {$marginAll}px;";
-            $css .= "--woow-space-menu-right: {$marginAll}px;";
-            $css .= "--woow-space-menu-bottom: {$marginAll}px;";
-            $css .= "--woow-space-menu-left: {$marginAll}px;";
-        } else {
-            $marginTop = $settings['menu_margin_top'] ?? 20;
-            $marginRight = $settings['menu_margin_right'] ?? 20;
-            $marginBottom = $settings['menu_margin_bottom'] ?? 20;
-            $marginLeft = $settings['menu_margin_left'] ?? 20;
-            $css .= "--woow-space-menu-top: {$marginTop}px;";
-            $css .= "--woow-space-menu-right: {$marginRight}px;";
-            $css .= "--woow-space-menu-bottom: {$marginBottom}px;";
-            $css .= "--woow-space-menu-left: {$marginLeft}px;";
-        }
-        
-        $oldMargin = $settings['menu_margin'] ?? 20;
-        $css .= "--woow-space-menu: {$oldMargin}px;";
-        
-        $adminBarMarginType = $settings['admin_bar_margin_type'] ?? 'all';
-        if ($adminBarMarginType === 'all') {
-            $adminBarMargin = $settings['admin_bar_margin'] ?? 10;
-            $css .= "--woow-space-bar-top: {$adminBarMargin}px;";
-            $css .= "--woow-space-bar-right: {$adminBarMargin}px;";
-            $css .= "--woow-space-bar-bottom: {$adminBarMargin}px;";
-            $css .= "--woow-space-bar-left: {$adminBarMargin}px;";
-        } else {
-            $adminBarMarginTop = $settings['admin_bar_margin_top'] ?? 10;
-            $adminBarMarginRight = $settings['admin_bar_margin_right'] ?? 10;
-            $adminBarMarginBottom = $settings['admin_bar_margin_bottom'] ?? 10;
-            $adminBarMarginLeft = $settings['admin_bar_margin_left'] ?? 10;
-            $css .= "--woow-space-bar-top: {$adminBarMarginTop}px;";
-            $css .= "--woow-space-bar-right: {$adminBarMarginRight}px;";
-            $css .= "--woow-space-bar-bottom: {$adminBarMarginBottom}px;";
-            $css .= "--woow-space-bar-left: {$adminBarMarginLeft}px;";
-        }
-        
-        $oldAdminBarMargin = isset($settings['admin_bar_detached_margin']) ? $settings['admin_bar_detached_margin'] : 10;
-        $css .= "--woow-space-bar: {$oldAdminBarMargin}px;";
-        
-        $menuBorderRadius = $settings['menu_border_radius_all'] ?? 0;
-        $css .= "--woow-radius-menu: {$menuBorderRadius}px;";
-        
-        $adminBarBorderRadius = $settings['admin_bar_border_radius'] ?? 0;
-        $css .= "--woow-radius-bar: {$adminBarBorderRadius}px;";
-        
-        $menuMarginType = $settings['menu_margin_type'] ?? 'all';
-        if ($menuMarginType === 'all') {
-            $menuMargin = $settings['menu_margin'] ?? 10;
-            $css .= "--woow-space-menu-floating-top: {$menuMargin}px;";
-            $css .= "--woow-space-menu-floating-right: {$menuMargin}px;";
-            $css .= "--woow-space-menu-floating-bottom: {$menuMargin}px;";
-            $css .= "--woow-space-menu-floating-left: {$menuMargin}px;";
-        } else {
-            $menuMarginTop = $settings['menu_margin_top'] ?? 10;
-            $menuMarginRight = $settings['menu_margin_right'] ?? 10;
-            $menuMarginBottom = $settings['menu_margin_bottom'] ?? 10;
-            $menuMarginLeft = $settings['menu_margin_left'] ?? 10;
-            $css .= "--woow-space-menu-floating-top: {$menuMarginTop}px;";
-            $css .= "--woow-space-menu-floating-right: {$menuMarginRight}px;";
-            $css .= "--woow-space-menu-floating-bottom: {$menuMarginBottom}px;";
-            $css .= "--woow-space-menu-floating-left: {$menuMarginLeft}px;";
-        }
-
-        $adminBarBackground = $settings['admin_bar_background'] ?? '#23282d';
-        $adminBarTextColor = $settings['admin_bar_text_color'] ?? '#ffffff';
-        $adminBarHoverColor = $settings['admin_bar_hover_color'] ?? '#46a6d8';
-        $adminBarFontSize = $settings['admin_bar_font_size'] ?? 13;
-        $adminBarPadding = $settings['admin_bar_padding'] ?? 8;
-        $adminBarBorderRadiusAll = $settings['admin_bar_border_radius'] ?? 0;
-        
-        $css .= "--woow-surface-bar: {$adminBarBackground};";
-        $css .= "--woow-surface-bar-text: {$adminBarTextColor};";
-        $css .= "--woow-surface-bar-hover: {$adminBarHoverColor};";
-        $css .= "--woow-surface-bar-font-size: {$adminBarFontSize}px;";
-        $css .= "--woow-surface-bar-padding: {$adminBarPadding}px;";
-        $css .= "--woow-radius-bar-all: {$adminBarBorderRadiusAll}px;";
-
-        $menuTextColor = $settings['menu_text_color'] ?? $activeColors['text'];
-        $menuHoverColor = $settings['menu_hover_color'] ?? $activeColors['primary'];
-        $menuActiveBackground = $settings['menu_active_background'] ?? $activeColors['accent'];
-        $menuActiveTextColor = $settings['menu_active_text_color'] ?? '#ffffff';
-        $menuItemHeight = $settings['menu_item_height'] ?? 34;
-        $menuBorderRadiusAll = $settings['menu_border_radius_all'] ?? 0;
-        
-        $css .= "--woow-surface-menu-text: {$menuTextColor};";
-        $css .= "--woow-surface-menu-hover: {$menuHoverColor};";
-        $css .= "--woow-surface-menu-active: {$menuActiveBackground};";
-        $css .= "--woow-surface-menu-active-text: {$menuActiveTextColor};";
-        $css .= "--woow-surface-menu-item-height: {$menuItemHeight}px;";
-        $css .= "--woow-radius-menu-all: {$menuBorderRadiusAll}px;";
-
-        $menuBackground = isset($settings['menu_background']) ? $settings['menu_background'] : $activeColors['surface'];
-        $css .= "--woow-surface-menu: {$menuBackground};";
-        
-        $css .= '}';
-        
-
-        
-        $css .= 'body.woow-dark-mode {';
-        $css .= "--woow-accent-primary: {$darkColors['primary']};";
-        $css .= "--woow-accent-secondary: {$darkColors['secondary']};";
-        $css .= "--woow-accent-primary: {$darkColors['accent']};";
-        $css .= "--woow-bg-primary: {$darkColors['background']};";
-        $css .= "--woow-bg-secondary: {$darkColors['surface']};";
-        $css .= "--woow-text-primary: {$darkColors['text']};";
-        $css .= "--woow-text-secondary: {$darkColors['text_secondary']};";
-        $css .= "--woow-border-primary: {$darkColors['border']};";
-        $css .= "--woow-glass-bg: " . $this->hexToRgba($darkColors['surface'], 0.85) . ";";
-        $css .= "--woow-glass-bg: " . $this->hexToRgba($darkColors['surface'], 0.6) . ";";
-        $css .= "--woow-glass-border: " . $this->hexToRgba($darkColors['text'], 0.2) . ";";
-        $css .= "--woow-gradient-start: {$darkColors['primary']};";
-        $css .= "--woow-gradient-end: {$darkColors['secondary']};";
-        $css .= "--woow-accent-glow: " . $this->hexToRgba($darkColors['primary'], 0.6) . ";";
-        $css .= '}';
-        
-        return $css;
-    }
     
     /**
      * Define adaptive color palettes for light/dark modes
@@ -2758,24 +2616,98 @@ class ModernAdminStylerV2 {
      * 🎯 LIVE EDIT MODE: Save settings via AJAX
      */
     public function ajaxSaveLiveSettings() {
-        // Przekieruj do nowej funkcji
-        $coreEngine = \ModernAdminStyler\Services\CoreEngine::getInstance();
-        $communicationManager = $coreEngine->getCommunicationManager();
-        return $communicationManager->handleSaveSettings();
+        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'mas_live_edit_nonce') || !current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Security check failed']);
+            return;
+        }
+        
+        try {
+            // Validate and sanitize input data
+            $validated_data = $this->input_validator->validateAndSanitize($_POST, [
+                'nonce' => ['type' => 'key', 'required' => true],
+                'action' => ['type' => 'key', 'required' => true],
+                'settings' => ['type' => 'json', 'required' => false]
+            ]);
+            
+            $new_settings = $validated_data['settings'] ?? [];
+            
+            if (!is_array($new_settings)) {
+                wp_send_json_error(['message' => 'Invalid settings format']);
+                return;
+            }
+            
+            $current_settings = $this->getSettings();
+            
+            $updated_settings = array_merge($current_settings, $new_settings);
+            
+            $sanitized_settings = $this->sanitizeSettings($updated_settings);
+            
+            $result = update_option('mas_v2_settings', $sanitized_settings);
+            
+            if ($result) {
+                $this->clearCache();
+                
+                wp_send_json_success([
+                    'message' => 'Settings saved successfully',
+                    'updated_count' => count($new_settings),
+                    'total_settings' => count($sanitized_settings),
+                    'timestamp' => current_time('mysql')
+                ]);
+            } else {
+                wp_send_json_error(['message' => 'Failed to save settings to database']);
+            }
+            
+        } catch (Exception $e) {
+            wp_send_json_error(['message' => 'Error saving settings: ' . $e->getMessage()]);
+        }
     }
     
     /**
      * 🎯 LIVE EDIT MODE: Get current settings via AJAX
      */
     public function ajaxGetLiveSettings() {
-        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'woow_v2_nonce')) {
-            wp_send_json_error(['message' => 'Security error']);
+        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'mas_live_edit_nonce') || !current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Security check failed']);
             return;
         }
-        $coreEngine = \ModernAdminStyler\Services\CoreEngine::getInstance();
-        $settingsManager = $coreEngine->getSettingsManager();
-        $settings = $settingsManager->getSettings();
-        wp_send_json_success(['settings' => $settings, 'timestamp' => current_time('mysql')]);
+        
+        try {
+            $settings = $this->getSettings();
+            
+            // Filtruj tylko ustawienia związane z Live Edit
+            $live_edit_settings = [];
+            $live_edit_keys = [
+                'admin_bar_background',
+                'admin_bar_text_color', 
+                'admin_bar_hover_color',
+                'admin_bar_height',
+                'admin_bar_font_size',
+                'admin_bar_border_radius',
+                'menu_background',
+                'menu_text_color',
+                'menu_hover_color',
+                'menu_width',
+                'menu_border_radius',
+                'accent_color'
+            ];
+            
+            foreach ($live_edit_keys as $key) {
+                if (isset($settings[$key])) {
+                    $live_edit_settings[$key] = $settings[$key];
+                }
+            }
+            
+            wp_send_json_success([
+                'settings' => $live_edit_settings,
+                'count' => count($live_edit_settings),
+                'last_modified' => get_option('mas_v2_settings_modified', 'Unknown'),
+                'cache_status' => wp_using_ext_object_cache() ? 'External cache' : 'WordPress default',
+                'timestamp' => current_time('mysql')
+            ]);
+            
+        } catch (Exception $e) {
+            wp_send_json_error(['message' => 'Error loading settings: ' . $e->getMessage()]);
+        }
     }
     
     /**
@@ -2829,6 +2761,131 @@ class ModernAdminStylerV2 {
         }
     }
     
+    /**
+     * 💾 AJAX Save Settings Handler (mas_v2_settings format)
+     * 
+     * Handles bulk settings save with proper validation and security
+     */
+    public function ajaxSaveSettings() {
+        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'mas_v2_nonce') || !current_user_can('manage_options')) {
+            wp_send_json_error(['message' => __('Security check failed', 'woow-admin-styler')]);
+            return;
+        }
+        
+        try {
+            // Validate and sanitize input data
+            $validated_data = $this->input_validator->validateAndSanitize($_POST, [
+                'nonce' => ['type' => 'key', 'required' => true],
+                'action' => ['type' => 'key', 'required' => true]
+            ]);
+        } catch (Exception $e) {
+            wp_send_json_error(['message' => 'Invalid input data: ' . $e->getMessage()]);
+            return;
+        }
+        
+        try {
+            error_log('MAS V2: AJAX Save Settings called');
+            
+            // Get form data and remove security fields
+            $form_data = $_POST;
+            unset($form_data['nonce'], $form_data['action']);
+            
+            // Get current settings for comparison
+            $old_settings = $this->getSettings();
+            
+            // Sanitize and validate settings
+            $sanitized_settings = $this->sanitizeSettings($form_data);
+            
+            // Save settings
+            $result = update_option('mas_v2_settings', $sanitized_settings);
+            
+            // Verify save was successful
+            $is_success = ($result === true || serialize($sanitized_settings) === serialize($old_settings));
+            
+            if ($is_success) {
+                // Clear cache after successful save
+                $this->clearCache();
+                
+                wp_send_json_success([
+                    'message' => __('Settings saved successfully!', 'woow-admin-styler'),
+                    'settings' => $sanitized_settings,
+                    'settings_count' => count($sanitized_settings),
+                    'timestamp' => current_time('mysql')
+                ]);
+            } else {
+                error_log('MAS V2: Settings save failed for user ' . get_current_user_id() . ' at ' . date('Y-m-d H:i:s'));
+                wp_send_json_error([
+                    'message' => __('Failed to save settings to database.', 'woow-admin-styler'),
+                    'error_code' => 'database_save_failed'
+                ]);
+            }
+            
+        } catch (Exception $e) {
+            error_log('MAS V2: Settings save error: ' . $e->getMessage() . ' for user ' . get_current_user_id());
+            wp_send_json_error([
+                'message' => __('Error saving settings: ', 'woow-admin-styler') . $e->getMessage(),
+                'error_code' => 'save_exception'
+            ]);
+        }
+    }
+    
+    /**
+     * 🎨 AJAX Live Preview Handler
+     * 
+     * Handles live preview functionality for real-time style changes
+     */
+    public function ajaxLivePreview() {
+        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'mas_live_edit_nonce') || !current_user_can('manage_options')) {
+            wp_send_json_error(['message' => __('Security check failed', 'woow-admin-styler')]);
+            return;
+        }
+        
+        try {
+            error_log('MAS V2: AJAX Live Preview called');
+            
+            // Get preview data
+            $preview_data = $_POST['preview_data'] ?? [];
+            $target_element = sanitize_text_field($_POST['target_element'] ?? '');
+            $preview_type = sanitize_text_field($_POST['preview_type'] ?? 'css');
+            
+            if (empty($preview_data)) {
+                wp_send_json_error([
+                    'message' => __('Preview data is required', 'woow-admin-styler'),
+                    'error_code' => 'missing_preview_data'
+                ]);
+                return;
+            }
+            
+            // Sanitize preview data
+            $sanitized_preview = $this->sanitizeSettings($preview_data);
+            
+            // Generate preview CSS
+            $preview_css = $this->generatePreviewCSS($sanitized_preview, $target_element);
+            
+            // Get current settings for comparison
+            $current_settings = $this->getSettings();
+            
+            // Calculate changes
+            $changes = $this->calculateSettingsChanges($current_settings, $sanitized_preview);
+            
+            wp_send_json_success([
+                'message' => __('Live preview generated successfully', 'woow-admin-styler'),
+                'preview_css' => $preview_css,
+                'target_element' => $target_element,
+                'preview_type' => $preview_type,
+                'changes' => $changes,
+                'preview_data' => $sanitized_preview,
+                'timestamp' => current_time('mysql')
+            ]);
+            
+        } catch (Exception $e) {
+            error_log('MAS V2: Live preview error: ' . $e->getMessage() . ' for user ' . get_current_user_id());
+            wp_send_json_error([
+                'message' => __('Error generating live preview: ', 'woow-admin-styler') . $e->getMessage(),
+                'error_code' => 'preview_exception'
+            ]);
+        }
+    }
     
     /**
      * 🎯 FAZA 6: Renderuje stronę Enterprise Dashboard
@@ -3092,6 +3149,200 @@ class ModernAdminStylerV2 {
      * Live Edit Mode provides superior UX with instant preview and
      * direct admin page editing without needing separate Customizer interface.
      */
+    
+    /**
+     * Generate preview CSS for live preview functionality
+     * 
+     * @param array $preview_settings Settings to preview
+     * @param string $target_element Target element selector
+     * @return string Generated CSS
+     */
+    private function generatePreviewCSS($preview_settings, $target_element = '') {
+        $css = '';
+        
+        try {
+            // Generate CSS variables from preview settings
+            $css_variables = $this->generateCSSVariables($preview_settings);
+            
+            if (!empty($css_variables)) {
+                if (!empty($target_element)) {
+                    // Apply to specific element
+                    $css .= "{$target_element} {\n";
+                    $css .= $css_variables;
+                    $css .= "}\n";
+                } else {
+                    // Apply to root
+                    $css .= ":root {\n";
+                    $css .= $css_variables;
+                    $css .= "}\n";
+                }
+            }
+            
+            // Add any specific preview styles
+            $css .= $this->generatePreviewSpecificStyles($preview_settings, $target_element);
+            
+        } catch (Exception $e) {
+            error_log('MAS V2: Error generating preview CSS: ' . $e->getMessage());
+            $css = "/* Error generating preview CSS: {$e->getMessage()} */";
+        }
+        
+        return $css;
+    }
+    
+    /**
+     * Generate CSS variables from settings
+     * 
+     * @param array $settings Settings array
+     * @return string CSS variables
+     */
+    private function generateCSSVariables($settings) {
+        $css_vars = '';
+        
+        // Mapping of setting keys to CSS variables
+        $css_variable_map = [
+            'admin_bar_background' => '--woow-surface-bar',
+            'admin_bar_text_color' => '--woow-text-bar',
+            'admin_bar_height' => '--woow-surface-bar-height',
+            'sidebar_background' => '--woow-surface-sidebar',
+            'sidebar_text_color' => '--woow-text-sidebar',
+            'sidebar_width' => '--woow-sidebar-width',
+            'content_background' => '--woow-surface-content',
+            'content_text_color' => '--woow-text-content',
+            'accent_color' => '--woow-accent-primary',
+            'secondary_color' => '--woow-accent-secondary'
+        ];
+        
+        foreach ($settings as $key => $value) {
+            if (isset($css_variable_map[$key]) && !empty($value)) {
+                $css_var_name = $css_variable_map[$key];
+                $css_value = $this->formatCSSValue($key, $value);
+                $css_vars .= "    {$css_var_name}: {$css_value};\n";
+            }
+        }
+        
+        return $css_vars;
+    }
+    
+    /**
+     * Format CSS value based on setting type
+     * 
+     * @param string $key Setting key
+     * @param mixed $value Setting value
+     * @return string Formatted CSS value
+     */
+    private function formatCSSValue($key, $value) {
+        // Color values
+        if (strpos($key, 'color') !== false || strpos($key, 'background') !== false) {
+            return $this->formatColorValue($value);
+        }
+        
+        // Size values
+        if (strpos($key, 'width') !== false || strpos($key, 'height') !== false) {
+            return $this->formatSizeValue($value);
+        }
+        
+        // Default: return as-is with quotes if needed
+        return is_numeric($value) ? $value : "'{$value}'";
+    }
+    
+    /**
+     * Format color value for CSS
+     * 
+     * @param string $color Color value
+     * @return string Formatted color
+     */
+    private function formatColorValue($color) {
+        $color = sanitize_hex_color($color);
+        return $color ? $color : '#000000';
+    }
+    
+    /**
+     * Format size value for CSS
+     * 
+     * @param mixed $size Size value
+     * @return string Formatted size with unit
+     */
+    private function formatSizeValue($size) {
+        if (is_numeric($size)) {
+            return $size . 'px';
+        }
+        
+        // If already has unit, return as-is
+        if (preg_match('/^\d+(\.\d+)?(px|em|rem|%|vh|vw)$/', $size)) {
+            return $size;
+        }
+        
+        // Default to px
+        return intval($size) . 'px';
+    }
+    
+    /**
+     * Generate preview-specific styles
+     * 
+     * @param array $settings Preview settings
+     * @param string $target_element Target element
+     * @return string Additional CSS
+     */
+    private function generatePreviewSpecificStyles($settings, $target_element) {
+        $css = '';
+        
+        // Add transition for smooth preview changes
+        if (!empty($target_element)) {
+            $css .= "{$target_element} {\n";
+            $css .= "    transition: all 0.3s ease;\n";
+            $css .= "}\n";
+        }
+        
+        return $css;
+    }
+    
+    /**
+     * Calculate changes between current and preview settings
+     * 
+     * @param array $current_settings Current settings
+     * @param array $preview_settings Preview settings
+     * @return array Changes summary
+     */
+    private function calculateSettingsChanges($current_settings, $preview_settings) {
+        $changes = [
+            'added' => [],
+            'modified' => [],
+            'removed' => [],
+            'unchanged' => []
+        ];
+        
+        // Find added and modified settings
+        foreach ($preview_settings as $key => $value) {
+            if (!isset($current_settings[$key])) {
+                $changes['added'][$key] = $value;
+            } elseif ($current_settings[$key] !== $value) {
+                $changes['modified'][$key] = [
+                    'old' => $current_settings[$key],
+                    'new' => $value
+                ];
+            } else {
+                $changes['unchanged'][$key] = $value;
+            }
+        }
+        
+        // Find removed settings
+        foreach ($current_settings as $key => $value) {
+            if (!isset($preview_settings[$key])) {
+                $changes['removed'][$key] = $value;
+            }
+        }
+        
+        // Add summary counts
+        $changes['summary'] = [
+            'total_changes' => count($changes['added']) + count($changes['modified']) + count($changes['removed']),
+            'added_count' => count($changes['added']),
+            'modified_count' => count($changes['modified']),
+            'removed_count' => count($changes['removed']),
+            'unchanged_count' => count($changes['unchanged'])
+        ];
+        
+        return $changes;
+    }
 }
 
 ModernAdminStylerV2::getInstance();

@@ -15,6 +15,10 @@
 
 namespace ModernAdminStyler\Services;
 
+// Import required service classes
+require_once __DIR__ . '/UnifiedAjaxManager.php';
+require_once __DIR__ . '/BackwardCompatibilityManager.php';
+
 class CoreEngine {
     
     private static $instance = null;
@@ -163,6 +167,16 @@ class CoreEngine {
                     $this->get('settings_manager') // Using settings_manager for presets
                 );
                 
+            // === UNIFIED AJAX MANAGEMENT ===
+            case 'unified_ajax_manager':
+                return new UnifiedAjaxManager(
+                    $this->get('settings_manager')
+                );
+                
+            // === BACKWARD COMPATIBILITY MANAGEMENT ===
+            case 'backward_compatibility_manager':
+                return new BackwardCompatibilityManager();
+                
             // === SETTINGS MANAGEMENT ===
             case 'settings_manager':
                 return new SettingsManager($this);
@@ -224,6 +238,8 @@ class CoreEngine {
             'cache_manager',
             'style_generator', 
             'security_manager',
+            'unified_ajax_manager',  // Initialize AJAX manager early for endpoint registration
+            'backward_compatibility_manager',  // Initialize compatibility layer after AJAX manager
             'admin_interface',
             'communication_manager',
             'asset_loader'
@@ -287,6 +303,8 @@ class CoreEngine {
             'cache_manager',
             'style_generator',
             'security_manager',
+            'unified_ajax_manager',
+            'backward_compatibility_manager',
             'admin_interface',
             'communication_manager',
             'asset_loader'
@@ -304,6 +322,8 @@ class CoreEngine {
             'cache_manager' => ['settings_manager'],
             'style_generator' => ['settings_manager', 'cache_manager'],
             'security_manager' => ['settings_manager', 'cache_manager'],
+            'unified_ajax_manager' => ['settings_manager'],
+            'backward_compatibility_manager' => [],
             'admin_interface' => ['settings_manager', 'security_manager'],
             'communication_manager' => ['settings_manager', 'cache_manager', 'security_manager'],
             'asset_loader' => ['settings_manager', 'style_generator']
@@ -429,6 +449,20 @@ class CoreEngine {
      */
     public function getCommunicationManager() {
         return $this->get('communication_manager');
+    }
+    
+    /**
+     * 🔗 Get Unified AJAX Manager
+     */
+    public function getUnifiedAjaxManager() {
+        return $this->get('unified_ajax_manager');
+    }
+    
+    /**
+     * 🔄 Get Backward Compatibility Manager
+     */
+    public function getBackwardCompatibilityManager() {
+        return $this->get('backward_compatibility_manager');
     }
     
     /**

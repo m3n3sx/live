@@ -14,6 +14,13 @@
 
 namespace ModernAdminStyler\Services;
 
+// Import security classes
+require_once __DIR__ . '/AjaxSecurityManager.php';
+require_once __DIR__ . '/SecurityExceptions.php';
+require_once __DIR__ . '/AjaxResponseManager.php';
+require_once __DIR__ . '/ErrorLogger.php';
+require_once __DIR__ . '/PerformanceMonitor.php';
+
 class CommunicationManager {
     
     // AJAX PROPERTIES (FROM AjaxHandler)
@@ -30,6 +37,21 @@ class CommunicationManager {
     private $metrics_collector;
     private $preset_manager;
     
+    // New unified AJAX security manager
+    private $ajax_security_manager;
+    
+    // New unified AJAX response manager
+    private $ajax_response_manager;
+    
+    // New unified error logger
+    private $error_logger;
+    
+    // New unified performance monitor
+    private $performance_monitor;
+    
+    // New unified input validator
+    private $input_validator;
+    
     public function __construct($settings_manager, $cache_manager = null, $security_manager = null, $metrics_collector = null, $preset_manager = null) {
         // AJAX initialization
         $this->settings_manager = $settings_manager;
@@ -39,6 +61,22 @@ class CommunicationManager {
         $this->security_manager = $security_manager;
         $this->metrics_collector = $metrics_collector;
         $this->preset_manager = $preset_manager;
+        
+        // Initialize unified AJAX security manager
+        $this->ajax_security_manager = new AjaxSecurityManager();
+        
+        // Initialize unified AJAX response manager
+        $this->ajax_response_manager = new AjaxResponseManager();
+        
+        // Initialize unified error logger
+        $this->error_logger = new ErrorLogger();
+        
+        // Initialize unified performance monitor
+        $this->performance_monitor = new PerformanceMonitor();
+        
+        // Initialize unified input validator
+        require_once __DIR__ . '/InputValidator.php';
+        $this->input_validator = new InputValidator($this->error_logger);
         
         $this->init();
     }
@@ -54,101 +92,105 @@ class CommunicationManager {
         add_action('admin_init', [$this, 'registerSettings']);
         add_action('admin_menu', [$this, 'addSettingsPage']);
         
-        // AJAX handlers for import/export
-        add_action('wp_ajax_mas_v2_import_functional_settings', [$this, 'handleImportSettings']);
-        
-        // Register AJAX handlers (FROM AjaxHandler)
-        add_action('wp_ajax_mas_v2_save_settings', [$this, 'handleSaveSettings']);
-        add_action('wp_ajax_mas_v2_reset_settings', [$this, 'handleResetSettings']);
-        add_action('wp_ajax_mas_v2_export_settings', [$this, 'handleExportSettings']);
-        add_action('wp_ajax_mas_v2_import_settings', [$this, 'handleImportSettings']);
-        add_action('wp_ajax_mas_v2_database_check', [$this, 'handleDatabaseCheck']);
-        
-        // Enterprise AJAX handlers
-        add_action('wp_ajax_mas_v2_cache_flush', [$this, 'handleCacheFlush']);
-        add_action('wp_ajax_mas_v2_cache_stats', [$this, 'handleCacheStats']);
-        add_action('wp_ajax_mas_v2_metrics_report', [$this, 'handleMetricsReport']);
-        add_action('wp_ajax_mas_v2_security_scan', [$this, 'handleSecurityScan']);
-        add_action('wp_ajax_mas_v2_performance_benchmark', [$this, 'handlePerformanceBenchmark']);
-        add_action('wp_ajax_mas_v2_css_regenerate', [$this, 'handleCSSRegenerate']);
-        add_action('wp_ajax_mas_v2_memory_stats', [$this, 'handleMemoryStats']);
-        add_action('wp_ajax_mas_v2_force_memory_optimization', [$this, 'handleForceMemoryOptimization']);
+        // NOTE: All AJAX handlers have been moved to UnifiedAjaxManager for centralized management
+        // This provides:
+        // - Consistent security validation across all endpoints
+        // - Standardized response formatting with wp_send_json()
+        // - Performance monitoring and rate limiting
+        // - Comprehensive error handling and logging
+        // - Backward compatibility through deprecated endpoint aliases
+        //
+        // The CommunicationManager now focuses on:
+        // - Settings API registration and management
+        // - Business logic for settings operations
+        // - Data validation and sanitization
+        // - Integration with other services
+        //
+        // AJAX endpoint handlers remain in this class but are called by UnifiedAjaxManager
     }
     
     /**
-     * 🔒 Weryfikuje bezpieczeństwo AJAX requesta
+     * 🔒 Unified AJAX security verification using AjaxSecurityManager
      */
-    private function verifyAjaxSecurity() {
-        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'mas_v2_nonce')) {
-            wp_send_json_error(['message' => __('Błąd bezpieczeństwa', 'woow-admin-styler')]);
+    private function verifyAjaxSecurity($action = 'generic', $config = []) {
+        try {
+            // Use the new unified security manager
+            $default_config = [
+                'capability' => 'manage_options',
+                'rate_limit' => 10
+            ];
+            $merged_config = array_merge($default_config, $config);
+            
+            return $this->ajax_security_manager->validateRequest($action, $merged_config);
+            
+        } catch (SecurityException $e) {
+            // Log the security violation (already handled by security manager)
+            $this->ajax_response_manager->securityError(
+                $e->getMessage(),
+                $e->getViolationType()
+            );
+            return false;
+        } catch (Exception $e) {
+            // Handle any other exceptions
+            error_log('MAS V2: Security verification error: ' . $e->getMessage());
+            $this->ajax_response_manager->error(
+                __('Błąd weryfikacji bezpieczeństwa', 'woow-admin-styler'),
+                'security_error'
+            );
             return false;
         }
-        
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error(['message' => __('Brak uprawnień', 'woow-admin-styler')]);
-            return false;
-        }
-        
-        return true;
     }
     
-    /**
-     * Rate limiting helper (max 10 zapisów na minutę na usera)
-     */
-    private function isRateLimited($action = 'save') {
-        $user_id = get_current_user_id();
-        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-        $key = 'mas_v2_rate_' . $action . '_' . $user_id;
-        $limit = 10;
-        $window = 60; // sekundy
-        $now = time();
-        $history = get_transient($key);
-        if (!is_array($history)) $history = [];
-        // Usuń stare wpisy
-        $history = array_filter($history, function($ts) use ($now, $window) { return $ts > $now - $window; });
-        if (count($history) >= $limit) {
-            error_log("MAS V2: Rate limit exceeded for user $user_id ($ip) at " . date('Y-m-d H:i:s'));
-            return true;
-        }
-        $history[] = $now;
-        set_transient($key, $history, $window);
-        return false;
-    }
+
 
     /**
      * 💾 Obsługuje zapisywanie ustawień przez AJAX
      */
     public function handleSaveSettings() {
-        if (!$this->verifyAjaxSecurity()) {
-            return;
-        }
-        if ($this->isRateLimited('save')) {
-            wp_send_json_error(['message' => __('Zbyt wiele zapisów. Odczekaj chwilę i spróbuj ponownie.', 'woow-admin-styler')]);
+        if (!$this->verifyAjaxSecurity('mas_v2_save_settings', ['rate_limit' => 5])) {
             return;
         }
         try {
             error_log('MAS V2: AJAX Save Settings called');
-            // Filtruj dane formularza
-            $form_data = $_POST;
+            
+            // Validate and sanitize input data using InputValidator
+            $validated_data = $this->input_validator->validateAndSanitize($_POST, [
+                'nonce' => ['type' => 'key', 'required' => true],
+                'action' => ['type' => 'key', 'required' => true]
+            ]);
+            
+            // Remove security fields from settings data
+            $form_data = $validated_data;
             unset($form_data['nonce'], $form_data['action']);
-            // Sanityzacja i zapis
+            
+            // Additional sanitization through settings manager
             $old_settings = $this->settings_manager->getSettings();
             $settings = $this->settings_manager->sanitizeSettings($form_data);
             $result = $this->settings_manager->saveSettings($settings);
             // Weryfikacja zapisu
             $is_success = ($result === true || serialize($settings) === serialize($old_settings));
             if ($is_success) {
-                wp_send_json_success([
-                    'message' => __('Ustawienia zostały zapisane pomyślnie!', 'woow-admin-styler'),
-                    'settings' => $settings
-                ]);
+                $this->ajax_response_manager->success(
+                    ['settings' => $settings],
+                    __('Ustawienia zostały zapisane pomyślnie!', 'woow-admin-styler'),
+                    'settings_saved'
+                );
             } else {
                 error_log('MAS V2: Save failed for user ' . get_current_user_id() . ' (' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown') . ') at ' . date('Y-m-d H:i:s'));
-                wp_send_json_error(['message' => __('Wystąpił błąd podczas zapisu do bazy danych.', 'woow-admin-styler')]);
+                $this->ajax_response_manager->databaseError(
+                    __('Wystąpił błąd podczas zapisu do bazy danych.', 'woow-admin-styler'),
+                    'save_settings'
+                );
             }
         } catch (Exception $e) {
-            error_log('MAS V2: Save error: ' . $e->getMessage() . ' for user ' . get_current_user_id() . ' (' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown') . ') at ' . date('Y-m-d H:i:s'));
-            wp_send_json_error(['message' => $e->getMessage()]);
+            // Use comprehensive error logging
+            $error_id = $this->error_logger->logAjaxError('mas_v2_save_settings', $e, $form_data, [
+                'operation' => 'save_settings',
+                'user_id' => get_current_user_id(),
+                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
+            ]);
+            
+            $this->ajax_response_manager->error($e->getMessage(), 'save_error', ['error_id' => $error_id]);
         }
     }
     
@@ -156,23 +198,21 @@ class CommunicationManager {
      * 🔄 Obsługuje resetowanie ustawień
      */
     public function handleResetSettings() {
-        if (!$this->verifyAjaxSecurity()) {
-            return;
-        }
-        if ($this->isRateLimited('reset')) {
-            wp_send_json_error(['message' => __('Zbyt wiele resetów. Odczekaj chwilę i spróbuj ponownie.', 'woow-admin-styler')]);
+        if (!$this->verifyAjaxSecurity('mas_v2_reset_settings', ['rate_limit' => 3])) {
             return;
         }
         try {
             $defaults = $this->settings_manager->getDefaultSettings();
             $this->settings_manager->saveSettings($defaults);
             
-            wp_send_json_success([
-                'message' => __('Ustawienia zostały przywrócone do domyślnych!', 'woow-admin-styler')
-            ]);
+            $this->ajax_response_manager->success(
+                ['settings' => $defaults],
+                __('Ustawienia zostały przywrócone do domyślnych!', 'woow-admin-styler'),
+                'settings_reset'
+            );
         } catch (Exception $e) {
             error_log('MAS V2: Reset error: ' . $e->getMessage() . ' for user ' . get_current_user_id() . ' (' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown') . ') at ' . date('Y-m-d H:i:s'));
-            wp_send_json_error(['message' => $e->getMessage()]);
+            $this->ajax_response_manager->error($e->getMessage(), 'reset_error');
         }
     }
     
@@ -192,12 +232,12 @@ class CommunicationManager {
                 'settings' => $settings
             ];
             
-            wp_send_json_success([
+            $this->ajax_response_manager->success([
                 'data' => $export_data,
                 'filename' => 'mas-v2-settings-' . date('Y-m-d') . '.json'
-            ]);
+            ], __('Ustawienia zostały wyeksportowane pomyślnie!', 'woow-admin-styler'), 'settings_exported');
         } catch (Exception $e) {
-            wp_send_json_error(['message' => $e->getMessage()]);
+            $this->ajax_response_manager->error($e->getMessage(), 'export_error');
         }
     }
     
@@ -210,7 +250,14 @@ class CommunicationManager {
         }
         
         try {
-            $import_data = json_decode(stripslashes($_POST['data']), true);
+            // Validate and sanitize input data
+            $validated_data = $this->input_validator->validateAndSanitize($_POST, [
+                'data' => ['type' => 'json', 'required' => true],
+                'nonce' => ['type' => 'key', 'required' => true],
+                'action' => ['type' => 'key', 'required' => true]
+            ]);
+            
+            $import_data = $validated_data['data'];
             
             if (!$import_data || !isset($import_data['settings'])) {
                 throw new Exception(__('Nieprawidłowy format pliku', 'woow-admin-styler'));
@@ -219,13 +266,12 @@ class CommunicationManager {
             $settings = $this->settings_manager->sanitizeSettings($import_data['settings']);
             $this->settings_manager->saveSettings($settings);
             
-            wp_send_json_success([
-                'message' => __('Ustawienia zostały zaimportowane pomyślnie!', 'woow-admin-styler'),
+            $this->ajax_response_manager->success([
                 'settings' => $settings
-            ]);
+            ], __('Ustawienia zostały zaimportowane pomyślnie!', 'woow-admin-styler'), 'settings_imported');
             
         } catch (Exception $e) {
-            wp_send_json_error(['message' => $e->getMessage()]);
+            $this->ajax_response_manager->error($e->getMessage(), 'import_error');
         }
     }
     
@@ -252,6 +298,253 @@ class CommunicationManager {
             
         } catch (Exception $e) {
             wp_send_json_error(['message' => $e->getMessage()]);
+        }
+    }
+
+    // ========================================
+    // 🎯 LIVE EDIT AJAX HANDLERS (for micro-panel functionality)
+    // ========================================
+
+    /**
+     * 💾 Handle live settings save (for micro-panel changes)
+     */
+    public function handleSaveLiveSettings() {
+        $start_time = microtime(true);
+        
+        if (!$this->verifyAjaxSecurity('mas_save_live_settings', ['rate_limit' => 20])) {
+            return;
+        }
+        
+        try {
+            error_log('MAS V2: Live Settings Save called');
+            
+            // Validate and sanitize input data
+            $validated_data = $this->input_validator->validateAndSanitize($_POST, [
+                'nonce' => ['type' => 'key', 'required' => true],
+                'action' => ['type' => 'key', 'required' => true],
+                'settings' => ['type' => 'json', 'required' => false]
+            ]);
+            
+            // Get current settings
+            $current_settings = $this->settings_manager->getSettings();
+            
+            // Process individual option updates
+            $form_data = $validated_data;
+            unset($form_data['nonce'], $form_data['action']);
+            
+            // Update only the changed options
+            foreach ($form_data as $option_id => $value) {
+                if ($option_id === 'settings') {
+                    // Handle bulk settings update
+                    $bulk_settings = json_decode(stripslashes($value), true);
+                    if (is_array($bulk_settings)) {
+                        foreach ($bulk_settings as $bulk_option => $bulk_value) {
+                            $current_settings[$bulk_option] = sanitize_text_field($bulk_value);
+                        }
+                    }
+                } else {
+                    // Handle individual option update
+                    $current_settings[$option_id] = sanitize_text_field($value);
+                }
+            }
+            
+            // Save updated settings
+            $result = $this->settings_manager->saveSettings($current_settings);
+            
+            if ($result !== false) {
+                // Record performance metrics
+                $execution_time = (microtime(true) - $start_time) * 1000;
+                $this->performance_monitor->recordAjaxRequest('mas_save_live_settings', $execution_time, true, [
+                    'updated_options_count' => count($form_data),
+                    'settings_size' => strlen(serialize($current_settings))
+                ]);
+                
+                $this->ajax_response_manager->success([
+                    'settings' => $current_settings,
+                    'updated_options' => array_keys($form_data)
+                ], __('Ustawienia zostały zapisane pomyślnie!', 'woow-admin-styler'), 'live_settings_saved');
+            } else {
+                // Record failed performance metrics
+                $execution_time = (microtime(true) - $start_time) * 1000;
+                $this->performance_monitor->recordAjaxRequest('mas_save_live_settings', $execution_time, false);
+                
+                error_log('MAS V2: Live save failed for user ' . get_current_user_id());
+                $this->ajax_response_manager->databaseError(
+                    __('Wystąpił błąd podczas zapisu.', 'woow-admin-styler'),
+                    'live_save'
+                );
+            }
+            
+        } catch (Exception $e) {
+            // Record error performance metrics
+            $execution_time = (microtime(true) - $start_time) * 1000;
+            $this->performance_monitor->recordAjaxRequest('mas_save_live_settings', $execution_time, false, [
+                'error_type' => get_class($e),
+                'error_message' => $e->getMessage()
+            ]);
+            
+            error_log('MAS V2: Live save error: ' . $e->getMessage());
+            $this->ajax_response_manager->error($e->getMessage(), 'live_save_error');
+        }
+    }
+    
+    /**
+     * 📥 Handle get live settings
+     */
+    public function handleGetLiveSettings() {
+        if (!$this->verifyAjaxSecurity()) {
+            return;
+        }
+        
+        try {
+            $settings = $this->settings_manager->getSettings();
+            
+            $this->ajax_response_manager->success([
+                'settings' => $settings
+            ], __('Ustawienia zostały pobrane pomyślnie!', 'woow-admin-styler'), 'live_settings_loaded');
+            
+        } catch (Exception $e) {
+            error_log('MAS V2: Get live settings error: ' . $e->getMessage());
+            $this->ajax_response_manager->error($e->getMessage(), 'live_settings_error');
+        }
+    }
+    
+    /**
+     * 🔄 Handle reset single live setting
+     */
+    public function handleResetLiveSetting() {
+        if (!$this->verifyAjaxSecurity('mas_reset_live_setting', ['rate_limit' => 10])) {
+            return;
+        }
+        
+        try {
+            // Validate and sanitize input data
+            $validated_data = $this->input_validator->validateAndSanitize($_POST, [
+                'option_id' => ['type' => 'key', 'required' => true, 'max_length' => 100],
+                'nonce' => ['type' => 'key', 'required' => true],
+                'action' => ['type' => 'key', 'required' => true]
+            ]);
+            
+            $option_id = $validated_data['option_id'];
+            
+            if (empty($option_id)) {
+                throw new Exception(__('Brak identyfikatora opcji', 'woow-admin-styler'));
+            }
+            
+            // Get current settings and defaults
+            $current_settings = $this->settings_manager->getSettings();
+            $default_settings = $this->settings_manager->getDefaultSettings();
+            
+            // Reset specific option to default
+            if (isset($default_settings[$option_id])) {
+                $current_settings[$option_id] = $default_settings[$option_id];
+                
+                $result = $this->settings_manager->saveSettings($current_settings);
+                
+                if ($result !== false) {
+                    wp_send_json_success([
+                        'message' => sprintf(__('Opcja %s została przywrócona do domyślnej wartości!', 'woow-admin-styler'), $option_id),
+                        'option_id' => $option_id,
+                        'default_value' => $default_settings[$option_id],
+                        'settings' => $current_settings
+                    ]);
+                } else {
+                    throw new Exception(__('Błąd podczas zapisu', 'woow-admin-styler'));
+                }
+            } else {
+                throw new Exception(__('Nieznana opcja', 'woow-admin-styler'));
+            }
+            
+        } catch (Exception $e) {
+            error_log('MAS V2: Reset live setting error: ' . $e->getMessage());
+            wp_send_json_error(['message' => $e->getMessage()]);
+        }
+    }
+    
+    /**
+     * 💾 Handle save live edit settings (alternative endpoint)
+     */
+    public function handleSaveLiveEditSettings() {
+        if (!$this->verifyAjaxSecurity('mas_save_live_edit_settings', ['rate_limit' => 15])) {
+            return;
+        }
+        
+        try {
+            error_log('MAS V2: Live Edit Settings Save called');
+            
+            $settings_json = $_POST['settings'] ?? '';
+            $settings = json_decode(stripslashes($settings_json), true);
+            
+            if (!is_array($settings)) {
+                throw new Exception(__('Nieprawidłowy format danych', 'woow-admin-styler'));
+            }
+            
+            // Get current settings and merge with new ones
+            $current_settings = $this->settings_manager->getSettings();
+            $updated_settings = array_merge($current_settings, $settings);
+            
+            // Sanitize and save
+            $sanitized_settings = $this->settings_manager->sanitizeSettings($updated_settings);
+            $result = $this->settings_manager->saveSettings($sanitized_settings);
+            
+            if ($result !== false) {
+                wp_send_json_success([
+                    'message' => __('Ustawienia live edit zostały zapisane pomyślnie!', 'woow-admin-styler'),
+                    'settings' => $sanitized_settings,
+                    'updated_count' => count($settings)
+                ]);
+            } else {
+                throw new Exception(__('Błąd podczas zapisu do bazy danych', 'woow-admin-styler'));
+            }
+            
+        } catch (Exception $e) {
+            error_log('MAS V2: Live edit save error: ' . $e->getMessage());
+            wp_send_json_error(['message' => $e->getMessage()]);
+        }
+    }
+    
+    /**
+     * 📝 Handle error logging from frontend using comprehensive ErrorLogger
+     */
+    public function handleLogError() {
+        // Less strict security for error logging
+        if (!current_user_can('manage_options')) {
+            $this->ajax_response_manager->error(__('Brak uprawnień', 'woow-admin-styler'), 'insufficient_capability');
+            return;
+        }
+        
+        try {
+            // Validate and sanitize input data
+            $validated_data = $this->input_validator->validateAndSanitize($_POST, [
+                'error_data' => ['type' => 'json', 'required' => true],
+                'error_message' => ['type' => 'text', 'required' => false, 'max_length' => 1000],
+                'error_type' => ['type' => 'text', 'required' => false, 'max_length' => 50],
+                'nonce' => ['type' => 'key', 'required' => false],
+                'action' => ['type' => 'key', 'required' => true]
+            ]);
+            
+            $error_data = $validated_data['error_data'];
+            
+            if (is_array($error_data)) {
+                // Use the comprehensive ErrorLogger for JavaScript errors
+                $error_id = $this->error_logger->logJavaScriptError($error_data);
+                
+                $this->ajax_response_manager->success([
+                    'error_id' => $error_id,
+                    'logged' => true
+                ], 'Error logged successfully', 'error_logged');
+            } else {
+                throw new Exception('Invalid error data format');
+            }
+            
+        } catch (Exception $e) {
+            // Log the logging error itself
+            $this->error_logger->logSystemError('Failed to log frontend error: ' . $e->getMessage(), [
+                'original_error_data' => $_POST['error_data'] ?? null,
+                'logging_error' => $e->getMessage()
+            ]);
+            
+            $this->ajax_response_manager->error('Failed to log error', 'logging_error');
         }
     }
 
